@@ -62,6 +62,7 @@
         "fullcalendar": "^6.1.20",
         "jquery": "^4.0.0",
         "sortablejs": "^1.15.7",
+        "sweetalert2": "^11.26.24",
         "tinymce": "^8.5.0",
         "vanilla-calendar-pro": "^3.1.0"
     }

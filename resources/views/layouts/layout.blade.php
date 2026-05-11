@@ -25,6 +25,7 @@
     </head>
 
     <body class="antialiased flex h-full text-base text-foreground bg-background demo1 kt-sidebar-fixed kt-header-fixed">
+        <form action="{{ route('logout') }}" method="POST" id="_islogout">@csrf</form>
         <!-- Page -->
         <!-- Main -->
         <div class="flex grow">

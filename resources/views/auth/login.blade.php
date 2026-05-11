@@ -47,7 +47,7 @@
     
         <div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
             <div class="kt-card max-w-[370px] w-full">
-                <form action="{{ route('login') }}" class="kt-card-content flex flex-col gap-5 p-10" id="sign_in_form" method="POST">
+                <form action="{{ route('login') }}" class="kt-card-content kt-form flex flex-col gap-5 p-10" id="sign_in_form" method="POST">
                     @csrf
                     <div class="text-center mb-2.5">
                         <h3 class="text-lg font-medium text-mono leading-none mb-2.5">Sign in</h3>
@@ -61,21 +61,26 @@
                         </div>
                         <x-auth-session-status class="mb-4" :status="session('status')" />
                     </div>
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 kt-form-item -mb-1">
                         <label class="kt-form-label font-normal text-mono">Email</label>
-                        <input class="kt-input" aria-invalid="true" placeholder="email@email.com" type="text" value="{{ old('email') }}" required>
+                        <input class="kt-input" @error('email') aria-invalid="true" @enderror placeholder="email@email.com" name="email" type="email" value="{{ old('email') }}" required>
+                        @error('email')
+                            <div class="kt-form-message">
+                                <strong>{{ $message }}</strong>
+                            </div>
+                        @enderror
                     </div>
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 kt-form-item -mb-1">
                         <div class="flex items-center justify-between gap-1">
                             <label class="kt-form-label font-normal text-mono">
                                 Password
                             </label>
-                            <a class="text-sm kt-link shrink-0" href="html/demo1/authentication/classic/reset-password/enter-email.html">
+                            <a class="text-sm kt-link shrink-0" href="#">
                                 Forgot Password?
                             </a>
                         </div>
                         <div class="kt-input" data-kt-toggle-password="true">
-                            <input name="user_password" placeholder="Enter Password" type="password" value="" required>
+                            <input placeholder="Enter Password" type="password" name="password" value="" required>
                             <button class="kt-btn kt-btn-sm kt-btn-ghost kt-btn-icon bg-transparent! -me-1.5" data-kt-toggle-password-trigger="true" type="button">
                                 <span class="kt-toggle-password-active:hidden">
                                     <i class="ki-filled ki-eye text-muted-foreground"></i>

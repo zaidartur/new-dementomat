@@ -27,5 +27,20 @@
 
         document.documentElement.classList.add(themeMode);
     }
+
+    function __logout() {
+        Swal.fire({
+            title: 'Logout!',
+            text: 'Anda ingin mengakhiri sesi ini?',
+            icon: 'question',
+            showDenyButton: true,
+            denyButtonText: 'Batalkan',
+            confirmButtonText: 'Konfirmasi',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('_islogout').submit()
+            }
+        })
+    }
 </script>
 <!-- End of Theme Mode -->
