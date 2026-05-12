@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="h-full" data-kt-theme="true" data-kt-theme-mode="light" dir="ltr" lang="en">
     <head>
-        <title> @yield('title') </title>
+        <title> @yield('title') | Sidemen Tomat Terasi</title>
 
         <meta charset="utf-8" />
         <meta content="follow, index" name="robots" />
