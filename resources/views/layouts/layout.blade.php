@@ -22,6 +22,7 @@
         
         @include('layouts.css')
         @vite(['resources/metronic/css/styles.css', 'resources/js/app.js'])
+        @yield('css')
     </head>
 
     <body class="antialiased flex h-full text-base text-foreground bg-background demo1 kt-sidebar-fixed kt-header-fixed">
@@ -1481,6 +1482,7 @@
 
         <!-- Scripts -->
         @include('layouts.js')
+        @yield('js')
         <!-- End of Scripts -->
     </body>
 

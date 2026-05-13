@@ -20,7 +20,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // RegKecSeeder::class,
             // RegDesakelSeeder::class,
-            UserSeeder::class,
+            // UserSeeder::class,
+            // FaskesSeeder::class,
+            // KategoriSkriningSeeder::class,
+            // ParameterSkriningSeeder::class,
+            RuleSkriningSeeder::class,
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailUser;
+use App\Models\DataKeluarga;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,14 +20,14 @@ class MobileController extends Controller
             'device_name'   => 'required|string',
         ]);
     
-        $detail = DetailUser::where('nik', $request->nik)->first();
+        $detail = DataKeluarga::where('nik', $request->nik)->where('is_auth', 1)->whereNull('parent_user')->first();
         if (!$detail) {
             throw ValidationException::withMessages([
                 'nik' => ['NIK tidak terdata pada database.'],
             ]);
         }
 
-        $user = User::where('uuid', $detail->uuid_user)->first();
+        $user = User::where('uuid', $detail->uid_keluarga)->first();
     
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -47,44 +47,48 @@ class MobileController extends Controller
     {
         // 1. Validate the input
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'nik'   => 'numeric|min_digits:15|max_digits:16',
             'password' => ['required', 'confirmed', Password::defaults()],
             'device_name' => 'required|string',
         ]);
 
-        $detail = DetailUser::where('nik', $request->nik)->first();
+        $detail = DataKeluarga::where('nik', $request->nik)->first();
         if ($detail) {
             throw ValidationException::withMessages([
                 'nik' => ['NIK sudah terdata pada database. Cobalah untuk login.'],
             ]);
         }
 
-        $username = $this->generateUniqueUsername($request->name);
+        $username = $this->generateUniqueUsername($request->nama);
         $uuid = Str::uuid();
 
         // 2. Create the user
         $user = User::create([
             'uuid'      => $uuid,
             'username'  => $username,
-            'name'      => $request->name,
+            'name'      => $request->nama,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
             'level'     => 'user',
         ]);
 
         if (!$user) {
+            User::where('uuid', $uuid)->delete();
             throw ValidationException::withMessages([
                 'name' => ['Gagal menyimpan data registrasi, cobalah untuk membuat ulang.'],
             ]);
         }
-        $user->assignRole('user');
 
-        DetailUser::create([
-            'uuid_user' => $uuid,
-            'nik'       => $request->nik,
+        DataKeluarga::create([
+            'uid_keluarga'  => $uuid,
+            'is_auth'       => 1,
+            'nik'           => $request->nik,
+            'nama_lengkap'  => $request->nama,
         ]);
+        
+        $user->assignRole('user');
 
         // 3. Create the Sanctum token
         $token = $user->createToken($request->device_name)->plainTextToken;
@@ -111,12 +115,42 @@ class MobileController extends Controller
         return $username;
     }
 
+    public function ubah_password(Request $request)
+    {
+        $request->validate([
+            'password_lama' => 'required|string',
+            'password'      => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = User::where('uuid', $request->user()->uuid)->first();
+    
+        if (! $user || ! Hash::check($request->password_lama, $user->password)) {
+            throw ValidationException::withMessages([
+                'password_lama' => ['Password lama yang diberikan tidak sesuai.'],
+            ]);
+        }
+
+        $upd = User::where('uuid', $request->user()->uuid)->update(['password' => Hash::make($request->password)]);
+        if (!$user) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'Gagal memperbarui password.'
+            ], 400);
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Password berhasil diperbarui.'
+        ], 200);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Successfully logged out'
+            'status'    => 'success',
+            'message'   => 'Successfully logged out'
         ], 200);
     }
 }

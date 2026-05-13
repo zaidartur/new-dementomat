@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Desa;
+use App\Models\Faskes;
+use App\Models\Kecamatan;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -11,6 +14,8 @@ class UserController extends Controller
     {
         $data = [
             'lists' => User::where('level', 'user')->get(),
+            'kec'   => Kecamatan::all(),
+            'faskes'=> Faskes::all(),
         ];
 
         return view('users.pengguna', $data);
@@ -44,5 +49,107 @@ class UserController extends Controller
         return response()->json([
             'username'  => 'Username berhasil diubah'
         ], 201);
+    }
+
+    public function ss_pengguna()
+    {
+        $request = Request();
+        $start  = $request->start;
+        $length = $request->length;
+        $page   = $request->page;
+        $size   = $request->size;
+        $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
+        $kec    = (isset($request->kecamatan) && !empty($request->kecamatan)) ? $request->kecamatan : null;
+        $total  = User::where('level', 'user')->whereNull('deleted_at')->orderBy('name')->count();
+
+        $query  = User::with(['detail', 'keluarga']);
+        
+        if ($request->has('search') && $request->search['value'] != '') {
+            $search = $request->search['value'];
+            $query->where(function ($q) use ($search) {
+                $q->where('detail_users.nik', 'like', "%$search%")
+                    ->orWhere('detail_useers.alamat_nik', 'like', "%$search%")
+                    ->orWhere('users.name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%");
+            });
+        }
+        if (!empty($faskes)) {
+            $query->whereHas('detail.faskes', function($que) use ($faskes) {
+                $que->where('faskes_name', $faskes);
+            });
+        }
+        if (!empty($kec)) {
+            $query->whereHas('detail', function($que) use ($kec) {
+                $que->where('kec_name', $kec);
+            });
+        }
+
+        $query->whereNull('deleted_at');
+        $query->where('level', 'user');
+        $totalFiltered = $query->count();
+        $query->orderBy('created_at', 'desc');
+        // $query->skip($start)->take($length);
+        $query->skip(intval($page)-1)->take(intval($size));
+
+        $users  = $query->get();
+        $data   = [];
+        foreach ($users as $key => $value) {
+            $data[] = [
+                'nama'      => $value->name,
+                'username'  => $value->username,
+                'nik'       => !empty($value->detail->nik) ? substr($value->detail->nik, 0, 4) . str_repeat("*", strlen($value->detail->nik) - 4) : '-',
+                'faskes'    => $value->detail->faskes->nama_faskes ?? '-',
+                'alamat'    => $value->detail->alamat ?? '-',
+                'kecamatan' => $value->detail->kecamatan->kec_name ?? '-',
+                'desa'      => $value->detail->desa->desakel_name ?? '-',
+                'keluarga'  => count($value->keluarga) ?? 0,
+                'usia'      => 0,
+                'opsi'      => '
+                        <span class="inline-flex gap-2.5">
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                    <span class="flex items-center gap-1.5">Lihat Detail</span>
+                                </span>
+                            </a>
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_edit("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil" aria-hidden="true">
+                                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
+                                    <path d="m15 5 4 4"></path>
+                                </svg>
+                                <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                    <span class="flex items-center gap-1.5">Edit Pengguna</span>
+                                </span>
+                            </a>
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_delete("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash" aria-hidden="true">
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                    <path d="M3 6h18"></path>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                    <span class="flex items-center gap-1.5">
+                                        Hapus Pengguna
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"class="lucide lucide-triangle-alert text-yellow-500 size-4" aria-hidden="true">
+                                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
+                                            <path d="M12 9v4"></path>
+                                            <path d="M12 17h.01"></path>
+                                        </svg>
+                                    </span>
+                                </span>
+                            </a>
+                        </span>
+                '
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->draw) ?? 0,
+            'recordsTotal'  => $total,
+            'recordsFiltered' => $totalFiltered,
+            'data'          => $data,
+            'page'          => $page,
+            'size'          => $size,
+        ]);
     }
 }

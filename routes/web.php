@@ -16,6 +16,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
 
     Route::prefix('user/')->group(function() {
         Route::get('pengguna', [UserController::class, 'pengguna'])->name('pengguna');
+        Route::get('tabel-pengguna', [UserController::class, 'ss_pengguna'])->name('pengguna.ss');
     });
 });
 

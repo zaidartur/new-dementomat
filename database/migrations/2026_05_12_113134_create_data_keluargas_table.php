@@ -13,16 +13,28 @@ return new class extends Migration
     {
         Schema::create('data_keluargas', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid_user');
-            $table->foreign('uuid_user')->references('uuid')->on('users');
+            $table->uuid('uid_keluarga')->unique();
+            $table->uuid('parent_user')->nullable();
+            $table->foreign('parent_user')->references('uuid')->on('users');
 
-            $table->string('nik_keluarga', '16')->unique();
-            $table->string('nama_keluarga', '150');
-            $table->date('tgl_lahir');
-            $table->enum('jenkel', ['L', 'P']);
-            $table->string('status_keluarga', '100');
+            $table->boolean('is_auth')->default(0);
+            $table->string('nama_lengkap', '150');
+            $table->string('nik', '16')->unique();
+            $table->text('alamat_nik')->nullable();
+            $table->string('telepon', '15')->nullable();
+            $table->text('alamat')->nullable();
+            $table->date('tgl_lahir')->nullable();
+            $table->enum('jenkel', ['L', 'P'])->nullable();
+            $table->string('status_keluarga', '100')->nullable();
+
+            $table->integer('kec_id')->nullable();
+            $table->foreign('kec_id')->references('kec_id')->on('kecamatans');
             
-            $table->foreignId('status_skrining')->nullable()->references('status_skrining')->nullOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('desakel_id')->nullable();
+            $table->foreign('desakel_id')->references('desakel_id')->on('desas');
+            
+            $table->uuid('id_faskes')->nullable();
+            $table->foreign('id_faskes')->references('faskes_id')->on('faskes');
             $table->timestamps();
         });
     }
