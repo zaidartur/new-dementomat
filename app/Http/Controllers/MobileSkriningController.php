@@ -37,6 +37,7 @@ class MobileSkriningController extends Controller
         }
 
         if (empty($user->nik) || empty($user->alamat_nik) || empty($user->alamat) || empty($user->tgl_lahir) || empty($user->jenkel) || empty($user->kec_id) || empty($user->desakel_id)) {
+            return response()->json([
                 'status'    => 'failed',
                 'message'   => 'Mohon untuk melengkapi biodata terlebih dahulu.'
             ], 400);
