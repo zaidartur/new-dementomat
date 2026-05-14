@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Desa;
+use App\Models\Faskes;
+use App\Models\Kecamatan;
+use Illuminate\Http\Request;
+
+class MobileUtilityController extends Controller
+{
+    public function data_faskes()
+    {
+        $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->get();
+        if (!$faskes) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'Gagal mengakses data faskes.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Daftar faskes di kabupaten Karanganyar.',
+            'data'      => $faskes,
+        ], 200);
+    }
+
+    public function data_kecamatan()
+    {
+        $kec = Kecamatan::select('kec_id', 'kec_name')->get();
+        if (!$kec) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'Gagal mengakses data kecamatan.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Daftar kecamatan di kabupaten Karanganyar.',
+            'data'      => $kec,
+        ], 200);
+    }
+
+    public function data_desa()
+    {
+        $desa = Desa::with('kecamatan')->get();
+        if (!$desa) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'Gagal mengakses data desa.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Daftar desa di kabupaten Karanganyar.',
+            'data'      => $desa,
+        ], 200);
+    }
+
+    public function data_desa_by_kecamatan($kec)
+    {
+        // validasi kecamatan
+        $lists = Kecamatan::select('kec_id')->get();
+        $kecId = [];
+        foreach ($lists as $value) {
+            $kecId[] = $value->kec_id;
+        }
+        if (intval($kec) == 0 || !in_array(intval($kec), $kecId)) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'ID kecamatan tidak diketahui.',
+            ], 400);
+        }
+
+        $desa = Desa::with('kecamatan')->select('desakel_id', 'kec_id', 'desakel_name')->where('kec_id', intval($kec))->get();
+        if (!$desa) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'Gagal mengakses data desa.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Daftar desa di kecamatan '. $desa[0]->kecamatan->kec_name .'.',
+            'data'      => $desa,
+        ], 200);
+    }
+
+    public function data_youtube()
+    {
+        //
+    }
+
+    public function data_slider()
+    {
+        //
+    }
+
+    public function data_berita()
+    {
+        //
+    }
+}

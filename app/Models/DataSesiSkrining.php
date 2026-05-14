@@ -2,9 +2,40 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id'])]
 class DataSesiSkrining extends Model
 {
-    //
+    /**
+     * Get the keluarga that owns the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function keluarga(): BelongsTo
+    {
+        return $this->belongsTo(DataKeluarga::class, 'uid_keluarga', 'uid_keluarga');
+    }
+
+    /**
+     * Get the kategori that owns the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function kategori(): BelongsTo
+    {
+        return $this->belongsTo(MasterKategoriSkrining::class, 'kategori_id', 'id');
+    }
+
+    /**
+     * Get the triggeredRule that owns the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function triggeredRule(): BelongsTo
+    {
+        return $this->belongsTo(DataRuleSkrining::class, 'triggered_rule_id', 'uid_rule');
+    }
 }

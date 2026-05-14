@@ -90,6 +90,7 @@ class MobileUserController extends Controller
             'alamat_nik'=> 'required|string',
             'dob'       => 'required|date',
             'jenkel'    => 'required|string|max:2',
+            'status'    => 'nullable|string',
             'alamat'    => 'required|string',
             'telepon'   => 'required|numeric',
             'kecamatan' => 'required|numeric',
@@ -104,6 +105,7 @@ class MobileUserController extends Controller
             'telepon'       => $request->telepon,
             'alamat'        => $request->alamat,
             'jenkel'        => $request->jenkel,
+            'status_keluarga' => $request->status,
             'kec_id'        => $request->kecamatan,
             'desakel_id'    => $request->desa,
             'id_faskes'     => $request->faskes,
@@ -166,13 +168,13 @@ class MobileUserController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Berhasil menambah data keluarga.'
-        ], 200);
+        ], 201);
     }
 
     public function update_keluarga(Request $request)
     {
         $request->validate([
-            'uid'       => 'required|string|min:35|max:36',
+            'uuid'      => 'required|string|min:35|max:36',
             'nama'      => 'required|string',
             'alamat_nik'=> 'required|string',
             'dob'       => 'required|date',
@@ -197,7 +199,7 @@ class MobileUserController extends Controller
             'desakel_id'    => $request->desa,
             'id_faskes'     => $request->faskes,
         ];
-        $update = DataKeluarga::where('parent_user', $request->user()->uuid)->where('is_auth', 0)->where('uid_keluarga', $request->uid)->update($data);
+        $update = DataKeluarga::where('parent_user', $request->user()->uuid)->where('is_auth', 0)->where('uid_keluarga', $request->uuid)->update($data);
         if (!$update) {
             return response()->json([
                 'status'    => 'failed',
@@ -214,10 +216,18 @@ class MobileUserController extends Controller
     public function hapus_keluarga(Request $request)
     {
         $request->validate([
-            'uid'   => 'required|string|min:35|max:36',
+            'uuid'   => 'required|string|min:35|max:36',
         ]);
 
-        $drop = DataKeluarga::where('parent_user', $request->user()->uuid)->where('is_auth', 0)->where('uid_keluarga', $request->uid)->delete();
+        // prevent user login delete data it-self
+        if ($request->uuid == $request->user()->uuid) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => 'User tidak bisa menghapus data dirinya sendiri.'
+            ], 401);
+        }
+
+        $drop = DataKeluarga::where('parent_user', $request->user()->uuid)->where('is_auth', 0)->where('uid_keluarga', $request->uuid)->delete();
         if (!$drop) {
             return response()->json([
                 'status'    => 'failed',

@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid_sesi')->unique();
             $table->uuid('uid_keluarga');
-            $table->foreign('uid_keluarga')->references('uid_keluarga')->on('data_keluargas');
+            $table->foreign('uid_keluarga')->references('uid_keluarga')->on('data_keluargas')->nullOnDelete()->cascadeOnUpdate();
 
             $table->integer('umur_saat_skrining');
             $table->foreignId('kategori_id')->nullable()->constrained('master_kategori_skrinings')->nullOnDelete()->cascadeOnUpdate();
             $table->uuid('triggered_rule_id')->nullable();
-            $table->foreign('triggered_rule_id')->references('uid_rule')->on('data_rule_skrinings');
+            $table->foreign('triggered_rule_id')->references('uid_rule')->on('data_rule_skrinings')->nullOnDelete()->cascadeOnUpdate();
+            $table->date('tgl_tcm')->nullable();
+            $table->enum('hasil_tcm', ['poitive', 'negative'])->nullable();
             $table->timestamps();
         });
     }

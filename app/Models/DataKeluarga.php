@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['uid_keluarga', 'parent_user', 'is_auth', 'nama_lengkap', 'nik', 'alamat_nik', 'telepon', 'alamat', 'tgl_lahir', 'jenkel', 'status_keluarga', 'kec_id', 'desakel_id', 'id_faskes'])]
+#[Fillable(['uid_keluarga', 'parent_user', 'is_auth', 'nama_lengkap', 'nik', 'alamat_nik', 'telepon', 'alamat', 'tgl_lahir', 'jenkel', 'status_keluarga', 'kec_id', 'desakel_id', 'id_faskes', 'status_tbc'])]
 #[Hidden(['is_auth', 'id', 'parent_user'])]
 class DataKeluarga extends Model
 {

@@ -27,7 +27,7 @@
                     <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
                         <option value="" selected="">Semua Faskes</option>
                         @foreach ($faskes as $fs)
-                            <option value="{{ $fs->nama_faskes }}">{{ $fs->nama_faskes }}</option>
+                            <option value="{{ $fs->faskes_id }}">{{ $fs->nama_faskes }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -36,7 +36,7 @@
                     <select id="kt_datatable_remote_filters_kecamatan" class="kt-select kt-select-sm w-40">
                         <option value="" selected="">Semua Kecamatan</option>
                         @foreach ($kec as $kc)
-                            <option value="{{ $kc->kec_name }}">{{ $kc->kec_name }}</option>
+                            <option value="{{ $kc->kec_id }}">{{ $kc->kec_name }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -199,6 +199,7 @@
                             break;
                         }
                     }
+                    console.log('faskes', fs)
                     if (fs && fs.value) {
                         params.set('faskes', fs.value);
                     } else {
@@ -274,6 +275,7 @@
                 applyBtn.addEventListener('click', function () {
                     var v = selectFaskes.value
                     var k = selectKec.value
+                    console.log(v)
                     if (v) {
                         if (k) {
                             datatable.setFilter({ column: 'faskes', type: 'text', value: v }).setFilter({ column: 'kecamatan', type: 'text', value: k }).reload()

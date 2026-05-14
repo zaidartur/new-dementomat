@@ -3,6 +3,7 @@
 use App\Http\Controllers\MobileController;
 use App\Http\Controllers\MobileSkriningController;
 use App\Http\Controllers\MobileUserController;
+use App\Http\Controllers\MobileUtilityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,9 +14,20 @@ Route::post('/auth/register', [MobileController::class, 'register']);
 Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(function() {
     Route::post('/logout', [MobileController::class, 'logout']);
 
+    Route::prefix('/pendukung')->group(function() {
+        Route::get('/data-faskes', [MobileUtilityController::class, 'data_faskes']);
+        Route::get('/data-kecamatan', [MobileUtilityController::class, 'data_kecamatan']);
+        Route::get('/data-desa', [MobileUtilityController::class, 'data_desa']);
+        Route::get('/data-desa-kecamatan/{kec}', [MobileUtilityController::class, 'data_desa_by_kecamatan']);
+        Route::get('/data-video', [MobileUtilityController::class, 'data_youtube']);
+        Route::get('/data-slider', [MobileUtilityController::class, 'data_slider']);
+        Route::get('/data-berita', [MobileUtilityController::class, 'data_berita']);
+    });
+
     Route::prefix('/skrining')->group(function() {
         Route::post('/baru', [MobileSkriningController::class, 'show_parameter']);
         Route::post('/simpan', [MobileSkriningController::class, 'save_parameter'])->middleware('throttle:api');
+        Route::post('/riwayat', [MobileSkriningController::class, 'riwayat_skrining']);
     });
 
     Route::prefix('/user')->group(function() {

@@ -74,13 +74,13 @@ class UserController extends Controller
             });
         }
         if (!empty($faskes)) {
-            $query->whereHas('detail.faskes', function($que) use ($faskes) {
-                $que->where('faskes_name', $faskes);
+            $query->whereHas('detail', function($que) use ($faskes) {
+                $que->where('id_faskes', $faskes);
             });
         }
         if (!empty($kec)) {
             $query->whereHas('detail', function($que) use ($kec) {
-                $que->where('kec_name', $kec);
+                $que->where('kec_id', $kec);
             });
         }
 
@@ -99,8 +99,10 @@ class UserController extends Controller
                 'username'  => $value->username,
                 'nik'       => !empty($value->detail->nik) ? substr($value->detail->nik, 0, 4) . str_repeat("*", strlen($value->detail->nik) - 4) : '-',
                 'faskes'    => $value->detail->faskes->nama_faskes ?? '-',
+                'id_faskes' => $value->detail->id_faskes,
                 'alamat'    => $value->detail->alamat ?? '-',
                 'kecamatan' => $value->detail->kecamatan->kec_name ?? '-',
+                'id_kec'    => $value->detail->kec_id,
                 'desa'      => $value->detail->desa->desakel_name ?? '-',
                 'keluarga'  => count($value->keluarga) ?? 0,
                 'usia'      => 0,
