@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MasterParameterSkrining;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -41,8 +42,8 @@ class ParameterSkriningSeeder extends Seeder
             ['uid_parameter' => Str::uuid(), 'kategori_id' => 1, 'kode' => 'A8', 'pertanyaan' => 'Benjolan di leher / ketiak / selangkangan', 'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')],
         ];
 
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('master_parameter_skrinings')->insert($chunk);
+        foreach ($data as $key => $value) {
+            MasterParameterSkrining::firstOrCreate($value);
         }
     }
 }

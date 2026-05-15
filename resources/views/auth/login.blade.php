@@ -58,9 +58,9 @@
                         <x-auth-session-status class="mb-4" :status="session('status')" />
                     </div>
                     <div class="flex flex-col gap-1 kt-form-item -mb-1">
-                        <label class="kt-form-label font-normal text-mono">Email</label>
-                        <input class="kt-input" @error('email') aria-invalid="true" @enderror placeholder="email@email.com" name="email" type="email" value="{{ old('email') }}" required>
-                        @error('email')
+                        <label class="kt-form-label font-normal text-mono">Username</label>
+                        <input class="kt-input" @error('username') aria-invalid="true" @enderror placeholder="Enter Username" name="username" type="text" maxlength="50" value="{{ old('username') }}" required>
+                        @error('username')
                             <div class="kt-form-message">
                                 <strong>{{ $message }}</strong>
                             </div>

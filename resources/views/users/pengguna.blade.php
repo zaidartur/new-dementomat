@@ -20,7 +20,14 @@
     <div class="grid w-full space-y-5">
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
-                <input type="text" placeholder="Pencarian..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" />
+                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" />
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" class="kt-checkbox" id="check_nik" value="1" />
+                    <label class="kt-label" for="check_nik">
+                        Lihat NIK Pengguna
+                    </label>
+                </div>
 
                 <label class="flex items-center gap-2 text-sm">
                     <span class="text-muted-foreground">Faskes</span>
@@ -114,6 +121,23 @@
         </div>
     </div>
 </div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_three">
+    <div class="kt-modal-content w-full top-[10%]">
+        <div class="kt-modal-header">
+            <h3 class="kt-modal-title" id="title_modal">Detail Pengguna</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg bg-muted w-full grow h-[250px]"></div>
+        </div>
+    </div>
+</div>
 @endsection
 
 
@@ -176,6 +200,7 @@
         };
         var mapRequest = function (params) {
             var raw = params.get('filters');
+            var cek = document.getElementById('check_nik');
             if (raw) {
                 try {
                     var arr = JSON.parse(raw)
@@ -199,11 +224,16 @@
                             break;
                         }
                     }
-                    console.log('faskes', fs)
                     if (fs && fs.value) {
                         params.set('faskes', fs.value);
                     } else {
                         params.delete('faskes');
+                    }
+
+                    if (cek.checked) {
+                        params.set('nik', 'show')
+                    } else {
+                        params.set('nik', 'hide')
                     }
                 } catch (e) {
                     /* ignore */
@@ -275,7 +305,7 @@
                 applyBtn.addEventListener('click', function () {
                     var v = selectFaskes.value
                     var k = selectKec.value
-                    console.log(v)
+
                     if (v) {
                         if (k) {
                             datatable.setFilter({ column: 'faskes', type: 'text', value: v }).setFilter({ column: 'kecamatan', type: 'text', value: k }).reload()
@@ -313,6 +343,22 @@
 </script>
 
 <script>
-    //
+    function _detail(id) {
+        $.ajax({
+            url: '/user/detail-pengguna/' + id,
+            type: 'GET',
+            dataType: 'JSON',
+            success: function(res) {
+                console.log(res)
+                const data = res.data
+
+                $('#title_modal').html(data.name)
+                new KTModal('#modal_three').show()
+            },
+            error: function(res) {
+                Swal.fire('Error', res.message, 'error')
+            }
+        })
+    }
 </script>
 @endsection

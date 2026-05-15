@@ -7,6 +7,9 @@ use App\Models\Faskes;
 use App\Models\Kecamatan;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -21,12 +24,17 @@ class UserController extends Controller
         return view('users.pengguna', $data);
     }
 
-    public function update_user_mobile(Request $request)
+    public function detail_pengguna($uid)
     {
-        //
+        $user = User::with(['detail', 'keluarga'])->where('uuid', $uid)->first();
+        if (!$user) {
+            return send_400('Gagal mengakses data user. Atau mungkin user tidak data di database.');
+        }
+
+        return send_200('Data user ' . $user->name, $user);
     }
 
-    public function update_user_username(Request $request)
+    public function update_username_pengguna(Request $request)
     {
         $request->validate([
             'username'  => 'required|string'
@@ -34,21 +42,68 @@ class UserController extends Controller
 
         $find = User::where('username', $request->username)->first();
         if ($find) {
-            return response()->json([
-                'username'  => 'Username sudah digunakan'
-            ], 400);
+            return send_400('Username "' . $request->username . '" sudah digunakan.');
         }
 
         $user = User::where('uuid', $request->user()->uuid)->update(['username', $request->username]);
         if (!$user) {
-            return response()->json([
-                'username'  => 'Username gagal diubah'
-            ], 400);
+            return send_400('Username gagal diubah.');
         }
 
-        return response()->json([
-            'username'  => 'Username berhasil diubah'
-        ], 201);
+        return send_200('Username berhasil diubah.');
+    }
+
+    public function update_password_pengguna(Request $request)
+    {
+        $request->validate([
+            'uuid'      => 'required|string|min:35|max:36',
+            'password'  => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = User::where('uuid', $request->uuid)->whereNull('created_at')->first();
+        if (!$user) {
+            send_400('Data pengguna tidak ditemukan di database.');
+        }
+
+        $upd = User::where('uuid', $request->uuid)->update(['password' => Hash::make($request->password)]);
+        if (!$upd) {
+            send_500('Gagal mengubah password pengguna.');
+        }
+
+        // drop user session
+        DB::table('permissions')->where('user_id', $user->id)->delete();
+        return send_200('Password pengguna ' . $user->name . ' berhasil diubah.');
+    }
+
+    public function hapus_pengguna(Request $request)
+    {
+        $request->validate([
+            'uuid'  => 'required|string|min:35|max:36',
+        ]);
+
+        $check = User::where('uuid', $request->uuid)->first();
+        $del = User::where('uuid', $request->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
+        if ($del) {
+            // drop user session
+            DB::table('permissions')->where('user_id', $check->id)->delete();
+        } else {
+            return send_500('Gagal menghapus user.');
+        }
+    }
+
+    public function simpan_keluarga(Request $request)
+    {
+        //
+    }
+
+    public function update_keluarga(Request $request)
+    {
+        //
+    }
+
+    public function hapus_keluarga(Request $request)
+    {
+        //
     }
 
     public function ss_pengguna()
@@ -64,13 +119,12 @@ class UserController extends Controller
 
         $query  = User::with(['detail', 'keluarga']);
         
-        if ($request->has('search') && $request->search['value'] != '') {
-            $search = $request->search['value'];
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('detail_users.nik', 'like', "%$search%")
-                    ->orWhere('detail_useers.alamat_nik', 'like', "%$search%")
-                    ->orWhere('users.name', 'like', "%$search%")
-                    ->orWhere('email', 'like', "%$search%");
+                $q->where('name', 'like', "%$search%");
+                    // ->orWhere('detail_useers.alamat_nik', 'like', "%$search%")
+                    // ->orWhere('users.name', 'like', "%$search%")
             });
         }
         if (!empty($faskes)) {
@@ -94,10 +148,11 @@ class UserController extends Controller
         $users  = $query->get();
         $data   = [];
         foreach ($users as $key => $value) {
+            $nik = $request->nik == 'show' ? ($value->detail->nik ?? '-') : (!empty($value->detail->nik) ? substr($value->detail->nik, 0, 4) . str_repeat("*", strlen($value->detail->nik) - 4) : '-');
             $data[] = [
                 'nama'      => $value->name,
                 'username'  => $value->username,
-                'nik'       => !empty($value->detail->nik) ? substr($value->detail->nik, 0, 4) . str_repeat("*", strlen($value->detail->nik) - 4) : '-',
+                'nik'       => $nik,
                 'faskes'    => $value->detail->faskes->nama_faskes ?? '-',
                 'id_faskes' => $value->detail->id_faskes,
                 'alamat'    => $value->detail->alamat ?? '-',
@@ -108,13 +163,13 @@ class UserController extends Controller
                 'usia'      => 0,
                 'opsi'      => '
                         <span class="inline-flex gap-2.5">
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
                                     <span class="flex items-center gap-1.5">Lihat Detail</span>
                                 </span>
                             </a>
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_edit("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_edit(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil" aria-hidden="true">
                                     <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
                                     <path d="m15 5 4 4"></path>
@@ -123,7 +178,7 @@ class UserController extends Controller
                                     <span class="flex items-center gap-1.5">Edit Pengguna</span>
                                 </span>
                             </a>
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_delete("' .$value->uuid. '")" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_delete(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash" aria-hidden="true">
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
                                     <path d="M3 6h18"></path>

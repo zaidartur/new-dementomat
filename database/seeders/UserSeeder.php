@@ -17,16 +17,19 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // superadmin
-        // $data = [
-        //     'uuid'      => Str::uuid(),
-        //     'name'      => 'S. Admin',
-        //     'username'  => 'superadmin',
-        //     'password'  => '12345678',
-        //     'email'     => 'admin@admin.com',
-        //     'level'     => 'superadmin',
-        // ];
+        $data_super = [
+            'uuid'      => Str::uuid(),
+            'name'      => 'S. Admin',
+            'username'  => 'superadmin',
+            'password'  => '12345678',
+            'email'     => 'admin@admin.com',
+            'level'     => 'superadmin',
+        ];
+        $super = User::firstOrCreate($data_super);
+        $super->assignRole('superadmin');
 
-        $data = [
+        // admin
+        $data_admin = [
             'uuid'      => Str::uuid(),
             'name'      => 'Admin',
             'username'  => 'admin',
@@ -35,11 +38,7 @@ class UserSeeder extends Seeder
             'level'     => 'admin',
         ];
 
-        // foreach (array_chunk($data, 500) as $chunk) {
-        //     DB::table('users')->insert($chunk);
-        // }
-
-        $user = User::create($data);
-        $user->assignRole('admin');
+        $admin = User::firstOrCreate($data_admin);
+        $admin->assignRole('admin');
     }
 }

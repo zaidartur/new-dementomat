@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('data_response_skrinings', function (Blueprint $table) {
             $table->id();
-            $table->uuid('sesi_uid');
-            $table->foreign('sesi_uid')->references('uid_sesi')->on('data_sesi_skrinings');
+            $table->uuid('sesi_uid')->nullable();
+            $table->foreign('sesi_uid')->references('uid_sesi')->on('data_sesi_skrinings')->nullOnDelete()->cascadeOnUpdate();
 
-            $table->uuid('parameter_uid');
-            $table->foreign('parameter_uid')->references('uid_parameter')->on('master_parameter_skrinings');
+            $table->uuid('parameter_uid')->nullable();
+            $table->foreign('parameter_uid')->references('uid_parameter')->on('master_parameter_skrinings')->nullOnDelete()->cascadeOnUpdate();
 
             $table->boolean('is_yes');
             $table->timestamps();

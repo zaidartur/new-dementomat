@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MasterKategoriSkrining;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +19,8 @@ class KategoriSkriningSeeder extends Seeder
             ['id' => 2, 'nama_kategori' => 'Skrining TBC Dewasa', 'min_age' => 15, 'max_age' => 250, 'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')],
         ];
 
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('master_kategori_skrinings')->insert($chunk);
+        foreach ($data as $key => $value) {
+            MasterKategoriSkrining::firstOrCreate($value);
         }
     }
 }

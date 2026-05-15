@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Faskes;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -42,8 +43,8 @@ class FaskesSeeder extends Seeder
             ['faskes_id' => Str::uuid(), 'nama_faskes' => 'RS Jati Husada', 'alamat_faskes' => 'Jl. Raya Solo-Tawangmangu No.Km. 10, RW.3, Dusun VI, Jati', 'kec_id' => 331311, 'desakel_id' => 3313112002, 'created_at' => date('Y-m-d H:i:s')],
         ];
 
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('faskes')->insert($chunk);
+        foreach ($data as $key => $value) {
+            Faskes::firstOrCreate($value);
         }
     }
 }

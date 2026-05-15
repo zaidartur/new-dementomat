@@ -20,11 +20,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // RegKecSeeder::class,
             // RegDesakelSeeder::class,
+            // RoleSeeder::class,
+            PermissionSeeder::class,
             // UserSeeder::class,
             // FaskesSeeder::class,
             // KategoriSkriningSeeder::class,
             // ParameterSkriningSeeder::class,
-            RuleSkriningSeeder::class,
+            // RuleSkriningSeeder::class,
         ]);
     }
 }

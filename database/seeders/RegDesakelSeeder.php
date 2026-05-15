@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Desa;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -192,9 +193,8 @@ class RegDesakelSeeder extends Seeder
             ['desakel_id' => '3313172009', 'kec_id' => '331317', 'desakel_name' => 'Lempong'],
         ];
 
-        // Menggunakan chunk untuk performa yang lebih baik saat insert banyak data
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('desas')->insert($chunk);
+        foreach ($data as $key => $value) {
+            Desa::firstOrCreate($value);
         }
     }
 }

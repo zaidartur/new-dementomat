@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->uuid('id_screening')->unique();
             
-            $table->string('nik', '16');
-            $table->foreign('nik')->references('nik')->on('detail_users');
+            $table->string('nik', '16')->nullable();
+            $table->foreign('nik')->references('nik')->on('data_keluargas')->nullOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
         });

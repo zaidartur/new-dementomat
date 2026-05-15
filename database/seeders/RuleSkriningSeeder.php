@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DataRuleSkrining;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -26,8 +27,12 @@ class RuleSkriningSeeder extends Seeder
             ['uid_rule' => Str::uuid(), 'kategori_id' => 2, 'nama_aturan' => 'Dewasa Wajib Rujuk - Batuk / dahak bercampur darah', 'rekomendasi' => 'Wajib Menghubungi Kader / Petugas Puskesmas', 'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')],
         ];
 
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('data_rule_skrinings')->insert($chunk);
+        // foreach (array_chunk($data, 500) as $chunk) {
+        //     DB::table('data_rule_skrinings')->insert($chunk);
+        // }
+
+        foreach ($data as $key => $value) {
+            DataRuleSkrining::firstOrCreate($value);
         }
     }
 }

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('data_rule_kondisis', function (Blueprint $table) {
             $table->id();
-            $table->uuid('rule_uid');
-            $table->foreign('rule_uid')->references('uid_rule')->on('data_rule_skrinings');
+            $table->uuid('rule_uid')->nullable();
+            $table->foreign('rule_uid')->references('uid_rule')->on('data_rule_skrinings')->nullOnDelete()->cascadeOnUpdate();
 
-            $table->uuid('parameter_uid');
-            $table->foreign('parameter_uid')->references('uid_parameter')->on('master_parameter_skrinings');
+            $table->uuid('parameter_uid')->nullable();
+            $table->foreign('parameter_uid')->references('uid_parameter')->on('master_parameter_skrinings')->nullOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

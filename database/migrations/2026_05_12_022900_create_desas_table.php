@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('desakel_id')->unique();
 
-            $table->integer('kec_id');
-            $table->foreign('kec_id')->references('kec_id')->on('kecamatans');
+            $table->integer('kec_id')->nullable();
+            $table->foreign('kec_id')->references('kec_id')->on('kecamatans')->nullOnDelete()->cascadeOnUpdate();
             
             $table->string('desakel_name', '100');
             $table->timestamps();

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid_keluarga')->unique();
             $table->uuid('parent_user')->nullable();
-            $table->foreign('parent_user')->references('uuid')->on('users');
+            $table->foreign('parent_user')->references('uuid')->on('users')->nullOnDelete()->cascadeOnUpdate();
 
             $table->boolean('is_auth')->default(0);
             $table->string('nama_lengkap', '150');
@@ -28,10 +28,10 @@ return new class extends Migration
             $table->string('status_keluarga', '100')->nullable();
 
             $table->integer('kec_id')->nullable();
-            $table->foreign('kec_id')->references('kec_id')->on('kecamatans');
+            $table->foreign('kec_id')->references('kec_id')->on('kecamatans')->nullOnDelete()->cascadeOnUpdate();
             
             $table->bigInteger('desakel_id')->nullable();
-            $table->foreign('desakel_id')->references('desakel_id')->on('desas');
+            $table->foreign('desakel_id')->references('desakel_id')->on('desas')->nullOnDelete()->cascadeOnUpdate();
             
             $table->uuid('id_faskes')->nullable();
             $table->foreign('id_faskes')->references('faskes_id')->on('faskes');

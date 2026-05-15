@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kecamatan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -29,8 +30,8 @@ class RegKecSeeder extends Seeder
             ['kec_id' => '331317', 'kotakab_id' => '3313', 'kec_name' => 'Jenawi'],
         ];
 
-        foreach (array_chunk($data, 500) as $chunk) {
-            DB::table('kecamatans')->insert($chunk);
+        foreach ($data as $key => $value) {
+            Kecamatan::firstOrCreate($value);
         }
     }
 }

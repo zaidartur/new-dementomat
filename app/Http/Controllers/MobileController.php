@@ -27,7 +27,7 @@ class MobileController extends Controller
             ]);
         }
 
-        $user = User::where('uuid', $detail->uid_keluarga)->first();
+        $user = User::where('uuid', $detail->uid_keluarga)->whereNull('deleted_at')->first();
     
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
