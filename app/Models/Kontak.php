@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['judul_kontak', 'nama_kontak', 'nomor_wa', 'id_faskes', 'uid_user'])]
@@ -12,13 +13,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Kontak extends Model
 {
     /**
-     * Get the faskes associated with the Kontak
+     * Get the faskes that owns the Kontak
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function faskes(): HasOne
+    public function faskes(): BelongsTo
     {
-        return $this->hasOne(Faskes::class, 'faskes_id', 'id_faskes');
+        return $this->belongsTo(Faskes::class, 'faskes_id', 'id_faskes');
     }
 
     /**

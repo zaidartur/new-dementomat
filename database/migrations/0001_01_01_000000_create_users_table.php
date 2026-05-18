@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->enum('level', ['superadmin', 'admin', 'faskes', 'user'])->default('user');
+            $table->uuid('faskes_id')->nullable();
+            $table->foreign('faskes_id')->references('faskes_id')->on('faskes')->nullOnDelete()->cascadeOnUpdate();
+            
             $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });

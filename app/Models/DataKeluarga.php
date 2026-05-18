@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['uid_keluarga', 'parent_user', 'is_auth', 'nama_lengkap', 'nik', 'alamat_nik', 'telepon', 'alamat', 'tgl_lahir', 'jenkel', 'status_keluarga', 'kec_id', 'desakel_id', 'id_faskes', 'status_tbc'])]
@@ -33,12 +34,22 @@ class DataKeluarga extends Model
     }
 
     /**
-     * Get the faskes associated with the DetailUser
+     * Get all of the kontak for the DataKeluarga
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function faskes(): HasOne
+    public function kontak(): HasMany
     {
-        return $this->hasOne(Faskes::class, 'faskes_id', 'id_faskes');
+        return $this->hasMany(Kontak::class, 'id_faskes', 'id_faskes');
+    }
+
+    /**
+     * Get the faskes that owns the DataKeluarga
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function faskes(): BelongsTo
+    {
+        return $this->belongsTo(Faskes::class, 'id_faskes', 'faskes_id');
     }
 }

@@ -13,6 +13,7 @@ Route::post('/auth/register', [MobileController::class, 'register']);
 
 Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(function() {
     Route::post('/logout', [MobileController::class, 'logout']);
+    Route::post('/deactivate', [MobileController::class, 'logout']);
 
     Route::prefix('/pendukung')->group(function() {
         Route::get('/data-faskes', [MobileUtilityController::class, 'data_faskes']);
@@ -28,6 +29,9 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::post('/baru', [MobileSkriningController::class, 'show_parameter']);
         Route::post('/simpan', [MobileSkriningController::class, 'save_parameter'])->middleware('throttle:api');
         Route::post('/riwayat', [MobileSkriningController::class, 'riwayat_skrining']);
+
+        Route::post('/tes-dahak', [MobileSkriningController::class, 'submit_dahak']);
+        Route::post('/pemantauan-obat', [MobileSkriningController::class, 'submit_obat']);
     });
 
     Route::prefix('/user')->group(function() {

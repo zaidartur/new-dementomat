@@ -19,6 +19,7 @@
         <meta content="Metronic - Tailwind CSS " property="og:title" />
         <meta content="" property="og:description" />
         <meta content="assets/media/app/og-image.png" property="og:image" />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         
         @include('layouts.css')
         @vite(['resources/metronic/css/styles.css', 'resources/js/app.js'])

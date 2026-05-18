@@ -157,6 +157,17 @@ class PermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $value]);
         }
 
+        // Menu Kontak
+        $kontak = [
+            'view kontak',
+            'simpan kontak',
+            'update kontak',
+            'hapus kontak'
+        ];
+        foreach ($kontak as $key => $value) {
+            Permission::firstOrCreate(['name' => $value]);
+        }
+
 
 
 
@@ -173,7 +184,8 @@ class PermissionSeeder extends Seeder
                 'view profile', 'simpan profile', 'ubah profile',
                 'view slider', 'simpan slider', 'update slider', 'hapus slider',
                 'view video', 'simpan video', 'update video', 'hapus video',
-                'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya'
+                'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya',
+                'view kontak', 'simpan kontak', 'update kontak', 'hapus kontak'
             ],
             'faskes'    => [
                 'view pengguna', 'update pengguna', 'update password pengguna', 'hapus pengguna', 'view keluarga', 'simpan keluarga', 'update keluarga', 'hapus keluarga',
@@ -181,7 +193,8 @@ class PermissionSeeder extends Seeder
                 'view cek dahak', 
                 'view pemantauan obat',
                 'view tempat faskes', 'simpan tempat faskes', 'update tempat faskes', 'hapus tempat faskes',
-                'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya'
+                'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya',
+                'view kontak', 'simpan kontak', 'update kontak', 'hapus kontak'
             ],
             'user'      => [
                 'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya',

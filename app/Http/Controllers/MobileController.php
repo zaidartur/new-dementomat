@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DataKeluarga;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -146,6 +147,20 @@ class MobileController extends Controller
             'status'    => 'success',
             'message'   => 'Password berhasil diperbarui.'
         ], 200);
+    }
+
+    public function deactivate(Request $request)
+    {
+        $user = User::where('uuid', $request->user()->uuid)->first();
+        if (!$user) return send_400('User akun tidak sesuai.');
+
+        $user->deleted_at = date('Y-m-d H:i:s');
+        $upd = $user->save();
+        if (!$upd) return send_400('Gagal deaktivasi akun.');
+
+        // eliminate all user session ID in PAN
+        DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
+        return send_200('Akun berhasil deaktivasi.');
     }
 
     public function logout(Request $request)

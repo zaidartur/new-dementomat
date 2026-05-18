@@ -13,7 +13,7 @@ class MobileUserController extends Controller
     public function profile()
     {
         $request = Request();
-        $users = User::with(['detail', 'detail.kecamatan', 'detail.desa', 'detail.faskes', 'detail.faskes.kecamatan', 'detail.faskes.desa'])
+        $users = User::with(['detail', 'detail.kecamatan', 'detail.desa', 'detail.faskes', 'detail.faskes.kecamatan', 'detail.faskes.desa', 'detail.faskes.kontak'])
                 ->where('uuid', $request->user()->uuid)
                 ->first()
                 ->makeHidden('level');
@@ -191,6 +191,7 @@ class MobileUserController extends Controller
         $request->validate([
             'uuid'      => 'required|string|min:35|max:36',
             'nama'      => 'required|string',
+            'nik'       => 'required|numeric|min_digits:15|max_digits:16',
             'alamat_nik'=> 'required|string',
             'dob'       => 'required|date',
             'jenkel'    => 'required|string|max:2',
@@ -208,6 +209,7 @@ class MobileUserController extends Controller
         }
 
         $data = [
+            'nik'           => $request->nik,
             'nama_lengkap'  => $request->nama,
             'alamat_nik'    => $request->alamat_nik,
             'tgl_lahir'     => $request->dob,

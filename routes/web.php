@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KontakController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SkriningController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,19 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::post('simpan-keluarga', [UserController::class, 'simpan_keluarga'])->name('pengguna.keluarga.simpan')->middleware('permission:simpan keluarga');
         Route::post('update-keluarga', [UserController::class, 'update_keluarga'])->name('pengguna.keluarga.update')->middleware('permission:update keluarga');
         Route::post('hapus-keluarga', [UserController::class, 'hapus_keluarga'])->name('pengguna.keluarga.hapus')->middleware('permission:hapus keluarga');
+    });
+
+    Route::prefix('skrining/')->group(function() {
+        Route::get('view', [SkriningController::class, 'view'])->name('skrining')->middleware('permission:view hasil skrining');
+        Route::get('data-skrining', [SkriningController::class, 'ss_skrining'])->name('skrining.ss')->middleware('permission:view hasil skrining');
+    });
+
+    Route::prefix('kontak/')->group(function() {
+        Route::get('view', [KontakController::class, 'view'])->name('kontak')->middleware('permission:view kontak');
+        Route::get('detail/{id}', [KontakController::class, 'detail'])->name('kontak.detail')->middleware('permission:view kontak');
+        Route::post('simpan', [KontakController::class, 'simpan'])->name('kontak.simpan')->middleware('permission:simpan kontak');
+        Route::post('update', [KontakController::class, 'update'])->name('kontak.update')->middleware('permission:update kontak');
+        Route::post('hapus', [KontakController::class, 'hapus'])->name('kontak.hapus')->middleware('permission:hapus kontak');
     });
 });
 

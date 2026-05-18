@@ -108,7 +108,7 @@ class UserController extends Controller
 
     public function ss_pengguna()
     {
-        $request = Request();
+        $request = new Request();
         $start  = $request->start;
         $length = $request->length;
         $page   = $request->page;

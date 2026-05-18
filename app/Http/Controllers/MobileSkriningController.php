@@ -60,7 +60,8 @@ class MobileSkriningController extends Controller
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $statusTerkunci = [
             'Wajib Menghubungi Kader / Petugas Puskesmas', 
-            'Menunggu Tes Dahak', 
+            'Menunggu Tes Dahak',
+            'Menunggu Verifikasi Admin/Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($user->status_tbc, $statusTerkunci)) {
@@ -86,6 +87,7 @@ class MobileSkriningController extends Controller
     {
         $validated = $request->validate([
             'uuid'      => 'required|string|min:35|max:36',
+            'lokasi'    => 'nullable',
             'parameter' => 'required|array',
             'parameter.*.uid_parameter' => 'required|string|min:35|max:36',
             'parameter.*.is_yes' => 'required|boolean',
@@ -110,6 +112,7 @@ class MobileSkriningController extends Controller
         $statusTerkunci = [
             'Wajib Menghubungi Kader / Petugas Puskesmas', 
             'Menunggu Tes Dahak', 
+            'Menunggu Verifikasi Admin/Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($check->status_tbc, $statusTerkunci)) {
@@ -136,6 +139,7 @@ class MobileSkriningController extends Controller
                 'umur_saat_skrining' => $usia,
                 'kategori_id'   => $kategori->id,
                 'triggered_rule_id'  => null,
+                'location'      => !empty($request->lokasi) ? $request->lokasi : null,
             ]);
 
             $yesParameterIds = [];
@@ -212,6 +216,7 @@ class MobileSkriningController extends Controller
                 'data'      => [
                     'uid_sesi'  => $session->uid_sesi,
                     'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
+                    'lokasi'    => $request->lokasi,
                     'user'      => [
                         'nama'      => $session->keluarga->nama_lengkap,
                         'hubungan'  => $session->keluarga->status_keluarga,
@@ -229,7 +234,7 @@ class MobileSkriningController extends Controller
     {
         $userId = $request->user()->uuid;
 
-        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
+        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
                     ->whereHas('keluarga', function($query) use ($userId) {
                         $query->where('parent_user', $userId)
                             ->orWhere('uid_keluarga', $userId);
@@ -241,6 +246,7 @@ class MobileSkriningController extends Controller
             return [
                 'uid_sesi'  => $session->uid_sesi,
                 'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
+                'lokasi'    => $session->location,
                 'user'      => [
                     'nama'      => $session->keluarga->nama_lengkap,
                     'hubungan'  => $session->keluarga->status_keluarga,
@@ -250,7 +256,7 @@ class MobileSkriningController extends Controller
                 'kategori'  => $session->kategori->nama_kategori,
                 'status_rujuk' => $session->triggered_rule_id ? true : false,
                 'rekomendasi'  => $session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman. Tetap jaga kesehatan dan pola hidup bersih.',
-                'kontak'    => $session->keluarga->faskes->kontak,
+                'kontak'    => $session->keluarga->faskes->kontak ?? [],
             ];
         });
 
@@ -261,5 +267,50 @@ class MobileSkriningController extends Controller
             'message'   => 'Data riwayat skrining user dan keluarga.',
             'data'      => $history,
         ], 200);
+    }
+
+    public function submit_dahak(Request $request)
+    {
+        $request->validate([
+            'uid_sesi'  => 'required|string|min:35|max:36',
+            'pilihan'   => 'required|string|in:faskes,mandiri',
+            'dokumen'   => 'required_if:pilihan,mandiri|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'tanggal'   => 'required_if:pilihan,mandiri|date',
+        ]);
+
+        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid_sesi)->first();
+        $user = $sesi->uid_keluarga;
+
+        if ($request->pilihan == 'faskes') {
+            $sesi->update(['jenis_tcm' => 'faskes']);
+            DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Tes Dahak']);
+
+            return send_200('Pilihan tersimpan. Silakan datang ke Puskesmas terdekat.');
+        }
+        if ($request->pilihan == 'mandiri') {
+            if (!file_exists(public_path('dokumen_tcm'))) {
+                mkdir(public_path('dokumen_tcm', 755));
+            }
+
+            $file = $request->file('dokumen');
+            $extension = $file->getClientOriginalExtension();
+            $fileName  = $user . '_' . date('YmdHis') . '.' . strtolower($extension);
+            $path = $file->storeAs('dokumen_tcm', $fileName, 'public');
+            if (!$path) return send_400('Gagal mengunggah file dokumen.');
+
+            $sesi->update([
+                'jenis_tcm' => 'mandiri',
+                'tgl_tcm'   => Carbon::parse($request->tanggal)->format('Y-m-d'),
+                'dokumen'   => $fileName,
+            ]);
+            DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Verifikasi Admin/Petugas']);
+
+            return send_200('Dokumen berhasil diunggah. Mohon tunggu verifikasi dari petugas.');
+        }
+    }
+
+    public function submit_obat(Request $request)
+    {
+        //
     }
 }

@@ -4,13 +4,21 @@
         <div class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-3 py-5">
             <div class="flex order-2 md:order-1 gap-2 font-normal text-sm">
                 <span class="text-secondary-foreground">
-                    2026©
+                    {{ date('Y') }}©
+                </span>
+                <a class="text-secondary-foreground hover:text-primary" href="https://diskominfo.karanganyarkab.go.id">
+                    Diskominfo Kab. Karanganyar
+                </a>
+            </div>
+            <div class="flex order-2 md:order-1 gap-2 font-normal text-sm">
+                <span class="text-secondary-foreground">
+                    Template by
                 </span>
                 <a class="text-secondary-foreground hover:text-primary" href="https://keenthemes.com">
                     Keenthemes Inc.
                 </a>
             </div>
-            <nav class="flex order-1 md:order-2 gap-4 font-normal text-sm text-secondary-foreground">
+            {{-- <nav class="flex order-1 md:order-2 gap-4 font-normal text-sm text-secondary-foreground">
                 <a class="hover:text-primary" href="https://keenthemes.com/metronic/tailwind/docs">
                     Docs
                 </a>
@@ -28,7 +36,7 @@
                     href="https://keenthemes.com/metronic/tailwind/docs/getting-started/license">
                     License
                 </a>
-            </nav>
+            </nav> --}}
         </div>
     </div>
     <!-- End of Container -->
