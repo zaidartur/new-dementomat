@@ -23,8 +23,10 @@ return new class extends Migration
             $table->uuid('triggered_rule_id')->nullable();
             $table->foreign('triggered_rule_id')->references('uid_rule')->on('data_rule_skrinings')->nullOnDelete()->cascadeOnUpdate();
 
+            $table->string('location', '100')->nullable();
             $table->date('tgl_tcm')->nullable();
             $table->enum('hasil_tcm', ['poitive', 'negative'])->nullable();
+            $table->string('file_tcm')->nullable();
             $table->timestamps();
         });
     }

@@ -70,8 +70,8 @@ class UserController extends Controller
             send_500('Gagal mengubah password pengguna.');
         }
 
-        // drop user session
-        DB::table('permissions')->where('user_id', $user->id)->delete();
+        // drop user PAN
+        DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
         return send_200('Password pengguna ' . $user->name . ' berhasil diubah.');
     }
 
@@ -84,8 +84,8 @@ class UserController extends Controller
         $check = User::where('uuid', $request->uuid)->first();
         $del = User::where('uuid', $request->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
         if ($del) {
-            // drop user session
-            DB::table('permissions')->where('user_id', $check->id)->delete();
+            // drop user PAN
+            DB::table('personal_access_tokens')->where('tokenable_id', $check->id)->delete();
         } else {
             return send_500('Gagal menghapus user.');
         }

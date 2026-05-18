@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['faskes_id', 'nama_faskes', 'alamat_faskes', 'kec_id', 'desakel_id'])]
@@ -29,5 +30,15 @@ class Faskes extends Model
     public function desa(): HasOne
     {
         return $this->hasOne(Desa::class, 'desakel_id', 'desakel_id');
+    }
+
+    /**
+     * Get all of the kontak for the Faskes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function kontak(): HasMany
+    {
+        return $this->hasMany(Kontak::class, 'id_faskes', 'faskes_id');
     }
 }

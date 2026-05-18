@@ -98,6 +98,11 @@ class MobileUserController extends Controller
             'faskes'    => 'required|string|min:35|max:36',
         ]);
 
+        // check no hp
+        if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
+            return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
+        }
+
         $data = [
             'nama_lengkap'  => $request->nama,
             'alamat_nik'    => $request->alamat_nik,
@@ -140,6 +145,16 @@ class MobileUserController extends Controller
             'desa'      => 'required|numeric',
             'faskes'    => 'required|string|min:35|max:36',
         ]);
+
+        // check NIK
+        if (DataKeluarga::where('nik', $request->nik)->exists()) {
+            return send_400('NIK sudah ada di database.');
+        }
+
+        // check no hp
+        if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
+            return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
+        }
 
         $data = [
             'uid_keluarga'  => Str::uuid(),
@@ -186,6 +201,11 @@ class MobileUserController extends Controller
             'desa'      => 'required|numeric',
             'faskes'    => 'required|string|min:35|max:36',
         ]);
+
+        // check no hp
+        if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
+            return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
+        }
 
         $data = [
             'nama_lengkap'  => $request->nama,

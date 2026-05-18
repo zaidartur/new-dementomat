@@ -22,17 +22,19 @@ class MobileController extends Controller
     
         $detail = DataKeluarga::where('nik', $request->nik)->where('is_auth', 1)->whereNull('parent_user')->first();
         if (!$detail) {
-            throw ValidationException::withMessages([
-                'nik' => ['NIK tidak terdata pada database.'],
-            ]);
+            // throw ValidationException::withMessages([
+            //     'nik' => ['NIK tidak terdata pada database.'],
+            // ]);
+            return send_400('NIK tidak terdata pada database.');
         }
 
         $user = User::where('uuid', $detail->uid_keluarga)->whereNull('deleted_at')->first();
     
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'nik' => ['Kredensial yang diberikan tidak sesuai.'],
-            ]);
+            // throw ValidationException::withMessages([
+            //     'nik' => ['Kredensial yang diberikan tidak sesuai.'],
+            // ]);
+            return send_400('Kredensial yang diberikan tidak sesuai.');
         }
     
         $token = $user->createToken($request->device_name)->plainTextToken;
@@ -56,9 +58,10 @@ class MobileController extends Controller
 
         $detail = DataKeluarga::where('nik', $request->nik)->first();
         if ($detail) {
-            throw ValidationException::withMessages([
-                'nik' => ['NIK sudah terdata pada database. Cobalah untuk login.'],
-            ]);
+            // throw ValidationException::withMessages([
+            //     'nik' => ['NIK sudah terdata pada database. Cobalah untuk login.'],
+            // ]);
+            send_400('NIK sudah terdata pada database. Cobalah untuk login.');
         }
 
         $username = $this->generateUniqueUsername($request->nama);
@@ -76,9 +79,10 @@ class MobileController extends Controller
 
         if (!$user) {
             User::where('uuid', $uuid)->delete();
-            throw ValidationException::withMessages([
-                'name' => ['Gagal menyimpan data registrasi, cobalah untuk membuat ulang.'],
-            ]);
+            // throw ValidationException::withMessages([
+            //     'name' => ['Gagal menyimpan data registrasi, cobalah untuk membuat ulang.'],
+            // ]);
+            send_400('Gagal menyimpan data registrasi, cobalah untuk membuat ulang.');
         }
 
         DataKeluarga::create([
@@ -97,7 +101,7 @@ class MobileController extends Controller
         return response()->json([
             'user' => $user,
             'token' => $token,
-        ], 201); // 201 Created
+        ], 201);
     }
 
     private function generateUniqueUsername($name)

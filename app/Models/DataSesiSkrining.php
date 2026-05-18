@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id'])]
+#[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id', 'location', 'tgl_tcm', 'hasil_tcm', 'file_tcm'])]
 class DataSesiSkrining extends Model
 {
     /**

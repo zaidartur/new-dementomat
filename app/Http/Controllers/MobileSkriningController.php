@@ -229,7 +229,7 @@ class MobileSkriningController extends Controller
     {
         $userId = $request->user()->uuid;
 
-        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi'])
+        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
                     ->whereHas('keluarga', function($query) use ($userId) {
                         $query->where('parent_user', $userId)
                             ->orWhere('uid_keluarga', $userId);
@@ -249,7 +249,8 @@ class MobileSkriningController extends Controller
                 ],
                 'kategori'  => $session->kategori->nama_kategori,
                 'status_rujuk' => $session->triggered_rule_id ? true : false,
-                'rekomendasi'  => $session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman. Tetap jaga kesehatan dan pola hidup bersih.'
+                'rekomendasi'  => $session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman. Tetap jaga kesehatan dan pola hidup bersih.',
+                'kontak'    => $session->keluarga->faskes->kontak,
             ];
         });
 
