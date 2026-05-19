@@ -59,7 +59,7 @@ class MobileSkriningController extends Controller
 
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $statusTerkunci = [
-            'Wajib Menghubungi Kader / Petugas Puskesmas', 
+            'Wajib Menghubungi Kader / Petugas Puskesmas',
             'Menunggu Tes Dahak',
             'Menunggu Verifikasi Admin/Petugas',
             'Dalam Pengobatan'
@@ -235,6 +235,7 @@ class MobileSkriningController extends Controller
         $userId = $request->user()->uuid;
 
         $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
+                    ->whereNull('deleted_at')
                     ->whereHas('keluarga', function($query) use ($userId) {
                         $query->where('parent_user', $userId)
                             ->orWhere('uid_keluarga', $userId);
@@ -251,7 +252,7 @@ class MobileSkriningController extends Controller
                     'nama'      => $session->keluarga->nama_lengkap,
                     'hubungan'  => $session->keluarga->status_keluarga,
                     'usia_saat_tes'  => $session->umur_saat_skrining,
-                    'status_terkini' => $session->keluarga->status_tbc ?? 'Belum ada status'
+                    'status_tbc'=> $session->keluarga->status_tbc ?? 'Belum ada status'
                 ],
                 'kategori'  => $session->kategori->nama_kategori,
                 'status_rujuk' => $session->triggered_rule_id ? true : false,
@@ -278,7 +279,8 @@ class MobileSkriningController extends Controller
             'tanggal'   => 'required_if:pilihan,mandiri|date',
         ]);
 
-        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid_sesi)->first();
+        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid_sesi)->whereNull('deleted_at')->first();
+        if (!$sesi) return send_400('Data hasil skrining tidak diketahui.');
         $user = $sesi->uid_keluarga;
 
         if ($request->pilihan == 'faskes') {

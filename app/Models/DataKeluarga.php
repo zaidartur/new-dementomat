@@ -52,4 +52,14 @@ class DataKeluarga extends Model
     {
         return $this->belongsTo(Faskes::class, 'id_faskes', 'faskes_id');
     }
+
+    /**
+     * Get all of the sesi for the DataKeluarga
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sesi(): HasMany
+    {
+        return $this->hasMany(DataSesiSkrining::class, 'uid_keluarga', 'uid_keluarga');
+    }
 }

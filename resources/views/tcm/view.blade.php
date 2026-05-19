@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('title', 'Hasil Skrining')
+@section('title', 'Cek Dahak')
 
 
 @section('content')
@@ -8,30 +8,29 @@
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <div class="flex flex-col justify-center gap-2">
             <h1 class="text-xl font-medium leading-none text-mono">
-                <i class="ki-filled ki-cheque text-lg"></i>
-                Data Hasil Skrining
+                <i class="ki-filled ki-test-tubes text-lg"></i>
+                Data Cek Dahak
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Data hasil skrining terbaru
+                Data verifikasi dan hasil cek dahak secara mandiri maupun via faskes
             </div>
         </div>
     </div>
 </div>
-
 <div class="kt-container-fixed">
     <div class="grid w-full space-y-5">
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
-                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-2" data-kt-datatable-search="#kt_datatable_remote_filters" />
+                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" />
 
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-2">
                     <input type="checkbox" class="kt-checkbox" id="check_nik" value="1" />
                     <label class="kt-label" for="check_nik">
                         Lihat NIK Pengguna
                     </label>
                 </div>
 
-                <label class="flex items-center gap-1 text-sm">
+                <label class="flex items-center gap-2 text-sm">
                     <span class="text-muted-foreground">Faskes</span>
                     <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
                         <option value="" selected="">Semua Faskes</option>
@@ -40,7 +39,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="flex items-center gap-1 text-sm">
+                <label class="flex items-center gap-2 text-sm">
                     <span class="text-muted-foreground">Kec.</span>
                     <select id="kt_datatable_remote_filters_kecamatan" class="kt-select kt-select-sm w-40">
                         <option value="" selected="">Semua Kecamatan</option>
@@ -50,17 +49,9 @@
                     </select>
                 </label>
 
-                <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary gap-2">
+                <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary">
                     <i class="ki-filled ki-filter text-md"></i>
                     Apply filter
-                </button>
-
-                <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm kt-btn-primary kt-btn-outline" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
-                    <i class="ki-filled ki-folder-down text-md"></i>
-                    Export Data
-                    <span data-kt-tooltip-content="true" class="kt-tooltip">
-                        <span class="flex items-center gap-1.5">Unduh Semua Data Hasil Skrining</span>
-                    </span>
                 </button>
 
             </div>
@@ -69,12 +60,6 @@
                     <table class="kt-table" data-kt-datatable-table="true">
                         <thead>
                             <tr>
-                                <th scope="col" class="w-10" data-kt-datatable-column="nik">
-                                    <span class="kt-table-col">
-                                        <span class="kt-table-col-label">NIK</span>
-                                        {{-- <span class="kt-table-col-sort"></span> --}}
-                                    </span>
-                                </th>
                                 <th scope="col" class="w-20" data-kt-datatable-column="nama">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Nama Lengkap</span>
@@ -93,9 +78,9 @@
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="hasil">
+                                <th scope="col" class="w-10" data-kt-datatable-column="jenis">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Hasil Skrining</span>
+                                        <span class="kt-table-col-label">Pilihan TCM</span>
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
@@ -107,8 +92,7 @@
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="status">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Status TBC</span>
-                                        {{-- <span class="kt-table-col-sort"></span> --}}
+                                        <span class="kt-table-col-label">Status Verifikasi</span>
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="opsi">
@@ -138,13 +122,78 @@
         </div>
     </div>
 </div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_verify">
+    <div class="kt-modal-content max-w-[40%] top-[10%]">
+        <div class="kt-modal-header">
+            <h3 class="kt-modal-title" id="title_modal">Konfirmasi Verifikasi</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_kontak">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg w-full grow h-full">
+                <div class="flex flex-wrap gap-4 justify-center mb-10">
+                    <h3 class="text-center w-full font-bold">Hasil Verifikasi Cek Dahak <span id="is_user"></span>?</h3>
+                    <button type="button" class="kt-btn w-[30%] kt-btn-destructive" id="bt_plus">
+                        <i class="ki-filled ki-plus-squared text-lg"></i>
+                        Positif
+                    </button>
+                    <button type="button" class="kt-btn w-[30%] kt-btn-primary" id="bt_minus">
+                        <i class="ki-filled ki-minus-squared text-lg"></i>
+                        Negatif
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_dokumen">
+    <div class="kt-modal-content max-w-[40%] top-[10%]">
+        <div class="kt-modal-header">
+            <h3 class="kt-modal-title" id="title_modal">Upload Dokumen</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_kontak">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg w-full grow h-full">
+                <div class="flex flex-wrap gap-4 justify-center mb-10">
+                    <h3 class="text-center w-full font-bold">Form Upload Dokumen <span id="is_users"></span></h3>
+                    <form action="" id="form_dokumen" enctype="multipart/form-data">
+                        @csrf
+                        <div class="flex flex-wrap gap-4 justify-center">
+                            <div class="w-[70%] text-center mb-2">
+                                <input type="date" name="tanggal" class="kt-input w-full" value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required />
+                            </div>
+                            <div class="w-[70%] text-center mb-2">
+                                <input type="file" id="dokumen" name="dokumen" class="kt-input w-full" accept=".jpg,.jpeg,.png,.pdf" required />
+                            </div>
+                            <div class="w-full text-center">
+                                <button type="button" class="kt-btn kt-btn-outline w-[30%]" data-kt-modal-dismiss="#modal_kontak">Batalkan</button>
+                                <button type="submit" class="kt-btn w-[30%]">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 
 @section('js')
 <script>
     function ktResolveDocsDatatableApiUrl() {
-        var path = "/skrining/data-skrining"
+        var path = "/penanganan/tabel-dahak"
         if (typeof window === 'undefined') {
             return path;
         }
@@ -282,29 +331,49 @@
                 stateNamespace: 'kt-docs-datatable-remote-filters',
                 pageSize: 5,
                 columns: {
-                    // nik: { title: 'NIK' },
-                    nik: {
-                        render: function (_value, row) {
-                            return `<span class="kt-badge" style="color: ${row.color}">${row.nik}</span>`
+                    nama: {
+                        render: function(_val, row) {
+                            return `<h5>${row.nama}</h5><small>${row.nik}</small>`
                         }
                     },
-                    nama: { title: 'Nama Lengkap' },
                     kec: { title: 'Kecamatan' },
                     tanggal: { title: 'Tanggal Skrining' },
                     // hasil: { title: 'Hasil Skrining' },
-                    hasil: {
+                    jenis: {
                         render: function(_val, row) {
-                            if (row.hsail === 'Aman') {
-                                // return `<span class="kt-badge kt-badge-success"><i class="ki-filled ki-check-circle text-lg"></i> Aman</span> `
-                                return '<span class="text-primary"><i class="ki-filled ki-check-circle text-lg"></i> Aman</span>'
+                            // return row.jenis
+                            if (row.jenis === 'mandiri') {
+                                return `
+                                    <button class="kt-btn kt-btn-primary kt-btn-sm w-full capitalize" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start" onclick="_dokumen('${row.dokumen}', '${row.nama}')">
+                                        <i class="ki-filled ki-directbox-default text-md"></i>
+                                        ${row.jenis}
+                                        <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                            <span class="flex items-center gap-1.5">Lihat Dokumen</span>
+                                        </span>
+                                    </button>`
                             } else {
-                                // return `<span class="kt-badge kt-badge-destructive"><i class="ki-filled ki-information-4 text-lg"></i> ${row.hasil}</span> `
-                                return `<span class="text-destructive"><i class="ki-filled ki-information-4 text-lg"></i> ${row.hasil}</span>`
+                                return `
+                                    <button class="kt-btn kt-btn-primary kt-btn-sm w-full capitalize" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start" onclick="_dokumen('${row.dokumen ?? ''}', '${row.nama}', '${row.uid}')">
+                                        ${row.dokumen ? '<i class="ki-filled ki-directbox-default text-md"></i>' : '<i class="ki-filled ki-plus-circle text-md"></i>'}
+                                        ${row.jenis}
+                                        <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                            <span class="flex items-center gap-1.5">${row.dokumen ? 'Lihat Laporan TCM' : 'Buat Laporan TCM'}</span>
+                                        </span>
+                                    </button>
+                                `
                             }
                         }
                     },
                     faskes: { title: 'Faskes' },
-                    status: { title: 'Status Terakhir' },
+                    status: { 
+                        render: function (_val, row) {
+                            if (row.verif) {
+                                return `<span class="kt-badge kt-badge-light kt-badge-${row.hasil_tcm === 'positive' ? 'destructive' : 'warning'} uppercase">${row.hasil_tcm}</span>`
+                            } else {
+                                return 'Belum Verifikasi'
+                            }
+                        }
+                     },
                     opsi: {
                         render: function (_value, row) {
                             return row.opsi
@@ -356,31 +425,91 @@
         setTimeout(safeInitialize, 1);
     }
 </script>
+
 <script>
-    function _detail(uid) {
-        //
+    let selectedId
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    $(document).ready(function() {
+        $('#bt_plus').on('click', function() {
+            $(this).attr('disabled', 'true')
+            $('#bt_minus').attr('disabled', 'true')
+            $.ajax({
+                url: "{{ route('dahak.verify') }}",
+                type: 'POST',
+                data: {uid: selectedId, status: 'positive'},
+                success: function(res) {
+                    $('#bt_plus').removeAttr('disabled')
+                    $('#bt_minus').removeAttr('disabled')
+                    Swal.fire('Sukses', res.message, 'success').then(function() { location.reload() })
+                },
+                error: function(xhr, status, error) {
+                    console.log(error)
+                    $('#bt_plus').removeAttr('disabled')
+                    $('#bt_minus').removeAttr('disabled')
+                    Swal.fire('Error', xhr.responseJSON.message, 'error')
+                }
+            })
+        })
+
+        $('#bt_minus').on('click', function() {
+            $(this).attr('disabled', 'true')
+            $('#bt_plus').attr('disabled', 'true')
+            $.ajax({
+                url: "{{ route('dahak.verify') }}",
+                type: 'POST',
+                data: {uid: selectedId, status: 'negative'},
+                success: function(res) {
+                    $('#bt_minus').removeAttr('disabled')
+                    $('#bt_plus').removeAttr('disabled')
+                    Swal.fire('Sukses', res.message, 'success').then(function() { location.reload() })
+                },
+                error: function(xhr, status, error) {
+                    console.log(error)
+                    $('#bt_minus').removeAttr('disabled')
+                    $('#bt_plus').removeAttr('disabled')
+                    Swal.fire('Error', xhr.responseJSON.message, 'error')
+                }
+            })
+        })
+
+        $('#form_dokumen').on('submit', function(e) {
+            e.preventDefault()
+            const tgl  = $('[name="tanggal"]').val()
+            const doc  = document.getElementById('dokumen')
+            const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
+            const file = doc.files[0];
+            if (file && file.size > MAX_SIZE) {
+                Swal.fire('Peringatan', 'Ukuran file terlalu bersar. Batas ukuran maksimum file adalah 2Mb.', 'warning')
+                e.target.value = '';
+                return
+            }
+
+            if (doc.value && tgl) {
+                alert('OK')
+            }
+        })
+    })
+
+    function _dokumen(url = null, name, uid = null) {
+        if (url) {
+            window.open(url, '_blank')
+        } else {
+            $('#form_dokumen')[0].reset()
+            $('#is_users').html(`[${name}]`)
+            selectedId = uid
+            new KTModal('#modal_dokumen').show()
+        }
     }
 
-    function _reset_status(uid) {
-        Swal.fire({
-            title: 'Reset Status TBC?',
-            html: 'Data Status TBC Pengguna akan berganti menjadi <b>"Aman"</b> dan semua hasil skriningnya akan <span class="text-destructive"><b>dihapus</b></span>.',
-            icon: 'question',
-            showCancelButton: true,
-            cancelButtonText: 'Batalkan',
-            confirmButtonText: 'Konfirmasi'
-        })
-    }
-
-    function _reset_hasil(uid) {
-        Swal.fire({
-            title: 'Ubah Hasil Skrining?',
-            html: 'Data hasil skrining ini akan <span class="text-destructive"><b>dihapus</b></span>, dan status TBC Pengguna akan berganti ke hasil skrining sebelumnya (apabila ada).',
-            icon: 'question',
-            showCancelButton: true,
-            cancelButtonText: 'Batalkan',
-            confirmButtonText: 'Konfirmasi'
-        })
+    function _verifikasi(uid, name) {
+        $('#is_user').html(`[${name}]`)
+        selectedId = uid
+        new KTModal('#modal_verify').show()
     }
 </script>
 @endsection

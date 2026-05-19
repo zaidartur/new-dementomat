@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html class="h-full" data-kt-theme="true" data-kt-theme-mode="light" dir="ltr" lang="en">
     <head>
-        <title> @yield('title') | Sidemen Tomat Terasi</title>
+        <title> @yield('title') | Si Demen Tomat Terasi</title>
 
         <meta charset="utf-8" />
         <meta content="follow, index" name="robots" />
         <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
         <meta content="" name="description" />
-        <meta content="@keenthemes" name="twitter:site" />
-        <meta content="@keenthemes" name="twitter:creator" />
         <meta content="summary_large_image" name="twitter:card" />
-        <meta content="Metronic - Tailwind CSS " name="twitter:title" />
+        <meta content="Si Demen Tomat Terasi" name="twitter:title" />
         <meta content="" name="twitter:description" />
-        <meta content="assets/media/app/og-image.png" name="twitter:image" />
-        <meta content="en_US" property="og:locale" />
+        <meta content="assets/images/logos.png" name="twitter:image" />
+        <meta content="id_ID" property="og:locale" />
         <meta content="website" property="og:type" />
-        <meta content="@keenthemes" property="og:site_name" />
-        <meta content="Metronic - Tailwind CSS " property="og:title" />
+        <meta content="Si Demen Tomat Terasi" property="og:title" />
         <meta content="" property="og:description" />
-        <meta content="assets/media/app/og-image.png" property="og:image" />
+        <meta content="assets/images/logos.png" property="og:image" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
         @include('layouts.css')

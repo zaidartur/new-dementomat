@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CekDahakController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\ProfileController;
@@ -35,6 +36,12 @@ Route::prefix('/')->middleware('auth')->group(function() {
     Route::prefix('skrining/')->group(function() {
         Route::get('view', [SkriningController::class, 'view'])->name('skrining')->middleware('permission:view hasil skrining');
         Route::get('data-skrining', [SkriningController::class, 'ss_skrining'])->name('skrining.ss')->middleware('permission:view hasil skrining');
+    });
+
+    Route::prefix('penanganan/')->group(function() {
+        Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak');
+        Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss');
+        Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify');
     });
 
     Route::prefix('kontak/')->group(function() {

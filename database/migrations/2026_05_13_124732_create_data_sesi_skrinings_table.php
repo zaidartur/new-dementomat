@@ -28,6 +28,7 @@ return new class extends Migration
             $table->enum('hasil_tcm', ['poitive', 'negative'])->nullable();
             $table->enum('jenis_tcm', ['mandiri', 'faskes'])->nullable();
             $table->string('file_tcm')->nullable();
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }

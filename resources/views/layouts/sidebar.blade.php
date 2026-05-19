@@ -2,8 +2,10 @@
     {{-- Header --}}
     <div class="kt-sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0" id="sidebar_header">
         <a class="dark:hidden" href="#">
-            <img class="default-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/default-logo.svg') }}" />
-            <img class="small-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/mini-logo.svg') }}" />
+            {{-- <img class="default-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/default-logo.svg') }}" />
+            <img class="small-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/mini-logo.svg') }}" /> --}}
+            <img class="default-logo min-h-[22px] max-w-none max-h-[62px]" src="{{ asset('assets/images/logos.png') }}" />
+            <img class="small-logo min-h-[22px] max-w-none max-h-[36px]" src="{{ asset('assets/images/logos.png') }}" />
         </a>
         <a class="hidden dark:block" href="#">
             <img class="default-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/default-logo-dark.svg') }}" />
@@ -103,8 +105,8 @@
                 </div>
                 @endcan
                 @can('view cek dahak')
-                <div class="kt-menu-item" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
-                    <a href="{{ route('dashboard') }}" class="kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg" tabindex="0">
+                <div class="kt-menu-item {{ request()->routeIs('dahak') ? 'active' : '' }}" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
+                    <a href="{{ route('dahak') }}" class="kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg" tabindex="0">
                         <span class="kt-menu-icon items-start text-muted-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary w-[20px]">
                             <i class="ki-filled ki-test-tubes text-lg"></i>
                         </span>

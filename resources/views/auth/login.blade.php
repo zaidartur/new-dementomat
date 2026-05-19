@@ -1,30 +1,33 @@
 <!DOCTYPE html>
 <html class="h-full" data-kt-theme="true" data-kt-theme-mode="light" dir="ltr" lang="en">
     <head>
-        <title>Sign In | Sidemen Tomat Terasi</title>
+        <title>Sign In | Si Demen Tomat Terasi</title>
     
         <meta charset="utf-8"/>
         <meta content="follow, index" name="robots"/>
         <link href="https://127.0.0.1:8001/metronic-tailwind-html/demo1/authentication/classic/sign-in/index.html" rel="canonical"/>
         <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
-        <meta content="Sidemen Tomat Terasi" name="description"/>
-        <meta content="@keenthemes" name="twitter:site"/>
-        <meta content="@keenthemes" name="twitter:creator"/>
+        <meta content="Si Demen Tomat Terasi" name="description"/>
         <meta content="summary_large_image" name="twitter:card"/>
-        <meta content="Sidemen Tomat Terasi" name="twitter:title"/>
+        <meta content="Si Demen Tomat Terasi" name="twitter:title"/>
         <meta content="Sistem deteksi dini" name="twitter:description"/>
         <meta content="{{ asset('assets/media/app/og-image.png') }}" name="twitter:image"/>
         <meta content="en_US" property="og:locale"/>
         <meta content="website" property="og:type"/>
-        <meta content="@keenthemes" property="og:site_name"/>
-        <meta content="Sidemen Tomat Terasi" property="og:title"/>
+        <meta content="Si Demen Tomat Terasi" property="og:title"/>
         <meta content="Sistem deteksi dini" property="og:description"/>
         <meta content="{{ asset('assets/media/app/og-image.png') }}" property="og:image"/>
 
-        <link href="{{ asset('assets/media/app/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180"/>
+        {{-- <link href="{{ asset('assets/media/app/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180"/>
         <link href="{{ asset('assets/media/app/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png"/>
         <link href="{{ asset('assets/media/app/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png"/>
-        <link href="{{ asset('assets/media/app/favicon.ico') }}" rel="shortcut icon"/>
+        <link href="{{ asset('assets/media/app/favicon.ico') }}" rel="shortcut icon"/> --}}
+
+        <link href="{{ asset('assets/images/logos.png') }}" rel="apple-touch-icon" sizes="180x180" />
+        <link href="{{ asset('assets/images/logos.png') }}" rel="icon" sizes="32x32" type="image/png" />
+        <link href="{{ asset('assets/images/logos.png') }}" rel="icon" sizes="16x16" type="image/png" />
+        <link href="{{ asset('assets/images/logos.png') }}" rel="shortcut icon" />
+
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
         <link href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}" rel="stylesheet"/>
         <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet"/>
@@ -52,7 +55,7 @@
                         <h3 class="text-lg font-medium text-mono leading-none mb-2.5">Sign in</h3>
                         <div class="flex items-center justify-center font-medium">
                             <span class="text-sm text-secondary-foreground me-1.5">
-                                Sidemen Tomat Terasi
+                                Si Demen Tomat Terasi
                             </span>
                         </div>
                         <x-auth-session-status class="mb-4" :status="session('status')" />
