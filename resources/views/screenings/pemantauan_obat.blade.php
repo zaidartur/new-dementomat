@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('title', 'Cek Dahak')
+@section('title', 'Pemantauan Obat')
 
 
 @section('content')
@@ -8,11 +8,11 @@
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <div class="flex flex-col justify-center gap-2">
             <h1 class="text-xl font-medium leading-none text-mono">
-                <i class="ki-filled ki-test-tubes text-lg"></i>
-                Data Cek Dahak
+                <i class="ki-filled ki-capsule text-lg"></i>
+                Data Pemantauan Obat
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Data verifikasi dan hasil cek dahak secara mandiri maupun via faskes
+                Data pemantauan obat pengguna positif TBC
             </div>
         </div>
     </div>
@@ -78,21 +78,25 @@
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="jenis">
+                                <th scope="col" class="w-10" data-kt-datatable-column="mulai">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Pilihan TCM</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        <span class="kt-table-col-label">Tgl Mulai Obat</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-10" data-kt-datatable-column="obat">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Log Terakhir</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-10" data-kt-datatable-column="berat">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">BB Terakhir</span>
                                     </span>
                                 </th>
                                 <th scope="col" class="w-20" data-kt-datatable-column="faskes">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Faskes</span>
                                         <span class="kt-table-col-sort"></span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="status">
-                                    <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Status Verifikasi</span>
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="opsi">
@@ -123,11 +127,11 @@
     </div>
 </div>
 
-<div class="kt-modal" data-kt-modal="true" id="modal_verify">
-    <div class="kt-modal-content max-w-[40%] top-[10%]">
+<div class="kt-modal" data-kt-modal="true" id="modal_detail">
+    <div class="kt-modal-content w-full top-[10%]">
         <div class="kt-modal-header">
-            <h3 class="kt-modal-title" id="title_modal">Konfirmasi Verifikasi</h3>
-            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_kontak">
+            <h3 class="kt-modal-title" id="title_modal">Detail Pemantauan Obat</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
                     <path d="M18 6 6 18"></path>
                     <path d="m6 6 12 12"></path>
@@ -135,55 +139,7 @@
             </button>
         </div>
         <div class="kt-modal-body">
-            <div class="rounded-lg w-full grow h-full">
-                <div class="flex flex-wrap gap-4 justify-center mb-10">
-                    <h3 class="text-center w-full font-bold">Hasil Verifikasi Cek Dahak <span id="is_user"></span>?</h3>
-                    <button type="button" class="kt-btn w-[30%] kt-btn-destructive" id="bt_plus">
-                        <i class="ki-filled ki-plus-squared text-lg"></i>
-                        Positif
-                    </button>
-                    <button type="button" class="kt-btn w-[30%] kt-btn-primary" id="bt_minus">
-                        <i class="ki-filled ki-minus-squared text-lg"></i>
-                        Negatif
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="kt-modal" data-kt-modal="true" id="modal_dokumen">
-    <div class="kt-modal-content max-w-[40%] top-[10%]">
-        <div class="kt-modal-header">
-            <h3 class="kt-modal-title" id="title_modal">Upload Dokumen</h3>
-            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_kontak">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
-                    <path d="M18 6 6 18"></path>
-                    <path d="m6 6 12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="kt-modal-body">
-            <div class="rounded-lg w-full grow h-full">
-                <div class="flex flex-wrap gap-4 justify-center mb-10">
-                    <h3 class="text-center w-full font-bold">Form Upload Dokumen <span id="is_users"></span></h3>
-                    <form action="" id="form_dokumen" enctype="multipart/form-data">
-                        @csrf
-                        <div class="flex flex-wrap gap-4 justify-center">
-                            <div class="w-[70%] text-center mb-2">
-                                <input type="date" name="tanggal" class="kt-input w-full" value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required />
-                            </div>
-                            <div class="w-[70%] text-center mb-2">
-                                <input type="file" id="dokumen" name="dokumen" class="kt-input w-full" accept=".jpg,.jpeg,.png,.pdf" required />
-                            </div>
-                            <div class="w-full text-center">
-                                <button type="button" class="kt-btn kt-btn-outline w-[30%]" data-kt-modal-dismiss="#modal_kontak">Batalkan</button>
-                                <button type="submit" class="kt-btn w-[30%]">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <div class="rounded-lg bg-muted w-full grow h-[250px]"></div>
         </div>
     </div>
 </div>
@@ -193,7 +149,7 @@
 @section('js')
 <script>
     function ktResolveDocsDatatableApiUrl() {
-        var path = "/penanganan/tabel-dahak"
+        var path = "/penanganan/tabel-pemantauan"
         if (typeof window === 'undefined') {
             return path;
         }
@@ -341,44 +297,14 @@
                     },
                     kec: { title: 'Kecamatan' },
                     tanggal: { title: 'Tanggal Skrining' },
-                    // hasil: { title: 'Hasil Skrining' },
-                    jenis: {
-                        render: function(_val, row) {
-                            // return row.jenis
-                            if (row.jenis === 'mandiri') {
-                                return `
-                                    <button class="kt-btn kt-btn-primary kt-btn-sm w-full capitalize" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start" onclick="_dokumen('${row.dokumen}', '${row.nama}')">
-                                        <i class="ki-filled ki-directbox-default text-md"></i>
-                                        ${row.jenis}
-                                        ${row.dokumen ? '<i class="ki-filled ki-double-check text-md"></i>' : ''}
-                                        <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                            <span class="flex items-center gap-1.5">Lihat Dokumen</span>
-                                        </span>
-                                    </button>`
-                            } else {
-                                return `
-                                    <button class="kt-btn kt-btn-${row.dokumen ? 'primary' : 'outline'} kt-btn-sm w-full capitalize" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start" onclick="_dokumen('${row.dokumen ?? ''}', '${row.nama}', '${row.uid}')">
-                                        ${row.dokumen ? '<i class="ki-filled ki-directbox-default text-md"></i>' : '<i class="ki-filled ki-plus-circle text-md"></i>'}
-                                        ${row.jenis}
-                                        ${row.dokumen ? '<i class="ki-filled ki-double-check text-md"></i>' : ''}
-                                        <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                            <span class="flex items-center gap-1.5">${row.dokumen ? 'Lihat Laporan TCM' : 'Buat Laporan TCM'}</span>
-                                        </span>
-                                    </button>
-                                `
-                            }
-                        }
-                    },
-                    faskes: { title: 'Faskes' },
-                    status: { 
+                    mulai: { title: 'Tanggal Mulai' },
+                    obat: { title: 'Pemantauan Obat' },
+                    berat: { 
                         render: function (_val, row) {
-                            if (row.verif) {
-                                return `<span class="kt-badge kt-badge-light kt-badge-${row.hasil_tcm === 'positive' ? 'destructive' : 'warning'} uppercase">${row.hasil_tcm}</span>`
-                            } else {
-                                return 'Belum Verifikasi'
-                            }
+                            return `${(row.berat === '-') ? '-' : (row.berat + ' Kg')}`
                         }
                      },
+                    faskes: { title: 'Faskes' },
                     opsi: {
                         render: function (_value, row) {
                             return row.opsi
@@ -432,110 +358,9 @@
 </script>
 
 <script>
-    let selectedId
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-            'Accept': 'application/json'
-        }
-    })
-    $(document).ready(function() {
-        $('#bt_plus').on('click', function() {
-            $(this).attr('disabled', 'true')
-            $('#bt_minus').attr('disabled', 'true')
-            $.ajax({
-                url: "{{ route('dahak.verify') }}",
-                type: 'POST',
-                data: {uid: selectedId, status: 'positive'},
-                success: function(res) {
-                    $('#bt_plus').removeAttr('disabled')
-                    $('#bt_minus').removeAttr('disabled')
-                    Swal.fire('Sukses', res.message, 'success').then(function() { location.reload() })
-                },
-                error: function(xhr, status, error) {
-                    console.log(error)
-                    $('#bt_plus').removeAttr('disabled')
-                    $('#bt_minus').removeAttr('disabled')
-                    Swal.fire('Error', xhr.responseJSON.message, 'error')
-                }
-            })
-        })
-
-        $('#bt_minus').on('click', function() {
-            $(this).attr('disabled', 'true')
-            $('#bt_plus').attr('disabled', 'true')
-            $.ajax({
-                url: "{{ route('dahak.verify') }}",
-                type: 'POST',
-                data: {uid: selectedId, status: 'negative'},
-                success: function(res) {
-                    $('#bt_minus').removeAttr('disabled')
-                    $('#bt_plus').removeAttr('disabled')
-                    Swal.fire('Sukses', res.message, 'success').then(function() { location.reload() })
-                },
-                error: function(xhr, status, error) {
-                    console.log(error)
-                    $('#bt_minus').removeAttr('disabled')
-                    $('#bt_plus').removeAttr('disabled')
-                    Swal.fire('Error', xhr.responseJSON.message, 'error')
-                }
-            })
-        })
-
-        $('#form_dokumen').on('submit', function(e) {
-            e.preventDefault()
-            const tgl  = $('[name="tanggal"]').val()
-            const doc  = document.getElementById('dokumen')
-            const MAX_SIZE = 2 * 1024 * 1024; // 2MB
-
-            const file = doc.files[0];
-            if (file && file.size > MAX_SIZE) {
-                Swal.fire('Peringatan', 'Ukuran file terlalu bersar. Batas ukuran maksimum file adalah 2Mb.', 'warning')
-                e.target.value = '';
-                return
-            }
-
-            if (doc.value && tgl) {
-                let form = document.getElementById('form_dokumen');
-                let formData = new FormData(form)
-                formData.append('uid', selectedId);
-                $('#form_dokumen button').attr('disabled', 'true')
-                $.ajax({
-                    url: "{{ route('dahak.faskes') }}",
-                    type: 'POST',
-                    data: formData,
-                    dataType: 'json',
-                    processData: false,
-                    contentType: false,
-                    success: function(res) {
-                        $('#form_dokumen button').removeAttr('disabled')
-                        Swal.fire('Berhasil', res.message, 'success').then(function() { location.reload() })
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(error)
-                        Swal.fire('Error', xhr.responseJSON.message, 'error')
-                        $('#form_dokumen button').removeAttr('disabled')
-                    }
-                })
-            }
-        })
-    })
-
-    function _dokumen(url = null, name, uid = null) {
-        if (url) {
-            window.open(url, '_blank')
-        } else {
-            $('#form_dokumen')[0].reset()
-            $('#is_users').html(`[${name}]`)
-            selectedId = uid
-            new KTModal('#modal_dokumen').show()
-        }
-    }
-
-    function _verifikasi(uid, name) {
-        $('#is_user').html(`[${name}]`)
-        selectedId = uid
-        new KTModal('#modal_verify').show()
+    function _detail(uid) {
+        //
+        new KTModal('#modal_detail').show()
     }
 </script>
 @endsection

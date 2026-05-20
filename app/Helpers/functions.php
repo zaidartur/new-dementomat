@@ -4,7 +4,13 @@
  * Standardize JSON responses
  */
 
+use App\Services\PdfSanitizer;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Format;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Laravel\Facades\Image;
 
 if (!function_exists('send_200')) {
     function send_200($message, $result = null)
@@ -117,5 +123,94 @@ if (!function_exists('hslToHex')) {
         $res = sprintf("#%02x%02x%02x", round($r * 255), round($g * 255), round($b * 255));
 
         return $res;
+    }
+}
+
+if (!function_exists('upload_tcm')) {
+    // sanitize image
+    function upload_tcm_image($file, $uid) {
+        try {
+            // v3 below
+            // $manager = new ImageManager(new GdDriver());
+            // $image = $manager->read($file)
+            //         ->orient()
+            //         ->toJpeg(quality: 9);
+
+            $image = Image::decode($file)->orient();
+            $encoded = $image->encodeUsingFormat(Format::JPEG, quality: 90);
+
+            // 3. Save to temporary path
+            $extension = $file->getClientOriginalExtension();
+            $tempPath = storage_path('app/tmp/sanitized_' .$uid. '_' . date('YmdHis') .'.jpg');
+            File::ensureDirectoryExists(dirname($tempPath));
+            file_put_contents($tempPath, $encoded->toString());
+
+            // 4. Move to public folder
+            $fileName = $uid . '_' .date('YmdHis'). '.jpg';
+            $folder = public_path('storage/dokumen_tcm');
+            if (!is_dir($folder)) {
+                mkdir(public_path('storage/dokumen_tcm', 755));
+            }
+
+            $path = $folder . '/' . $fileName;
+            $move = File::move($tempPath, $path);
+
+            if (!$tempPath || !$move) {
+                return false;
+            }
+
+            return $fileName;
+        } catch(Exception $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists('upload_tcm')) {
+    function upload_tcm_pdf($file, $uid) {
+        try {
+            $sanitizer = new PdfSanitizer();
+
+            // Store original temporarily
+            if (! File::exists(storage_path('app/tmp'))) {
+                File::makeDirectory(storage_path('app/tmp'), 0755, true);
+            }
+            // if (! File::exists(storage_path('app/private/tmp'))) {
+            //     File::makeDirectory(storage_path('app/private/tmp'), 0755, true);
+            // }
+            $tempInput = storage_path('app/tmp/original_' . $uid . '_' .date('YmdHis'). '.pdf');
+            $tempOutput = storage_path('app/tmp/sanitized_' . $uid . '_' .date('YmdHis'). '.pdf');
+
+            $tempInput = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $tempInput);
+            $tempOutput = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $tempOutput);
+
+            $file->move(dirname($tempInput), basename($tempInput));
+
+            // Sanitize
+            $sanitizer->sanitize($tempInput, $tempOutput);
+
+            // Store sanitized PDF (never store original)
+            $folder = public_path('storage/dokumen_tcm');
+            if (! File::exists($folder)) {
+                File::makeDirectory($folder, 0755, true);
+            }
+            
+            $fileName = $uid . '_' .date('YmdHis'). '.pdf';
+            $path = $folder . '/' . $fileName;
+            $move = File::move($tempOutput, $path);
+
+            // Cleanup
+            @unlink($tempInput);
+            @unlink($tempOutput);
+
+            if ($move) {
+                return $fileName;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            //throw $th;
+            return false;
+        }
     }
 }

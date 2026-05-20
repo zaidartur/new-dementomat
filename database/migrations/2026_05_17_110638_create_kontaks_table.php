@@ -22,6 +22,7 @@ return new class extends Migration
             $table->uuid('uid_user')->nullable();
             $table->foreign('uid_user')->references('uuid')->on('users')->nullOnDelete()->cascadeOnUpdate();
 
+            $table->enum('jenis_kontak', ['faskes', 'admin']);
             $table->timestamps();
         });
     }

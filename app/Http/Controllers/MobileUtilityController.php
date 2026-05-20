@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\Kontak;
 use Illuminate\Http\Request;
 
 class MobileUtilityController extends Controller
@@ -88,6 +89,12 @@ class MobileUtilityController extends Controller
             'message'   => 'Daftar desa di kecamatan '. $desa[0]->kecamatan->kec_name .'.',
             'data'      => $desa,
         ], 200);
+    }
+
+    public function data_kontak()
+    {
+        $res = Kontak::where('jenis_kontak', 'admin')->first();
+        return send_200('Data kontak admin.', $res);
     }
 
     public function data_youtube()

@@ -20,6 +20,7 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::get('/data-kecamatan', [MobileUtilityController::class, 'data_kecamatan']);
         Route::get('/data-desa', [MobileUtilityController::class, 'data_desa']);
         Route::get('/data-desa-kecamatan/{kec}', [MobileUtilityController::class, 'data_desa_by_kecamatan']);
+        Route::get('/data-kontak', [MobileUtilityController::class, 'data_kontak']);
         Route::get('/data-video', [MobileUtilityController::class, 'data_youtube']);
         Route::get('/data-slider', [MobileUtilityController::class, 'data_slider']);
         Route::get('/data-berita', [MobileUtilityController::class, 'data_berita']);
@@ -31,7 +32,8 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::post('/riwayat', [MobileSkriningController::class, 'riwayat_skrining']);
 
         Route::post('/tes-dahak', [MobileSkriningController::class, 'submit_dahak']);
-        Route::post('/pemantauan-obat', [MobileSkriningController::class, 'submit_obat']);
+        Route::post('/pemantauan-obat', [MobileSkriningController::class, 'submit_log_obat'])->middleware('throttle:api');
+        Route::post('/berat-badan-bulanan', [MobileSkriningController::class, 'submit_berat_badan'])->middleware('throttle:api');
     });
 
     Route::prefix('/user')->group(function() {

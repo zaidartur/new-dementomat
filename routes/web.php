@@ -3,6 +3,7 @@
 use App\Http\Controllers\CekDahakController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontakController;
+use App\Http\Controllers\PantauanObatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkriningController;
 use App\Http\Controllers\UserController;
@@ -41,7 +42,11 @@ Route::prefix('/')->middleware('auth')->group(function() {
     Route::prefix('penanganan/')->group(function() {
         Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak');
         Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss');
+        Route::post('submit-manual', [CekDahakController::class, 'simpan_cek_manual'])->name('dahak.faskes');
         Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify');
+
+        Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat');
+        Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss');
     });
 
     Route::prefix('kontak/')->group(function() {

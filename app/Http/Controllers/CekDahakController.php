@@ -44,12 +44,43 @@ class CekDahakController extends Controller
         if (!$save) return send_400('Gagal melakukan verifikasi.');
 
         if ($request->status == 'positive') {
-            $user = DataKeluarga::where('uid_keluarga', $sesi->uid_keluarga)->update(['status_tbc' => 'Dalam Pengobatan']);
+            $user = DataKeluarga::where('uid_keluarga', $sesi->uid_keluarga)->update(['status_tbc' => 'Dalam Pengobatan', 'tgl_mulai_obat' => date('Y-m-d')]);
         } else {
-            $user = DataKeluarga::where('uid_keluarga', $sesi->uid_keluarga)->update(['status_tbc' => 'Aman']);
+            $user = DataKeluarga::where('uid_keluarga', $sesi->uid_keluarga)->update(['status_tbc' => 'Aman', 'tgl_mulai_obat' => null]);
         }
 
         return send_200('Berhasil verifikasi.');
+    }
+
+    public function simpan_cek_manual(Request $request)
+    {
+        $request->validate([
+            'uid'       => 'required|string|min:35|max:36|exists:data_sesi_skrinings,uid_sesi',
+            'tanggal'   => 'required|date',
+            'dokumen'   => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid)->whereNull('deleted_at')->first();
+        if (!$sesi) return send_400('ID sesi tidak diketahui.');
+
+        $file = $request->file('dokumen');
+        $extension = $file->getClientOriginalExtension();
+        if (strtolower($extension) == 'pdf') {
+            $image = upload_tcm_pdf($file, $sesi->uid_keluarga);
+        } elseif (in_array(strtolower($extension), ['jpg', 'jpeg', 'png'])) {
+            $image = upload_tcm_image($file, $sesi->uid_keluarga);
+        } else {
+            return send_400('Format file tidak diketahui.');
+        }
+
+        if (!$image) return send_400('Gagal mengunggah dokumen hasil lab.');
+        
+        $sesi->file_tcm = $image;
+        $sesi->tgl_tcm  = Carbon::parse($request->tanggal)->format('Y-m-d');
+        $save = $sesi->save();
+        if (!$save) return send_400('Gagal update data TCM.');
+
+        return send_201('Dokumen berhasil diunggah.');
     }
 
     public function ss_dahak()
@@ -118,13 +149,25 @@ class CekDahakController extends Controller
         $totalFiltered = $query->count();
         $query->skip(intval($page)-1)->take(intval($size));
         $totals = $query->get();
-        $data = [];
+        $result = collect($totals)->map(function($record) {
+            $user_uid = $record->uid_keluarga;
 
-        foreach ($totals as $key => $value) {
+            $cleanHex = str_replace('-', '', $user_uid);
+            $hexSegment = substr($cleanHex, 0, 6);
+            $decValue = hexdec($hexSegment);
+            $hue = $decValue % 360;
+            $record->color = hslToHex($hue, 80, 45);
+
+            return $record;
+        });
+
+        $data = [];
+        foreach ($result as $key => $value) {
             $nik = $request->nik == 'show' ? ($value->keluarga->nik ?? '-') : (!empty($value->keluarga->nik) ? substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4) : '-');
             $data[] = [
                 'nik'       => $nik,
                 'nama'      => $value->keluarga->nama_lengkap,
+                'color'     => $value->color,
                 'kec'       => $value->keluarga->kecamatan->kec_name,
                 'desa'      => $value->keluarga->desa->desakel_name,
                 'tanggal'   => Carbon::parse($value->created_at)->locale('id')->translatedFormat('d F Y'),

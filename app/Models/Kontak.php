@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['judul_kontak', 'nama_kontak', 'nomor_wa', 'id_faskes', 'uid_user'])]
+#[Fillable(['judul_kontak', 'nama_kontak', 'nomor_wa', 'id_faskes', 'uid_user', 'jenis_kontak'])]
 #[Hidden(['uid_user'])]
 class Kontak extends Model
 {
@@ -19,7 +19,7 @@ class Kontak extends Model
      */
     public function faskes(): BelongsTo
     {
-        return $this->belongsTo(Faskes::class, 'faskes_id', 'id_faskes');
+        return $this->belongsTo(Faskes::class, 'id_faskes', 'faskes_id');
     }
 
     /**
