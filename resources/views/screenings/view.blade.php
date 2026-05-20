@@ -294,7 +294,7 @@
                     // hasil: { title: 'Hasil Skrining' },
                     hasil: {
                         render: function(_val, row) {
-                            if (row.hsail === 'Aman') {
+                            if (row.hasil === 'Aman') {
                                 // return `<span class="kt-badge kt-badge-success"><i class="ki-filled ki-check-circle text-lg"></i> Aman</span> `
                                 return '<span class="text-primary"><i class="ki-filled ki-check-circle text-lg"></i> Aman</span>'
                             } else {
