@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class MobileSkriningController extends Controller
 {
@@ -293,7 +294,8 @@ class MobileSkriningController extends Controller
         }
         if ($request->pilihan == 'mandiri') {
             if (!is_dir(public_path('storage/dokumen_tcm'))) {
-                mkdir(public_path('storage/dokumen_tcm', 755));
+                // mkdir(public_path('storage/dokumen_tcm', 755));
+                File::makeDirectory(public_path('storage/dokumen_tcm'), 0755, true);
             }
 
             $file = $request->file('dokumen');
@@ -305,7 +307,7 @@ class MobileSkriningController extends Controller
             $sesi->update([
                 'jenis_tcm' => 'mandiri',
                 'tgl_tcm'   => Carbon::parse($request->tanggal)->format('Y-m-d'),
-                'dokumen'   => $fileName,
+                'file_tcm'  => $fileName,
             ]);
             DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Verifikasi Admin/Petugas']);
 

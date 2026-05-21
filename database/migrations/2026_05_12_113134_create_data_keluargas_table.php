@@ -38,6 +38,7 @@ return new class extends Migration
 
             $table->string('status_tbc', '200')->nullable();
             $table->date('tgl_mulai_obat')->nullable();
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }

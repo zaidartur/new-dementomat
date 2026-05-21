@@ -47,6 +47,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
 
         Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat');
         Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss');
+        Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail');
     });
 
     Route::prefix('kontak/')->group(function() {

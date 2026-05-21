@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->string('location', '100')->nullable();
             $table->date('tgl_tcm')->nullable();
-            $table->enum('hasil_tcm', ['poitive', 'negative'])->nullable();
+            $table->enum('hasil_tcm', ['positive', 'negative'])->nullable();
             $table->enum('jenis_tcm', ['mandiri', 'faskes'])->nullable();
             $table->string('file_tcm')->nullable();
             $table->dateTime('deleted_at')->nullable();

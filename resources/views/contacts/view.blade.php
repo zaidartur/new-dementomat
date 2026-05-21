@@ -12,7 +12,7 @@
                 Contact Person
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Data kontak / nomor telepon petugas faskes di setiap faskes
+                Data kontak / nomor telepon petugas faskes dan admin dinkes
             </div>
         </div>
     </div>
@@ -36,25 +36,31 @@
                                 <th scope="col" class="w-25" data-kt-datatable-column="judul">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Judul Kontak</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
                                 <th scope="col" class="w-25" data-kt-datatable-column="nama">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Nama Kontak</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="telepon">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Telepon</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
-                                <th scope="col" class="w-30" data-kt-datatable-column="faskes">
+                                <th scope="col" class="w-10" data-kt-datatable-column="level">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Level Kontak</span>
+                                        {{-- <span class="kt-table-col-sort"></span> --}}
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="faskes">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Faskes</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="opsi">
@@ -70,6 +76,7 @@
                                     <td>{{ $item->judul_kontak }}</td>
                                     <td>{{ $item->nama_kontak }}</td>
                                     <td>{{ $item->nomor_wa }}</td>
+                                    <td class="capitalize">{{ $item->jenis_kontak }}</td>
                                     <td>{{ $item->faskes ? $item->faskes->nama_faskes : '' }}</td>
                                     <td>
                                         <span class="inline-flex gap-2.5">
@@ -173,9 +180,21 @@
                         </div>
                         @if (Request()->user()->hasAnyRole(['superadmin', 'admin']))
                             <div class="kt-form-item">
+                                <label class="kt-form-label">Jenis Kontak</label>
+                                <div class="kt-form-control">
+                                    <select class="kt-select" data-kt-select="true" id="jenis" name="jenis" data-kt-select-placeholder="Pilih jenis..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onchange="_jenis(this.value)" required>
+                                        <option value="">Pilih Jenis</option>
+                                        <option value="admin">Kontak Admin</option>
+                                        <option value="faskes">Kontak Faskes</option>
+                                    </select>
+                                </div>
+                                <div class="kt-form-message">Mohon memilih faskes.</div>
+                            </div>
+                            <div class="kt-form-item is-faskes hidden" id="is_faskes">
                                 <label class="kt-form-label">Faskes:</label>
                                 <div class="kt-form-control">
-                                    <select class="kt-select" data-kt-select="true" id="faskes" name="faskes" data-kt-select-placeholder="Pilih faskes..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                    <select class="kt-select" data-kt-select="true" id="faskes" name="faskes" data-kt-select-placeholder="Pilih faskes..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}'>
+                                        <option value="">Pilih Faskes</option>
                                         @foreach ($faskes as $item)
                                             <option value="{{ $item->faskes_id }}">{{ $item->nama_faskes }}</option>
                                         @endforeach
@@ -252,7 +271,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.error(error)
-                        Swal.fire('Error', 'Terjadi kesalahan pada sistem.', 'error')
+                        Swal.fire('Error', xhr.responseJSON.message, 'error')
                     }
                 })
             }
@@ -295,11 +314,34 @@
         $('#phone').val(data.nomor_wa)
 
         @if(Request()->user()->hasAnyRole(['superadmin', 'admin']))
-            const selectFaskes = document.querySelector('#faskes');
-            selectFaskes.value = data.id_faskes
-            const selectInstance = KTSelect.getInstance(selectFaskes)
-            if (selectInstance) {
-                selectInstance.update()
+            const selectJenis = document.querySelector('#jenis')
+            selectJenis.value = data.jenis_kontak
+            const selectInstances = KTSelect.getInstance(selectJenis)
+            if (selectInstances) {
+                selectInstances.update()
+            }
+
+            fs = document.querySelector('#is_faskes')
+            if (data.jenis_kontak === 'admin') {
+                const selectFaskes = document.querySelector('#faskes');
+                selectFaskes.value = ''
+                const selectInstance = KTSelect.getInstance(selectFaskes)
+                if (selectInstance) {
+                    selectInstance.update()
+                }
+
+                fs.classList.add('hidden')
+                $('#faskes').removeAttr('required')
+            } else {
+                const selectFaskes = document.querySelector('#faskes');
+                selectFaskes.value = data.id_faskes
+                const selectInstance = KTSelect.getInstance(selectFaskes)
+                if (selectInstance) {
+                    selectInstance.update()
+                }
+
+                fs.classList.remove('hidden')
+                $('#faskes').attr('required', 'true')
             }
         @endif
     }
@@ -332,5 +374,22 @@
             })
         }
     }
+
+    @if (Request()->user()->hasAnyRole(['superadmin', 'admin']))
+    function _jenis(val) {
+        console.log(val)
+        fs = document.querySelector('#is_faskes')
+        if (val === 'faskes') {
+            fs.classList.remove('hidden')
+            $('#faskes').attr('required', 'true')
+        } else if (val === 'admin') {
+            fs.classList.add('hidden')
+            $('#faskes').removeAttr('required')
+        } else {
+            fs.classList.add('hidden')
+            $('#faskes').removeAttr('required')
+        }
+    }
+    @endif
 </script>
 @endsection

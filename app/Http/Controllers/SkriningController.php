@@ -46,9 +46,13 @@ class SkriningController extends Controller
         $order  = $request->sortOrder ?? 'asc';
         $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
         $kec    = (isset($request->kecamatan) && !empty($request->kecamatan)) ? $request->kecamatan : null;
-        $total  = DataSesiSkrining::orderBy('created_at')->whereNull('deleted_at')->count();
+        $total  = DataSesiSkrining::with('keluarga')
+                ->whereHas('keluarga', function($q) {
+                    $q->whereNull('deleted_at');
+                })
+                ->orderBy('created_at')->whereNull('deleted_at')->count();
 
-        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa']);
+        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,deleted_at', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -91,6 +95,9 @@ class SkriningController extends Controller
         }
 
         $query->whereNull('deleted_at');
+        $query->whereHas('keluarga', function($q) {
+            $q->whereNull('deleted_at');
+        });
         $totalFiltered = $query->count();
         // $query->orderBy('created_at', 'desc');
         $query->skip(intval($page)-1)->take(intval($size));

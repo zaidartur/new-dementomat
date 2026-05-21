@@ -21,7 +21,7 @@ class MobileController extends Controller
             'device_name'   => 'required|string',
         ]);
     
-        $detail = DataKeluarga::where('nik', $request->nik)->where('is_auth', 1)->whereNull('parent_user')->first();
+        $detail = DataKeluarga::where('nik', $request->nik)->where('is_auth', 1)->whereNull('parent_user')->whereNull('deleted_at')->first();
         if (!$detail) {
             // throw ValidationException::withMessages([
             //     'nik' => ['NIK tidak terdata pada database.'],
@@ -127,7 +127,7 @@ class MobileController extends Controller
             'password'      => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = User::where('uuid', $request->user()->uuid)->first();
+        $user = User::where('uuid', $request->user()->uuid)->whereNull('deleted_at')->first();
     
         if (! $user || ! Hash::check($request->password_lama, $user->password)) {
             throw ValidationException::withMessages([
@@ -151,7 +151,7 @@ class MobileController extends Controller
 
     public function deactivate(Request $request)
     {
-        $user = User::where('uuid', $request->user()->uuid)->first();
+        $user = User::where('uuid', $request->user()->uuid)->whereNull('deleted_at')->first();
         if (!$user) return send_400('User akun tidak sesuai.');
 
         $user->deleted_at = date('Y-m-d H:i:s');
@@ -159,6 +159,8 @@ class MobileController extends Controller
         if (!$upd) return send_400('Gagal deaktivasi akun.');
 
         // eliminate all user session ID in PAN
+        DataKeluarga::where('uid_keluarga', $user->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
+        DataKeluarga::where('parent_user', $user->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
         DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
         return send_200('Akun berhasil deaktivasi.');
     }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataKeluarga;
 use App\Models\DataSesiSkrining;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\PantauanBeratBadan;
+use App\Models\PantauanObat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -26,6 +29,163 @@ class PantauanObatController extends Controller
         return view('screenings.pemantauan_obat', $data);
     }
 
+    public function detail_user(Request $request)
+    {
+        $request->validate([
+            'uid'   => 'required|string|exists:data_keluargas,uid_keluarga',
+        ]);
+
+        $user = DataKeluarga::with(['desa', 'kecamatan', 'faskes'])->where('uid_keluarga', $request->uid)->whereNull('deleted_at')->first();
+
+        // berat badan
+        $berat = PantauanBeratBadan::where('uid_keluarga', $user->uid_keluarga)->orderBy('bulan_ke')->get()->keyBy('bulan_ke');
+        $data_berat = [];
+        $label_berat = [];
+        for ($i=1; $i < 7; $i++) { 
+            $label_berat[] = 'Bulan ke ' . $i;
+            if ($berat->has($i)) {
+                $jml = $berat->get($i)->berat_badan;
+                // $data_berat['Bulan ke ' . $i][] = floatval($jml);
+                $data_berat[] = floatval($jml);
+            } else {
+                // $data_berat['Bulan ke ' . $i][] = 0;
+                $data_berat[] = 0;
+            }
+        }
+
+
+        $bulan_ke   = $request->query('bulan_ke', 1);
+        $tgl_mulai_obat = Carbon::parse($user->tgl_mulai_obat);
+        $periode_mulai  = $tgl_mulai_obat->copy()->addMonths($bulan_ke - 1);
+        $jml_hari   = 30;
+        $periode_akhir  = $periode_mulai->copy()->addDays($jml_hari - 1);
+
+        // $bln_awal   = Carbon::now()->startOfMonth();
+        // $bln_akhir  = Carbon::now()->endOfMonth();
+        // $jml_hari   = $bln_awal->daysInMonth();
+
+        $obat = PantauanObat::where('uid_keluarga', $request->uid)
+                ->whereBetween('tanggal', [$periode_mulai->format('Y-m-d'), $periode_akhir->format('Y-m-d')])
+                ->get()->keyBy('tanggal');
+        
+        $heatmap_data = [
+            'Mual'      => [],
+            'Pipis Merah'   => [],
+            'Pendengaran'   => [],
+            'Penglihatan'   => [],
+            'Pegal'     => [],
+            'Batuk'     => [],
+            'Demam'     => [],
+        ];
+
+        // menghitung hari ke berapa
+        $hariKe = null;
+        $fasePengobatan = null;
+        if ($user->status_tbc == 'Dalam Pengobatan' && $user->tgl_mulai_obat) {
+            $tgl_mulai = $tgl_mulai_obat->startOfDay();
+            $today = Carbon::now()->startOfDay();
+
+            $hariKe = $tgl_mulai->diffInDays($today) + 1;
+            if ($hariKe <= 60) {
+                $fasePengobatan = 'Fase Intensif (Bulan 1-2)';
+            } else if ($hariKe <= 180) {
+                $fasePengobatan = 'Fase Lanjutan (Bulan 3-6)';
+            } else {
+                $fasePengobatan = 'Masa Pengobatan Standar Selesai (Evaluasi)';
+            }
+        }
+
+        for ($tgl=0; $tgl < $jml_hari; $tgl++) { 
+            // $tgl_key = $bln_awal->copy()->day($tgl)->format('Y-m-d');
+            // $label_x = $tgl;
+            $hari_ini   = $periode_mulai->copy()->addDays($tgl);
+            $tgl_key    = $hari_ini->format('Y-m-d');
+            $label_x    = sprintf("%02d", $tgl + 1);
+
+            $tgl_kalender = $hari_ini->locale('id')->translatedFormat('d M Y');
+
+            foreach ($heatmap_data as $gejala => $value) {
+                $column_map = [
+                    'Mual' => 'efek_mual',
+                    'Pipis Merah'   => 'efek_pipis_merah',
+                    'Pendengaran'   => 'efek_pendengaran',
+                    'Penglihatan'   => 'efek_penglihatan',
+                    'Pegal' => 'efek_pegal',
+                    'Batuk' => 'efek_batuk',
+                    'Demam' => 'efek_demam'
+                ];
+                $db_column  = $column_map[$gejala];
+
+                if ($obat->has($tgl_key)) {
+                    $obat_hari_ini  = $obat->get($tgl_key);
+                    $heatmap_data[$gejala][]    = [
+                        'x'     => $label_x,
+                        'y'     => $obat_hari_ini->$db_column ? 1 : 0,
+                        'date'  => $tgl_kalender
+                    ];
+                } else {
+                    $heatmap_data[$gejala][]    = [
+                        'x'     => $label_x,
+                        'y'     => -1,
+                        'date'  => $tgl_kalender
+                    ];
+                }
+            }
+
+            // if ($obat->has($tgl_key)) {
+            //     $obat_hari_ini = $obat->get($tgl_key);
+
+            //     $heatmap_data['Mual'][]     = ['x' => $label_x, 'y' => $obat_hari_ini->efek_mual ? 1 : 0];
+            //     $heatmap_data['Pipis Merah'][]  = ['x' => $label_x, 'y' => $obat_hari_ini->efek_pipis_merah ? 1 : 0];
+            //     $heatmap_data['Pendengaran'][]  = ['x' => $label_x, 'y' => $obat_hari_ini->efek_pendengaran ? 1 : 0];
+            //     $heatmap_data['Penglihatan'][]  = ['x' => $label_x, 'y' => $obat_hari_ini->efek_penglihatan ? 1 : 0];
+            //     $heatmap_data['Pegal'][]    = ['x' => $label_x, 'y' => $obat_hari_ini->efek_pegal ? 1 : 0];
+            //     $heatmap_data['Batuk'][]    = ['x' => $label_x, 'y' => $obat_hari_ini->efek_batuk ? 1 : 0];
+            //     $heatmap_data['Demam'][]    = ['x' => $label_x, 'y' => $obat_hari_ini->efek_demam ? 1 : 0];
+            // } else {
+            //     $heatmap_data['Mual'][]     = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Pipis Merah'][]  = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Pendengaran'][]  = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Penglihatan'][]  = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Pegal'][]    = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Batuk'][]    = ['x' => $label_x, 'y' => -1];
+            //     $heatmap_data['Demam'][]    = ['x' => $label_x, 'y' => -1];
+            // }
+        }
+
+        // Data grafik heatmap
+        $series_data = [];
+        foreach ($heatmap_data as $gejala => $point) {
+            $series_data[] = [
+                'name'  => $gejala,
+                'data'  => $point,
+            ];
+        }
+
+        // Ringakasan total
+        $summary = [
+            'mual'  => $obat->where('efek_mual', true)->count(),
+            'pipis' => $obat->where('efek_pipis_merah', true)->count(),
+            'pendengaran' => $obat->where('efek_pendengaran', true)->count(),
+            'penglihatan' => $obat->where('efek_penglihatan', true)->count(),
+            'pegal' => $obat->where('efek_pegal', true)->count(),
+            'batuk' => $obat->where('efek_batuk', true)->count(),
+            'demam' => $obat->where('efek_demam', true)->count(),
+        ];
+
+        return send_200(
+            'Detail data ' . $user->nama_lengkap, 
+            [
+                'pengguna'  => $user,
+                'berat'     => ['data' => $data_berat, 'label' => $label_berat],
+                'series'    => $series_data,
+                'summary'   => $summary,
+                'durasi'    => ['hari_ke' => $hariKe, 'fase' => $fasePengobatan],
+                'riwayat'   => $obat->sortByDesc('tanggal'),
+            ]
+        );
+    }
+
     public function ss_obat()
     {
         $request = Request();
@@ -38,7 +198,8 @@ class PantauanObatController extends Controller
         $total  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.obatTerakhir', 'keluarga.beratTerakhir'])
                 ->whereNotNull('jenis_tcm')
                 ->whereHas('keluarga', function($q) {
-                    $q->whereIn('status_tbc', ['Dalam Pengobatan']);
+                    $q->whereIn('status_tbc', ['Dalam Pengobatan'])
+                      ->whereNull('deleted_at');
                 })->count();
 
         $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,tgl_mulai_obat', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.obatTerakhir', 'keluarga.beratTerakhir']);
@@ -86,7 +247,8 @@ class PantauanObatController extends Controller
 
         $query->whereNotNull('jenis_tcm')
             ->whereHas('keluarga', function($q) {
-                $q->whereIn('status_tbc', ['Dalam Pengobatan']);
+                $q->whereIn('status_tbc', ['Dalam Pengobatan'])
+                  ->whereNull('deleted_at');
             })
             ->whereNull('deleted_at');
         $totalFiltered = $query->count();
@@ -127,7 +289,7 @@ class PantauanObatController extends Controller
                 'uid'       => $value->uid_sesi,
                 'opsi'      => '
                         <span class="inline-flex gap-2.5">
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_keluarga. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
                                     <span class="flex items-center gap-1.5">Lihat Detail</span>

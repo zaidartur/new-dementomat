@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataKeluarga;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
@@ -16,7 +17,7 @@ class UserController extends Controller
     public function pengguna()
     {
         $data = [
-            'lists' => User::where('level', 'user')->get(),
+            'lists' => User::where('level', 'user')->whereNull('deleted_at')->get(),
             'kec'   => Kecamatan::all(),
             'faskes'=> Faskes::all(),
         ];
@@ -26,7 +27,7 @@ class UserController extends Controller
 
     public function detail_pengguna($uid)
     {
-        $user = User::with(['detail', 'keluarga'])->where('uuid', $uid)->first();
+        $user = User::with(['detail', 'keluarga'])->where('uuid', $uid)->whereNull('deleted_at')->first();
         if (!$user) {
             return send_400('Gagal mengakses data user. Atau mungkin user tidak data di database.');
         }
@@ -40,7 +41,7 @@ class UserController extends Controller
             'username'  => 'required|string'
         ]);
 
-        $find = User::where('username', $request->username)->first();
+        $find = User::where('username', $request->username)->whereNull('deleted_at')->first();
         if ($find) {
             return send_400('Username "' . $request->username . '" sudah digunakan.');
         }
@@ -81,14 +82,35 @@ class UserController extends Controller
             'uuid'  => 'required|string|min:35|max:36',
         ]);
 
-        $check = User::where('uuid', $request->uuid)->first();
+        $check = User::where('uuid', $request->uuid)->whereNull('deleted_at')->first();
         $del = User::where('uuid', $request->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
         if ($del) {
             // drop user PAN
+            DataKeluarga::where('uid_keluarga', $check->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
+            DataKeluarga::where('parent_user', $check->uuid)->update(['deleted_at' => date('Y-m-d H:i:s')]);
             DB::table('personal_access_tokens')->where('tokenable_id', $check->id)->delete();
         } else {
             return send_500('Gagal menghapus user.');
         }
+    }
+
+    public function reactivate_pengguna(Request $request)
+    {
+        $request->validate([
+            'uuid'  => 'required|string|exists:users,uuid'
+        ]);
+
+        $user = User::where('uuid', $request->uuid)->whereNotNull('deleted_at')->first();
+        if (!$user) return send_400('Pengguna tidak terdaftar atau masih aktif.');
+
+        $user->deleted_at = null;
+        $save = $user->save();
+        if (!$save) return send_400('Gagal reaktivasi pengguna.').
+
+        DataKeluarga::where('uid_keluarga', $user->uuid)->update(['deleted_at' => null]);
+        DataKeluarga::where('parent_user', $user->uuid)->update(['deleted_at' => null]);
+
+        return send_200('Pengguna berhasil di reaktivasi.');
     }
 
     public function simpan_keluarga(Request $request)

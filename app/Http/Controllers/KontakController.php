@@ -78,14 +78,16 @@ class KontakController extends Controller
             'judul'     => 'required|string|max:100',
             'nama'      => 'required|string|max:100',
             'phone'     => 'required|numeric|min_digits:9|max_digits:15',
-            'faskes'    => 'required|string|min:35|max:36'
+            'jenis'     => 'required|string|in:admin,faskes',
+            'faskes'    => 'required_if:jenis,faskes|string|min:35|max:36'
         ]);
 
         $data = [
             'judul_kontak'  => $request->judul,
             'nama_kontak'   => $request->nama,
             'nomor_wa'      => $request->phone,
-            'id_faskes'     => $request->faskes,
+            'id_faskes'     => $request->jenis == 'faskes' ? $request->faskes : null,
+            'jenis_kontak'  => $request->jenis,
         ];
 
         $save = empty($id) ? Kontak::create($data) : Kontak::where('id', $id)->update($data);
@@ -108,6 +110,7 @@ class KontakController extends Controller
             'nomor_wa'      => $request->phone,
             'id_faskes'     => Request()->user()->faskes_id,
             'uid_user'      => Request()->user()->uuid,
+            'jenis_kontak'  => 'faskes',
         ];
 
         $save = empty($id) ? Kontak::create($data) : Kontak::where('id', $id)->update($data);
