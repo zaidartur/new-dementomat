@@ -125,6 +125,12 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    // 'serializable_classes' => false,
+    'serializable_classes' => [
+        // Needed by Laravel Pulse.
+        Illuminate\Support\Collection::class,
+        stdClass::class,
+        Carbon\CarbonImmutable::class,
+    ],
 
 ];

@@ -21,6 +21,7 @@ class PermissionSeeder extends Seeder
             'update username pengguna',
             'update password pengguna',
             'hapus pengguna',
+            'reaktivasi pengguna',
             'view keluarga',
             'simpan keluarga',
             'update keluarga',

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CekDahakController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontakController;
+use App\Http\Controllers\MobileUtilityController;
 use App\Http\Controllers\PantauanObatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkriningController;
@@ -24,12 +25,15 @@ Route::prefix('/')->middleware('auth')->group(function() {
             Route::get('detail-pengguna/{uid}', [UserController::class, 'detail_pengguna'])->name('pengguna.detail');
             Route::get('tabel-pengguna', [UserController::class, 'ss_pengguna'])->name('pengguna.ss');
         });
+        Route::post('edit-pengguna', [UserController::class, 'edit_pengguna'])->name('pengguna.edit')->middleware('permission:update pengguna');
         Route::post('update-pengguna', [UserController::class, 'update_pengguna'])->name('pengguna.update')->middleware('permission:update pengguna');
         Route::post('update-username', [UserController::class, 'update_username_pengguna'])->name('pengguna.username')->middleware('permission:update username pengguna');
         Route::post('update-password', [UserController::class, 'update_password_pengguna'])->name('pengguna.password')->middleware('permission:update password pengguna');
         Route::post('hapus-pengguna', [UserController::class, 'hapus_pengguna'])->name('pengguna.hapus')->middleware('permission:hapus pengguna');
+        Route::post('reaktivasi-pengguna', [UserController::class, 'reactivate_pengguna'])->name('pengguna.reaktivasi')->middleware('permission:reaktivasi pengguna');
 
         Route::post('simpan-keluarga', [UserController::class, 'simpan_keluarga'])->name('pengguna.keluarga.simpan')->middleware('permission:simpan keluarga');
+        Route::post('edit-keluarga', [UserController::class, 'edit_keluarga'])->name('pengguna.keluarga.edit')->middleware('permission:update keluarga');
         Route::post('update-keluarga', [UserController::class, 'update_keluarga'])->name('pengguna.keluarga.update')->middleware('permission:update keluarga');
         Route::post('hapus-keluarga', [UserController::class, 'hapus_keluarga'])->name('pengguna.keluarga.hapus')->middleware('permission:hapus keluarga');
     });
@@ -56,6 +60,17 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::post('simpan', [KontakController::class, 'simpan'])->name('kontak.simpan')->middleware('permission:simpan kontak');
         Route::post('update', [KontakController::class, 'update'])->name('kontak.update')->middleware('permission:update kontak');
         Route::post('hapus', [KontakController::class, 'hapus'])->name('kontak.hapus')->middleware('permission:hapus kontak');
+    });
+
+    Route::prefix('utility/')->group(function() {
+        Route::get('/data-faskes', [MobileUtilityController::class, 'data_faskes']);
+        Route::get('/data-kecamatan', [MobileUtilityController::class, 'data_kecamatan']);
+        Route::get('/data-desa', [MobileUtilityController::class, 'data_desa']);
+        Route::get('/data-desa-kecamatan/{kec}', [MobileUtilityController::class, 'data_desa_by_kecamatan']);
+        Route::get('/data-kontak', [MobileUtilityController::class, 'data_kontak']);
+        Route::get('/data-video', [MobileUtilityController::class, 'data_youtube']);
+        Route::get('/data-slider', [MobileUtilityController::class, 'data_slider']);
+        Route::get('/data-berita', [MobileUtilityController::class, 'data_berita']);
     });
 });
 

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataKeluarga;
+use App\Models\DataSesiSkrining;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -27,12 +29,70 @@ class UserController extends Controller
 
     public function detail_pengguna($uid)
     {
-        $user = User::with(['detail', 'keluarga'])->where('uuid', $uid)->whereNull('deleted_at')->first();
+        $user = User::with(['detail', 'keluarga', 'detail.kecamatan', 'detail.desa', 'detail.faskes', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes'])->where('uuid', $uid)->whereNull('deleted_at')->first();
         if (!$user) {
             return send_400('Gagal mengakses data user. Atau mungkin user tidak data di database.');
         }
 
-        return send_200('Data user ' . $user->name, $user);
+        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc,id_faskes,jenkel', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
+                    ->whereNull('deleted_at')
+                    ->whereHas('keluarga', function($query) use ($uid) {
+                        $query->where('parent_user', $uid)
+                            ->orWhere('uid_keluarga', $uid);
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10);
+        
+        $formattedHistory = $history->getCollection()->map(function ($session) {
+            return [
+                'uid_sesi'  => $session->uid_sesi,
+                'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
+                'lokasi'    => $session->location,
+                'user'      => [
+                    'uid_keluarga'  => $session->keluarga->uid_keluarga,
+                    'nama'      => $session->keluarga->nama_lengkap,
+                    'hubungan'  => $session->keluarga->status_keluarga,
+                    'usia_saat_tes'  => $session->umur_saat_skrining,
+                    'jenis_kelamin'  => $session->keluarga->jenkel,
+                    'status_tbc'=> $session->keluarga->status_tbc ?? 'Belum ada status'
+                ],
+                'kategori'  => $session->kategori->nama_kategori,
+                'status_rujuk' => $session->triggered_rule_id ? true : false,
+                'rekomendasi'  => $session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman. Tetap jaga kesehatan dan pola hidup bersih.',
+                'kontak'    => $session->keluarga->faskes->kontak ?? [],
+            ];
+        });
+
+        $history->setCollection($formattedHistory);
+        $data = [
+            'user'  => $user,
+            'logs'  => $history,
+        ];
+
+        return send_200('Data user ' . $user->name, $data);
+    }
+
+    public function edit_pengguna(Request $request)
+    {
+        $request->validate([
+            'uid'   => 'required|string|exists:users,uuid'
+        ]);
+
+        $detail = User::with(['detail', 'detail.kecamatan', 'detail.desa', 'detail.faskes'])->where('uuid', $request->uid)->whereNull('deleted_at')->first();
+        if (!$detail) return send_400('ID pengguna tidak ditemukan.');
+
+        $data = [
+            'detail'    => $detail,
+            'kecamatan' => Kecamatan::all(),
+            'faskes'    => Faskes::all(),
+        ];
+
+        return send_200('Data user ' . $detail->name, $data);
+    }
+
+    public function update_pengguna(Request $request)
+    {
+        return 'oke';
     }
 
     public function update_username_pengguna(Request $request)
@@ -118,6 +178,11 @@ class UserController extends Controller
         //
     }
 
+    public function edit_keluarga($uid)
+    {
+        //
+    }
+
     public function update_keluarga(Request $request)
     {
         //
@@ -188,7 +253,7 @@ class UserController extends Controller
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Lihat Detail</span>
+                                    <span class="flex items-center gap-1.5">Lihat Detail & Keluarga</span>
                                 </span>
                             </a>
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_edit(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
@@ -197,7 +262,7 @@ class UserController extends Controller
                                     <path d="m15 5 4 4"></path>
                                 </svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Edit Pengguna</span>
+                                    <span class="flex items-center gap-1.5">Edit Data Pengguna</span>
                                 </span>
                             </a>
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-destructive" onclick="_delete(`' .$value->uuid. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
@@ -208,7 +273,7 @@ class UserController extends Controller
                                 </svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
                                     <span class="flex items-center gap-1.5">
-                                        Hapus Pengguna
+                                        Deaktivasi Pengguna
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"class="lucide lucide-triangle-alert text-yellow-500 size-4" aria-hidden="true">
                                             <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
                                             <path d="M12 9v4"></path>

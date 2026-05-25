@@ -10,6 +10,7 @@ use App\Models\PantauanBeratBadan;
 use App\Models\PantauanObat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PantauanObatController extends Controller
 {
@@ -39,6 +40,7 @@ class PantauanObatController extends Controller
 
         // berat badan
         $berat = PantauanBeratBadan::where('uid_keluarga', $user->uid_keluarga)->orderBy('bulan_ke')->get()->keyBy('bulan_ke');
+        $last_bulan = PantauanBeratBadan::where('uid_keluarga', $user->uid_keluarga)->orderBy('bulan_ke', 'desc')->first();
         $data_berat = [];
         $label_berat = [];
         for ($i=1; $i < 7; $i++) { 
@@ -54,19 +56,17 @@ class PantauanObatController extends Controller
         }
 
 
-        $bulan_ke   = $request->query('bulan_ke', 1);
+        $bulan_ke   = $request->input('bulan_ke', ($last_bulan->bulan_ke ?? 1));
         $tgl_mulai_obat = Carbon::parse($user->tgl_mulai_obat);
-        $periode_mulai  = $tgl_mulai_obat->copy()->addMonths($bulan_ke - 1);
+        $periode_mulai  = $tgl_mulai_obat->copy()->addMonths(intval($bulan_ke) - 1);
         $jml_hari   = 30;
         $periode_akhir  = $periode_mulai->copy()->addDays($jml_hari - 1);
-
-        // $bln_awal   = Carbon::now()->startOfMonth();
-        // $bln_akhir  = Carbon::now()->endOfMonth();
-        // $jml_hari   = $bln_awal->daysInMonth();
 
         $obat = PantauanObat::where('uid_keluarga', $request->uid)
                 ->whereBetween('tanggal', [$periode_mulai->format('Y-m-d'), $periode_akhir->format('Y-m-d')])
                 ->get()->keyBy('tanggal');
+        
+        if (count($obat) < 1) return send_400('Data log pantauan obat belum ada.');
         
         $heatmap_data = [
             'Mual'      => [],
@@ -93,6 +93,15 @@ class PantauanObatController extends Controller
             } else {
                 $fasePengobatan = 'Masa Pengobatan Standar Selesai (Evaluasi)';
             }
+
+            $obat->transform(function ($log) use ($tgl_mulai) {
+                $tgl_log = Carbon::parse($log->tanggal)->startOfDay();
+                $log->hari_ke   = $tgl_mulai->diffInDays($tgl_log) + 1;
+                $log->bulan_ke  = intval($tgl_mulai->diffInMonths($tgl_log)) + 1;
+                $log->translated_date = Carbon::parse($log->tanggal)->locale('id')->translatedFormat('d F Y');
+
+                return $log;
+            });
         }
 
         for ($tgl=0; $tgl < $jml_hari; $tgl++) { 
@@ -180,10 +189,15 @@ class PantauanObatController extends Controller
                 'berat'     => ['data' => $data_berat, 'label' => $label_berat],
                 'series'    => $series_data,
                 'summary'   => $summary,
-                'durasi'    => ['hari_ke' => $hariKe, 'fase' => $fasePengobatan],
-                'riwayat'   => $obat->sortByDesc('tanggal'),
+                'durasi'    => ['bulan_ke' => $last_bulan->bulan_ke ?? 0, 'hari_ke' => $hariKe, 'fase' => $fasePengobatan],
+                'riwayat'   => $obat->sortBy('tanggal')->values(),
             ]
         );
+    }
+
+    public function heatmap_monthly(Request $request)
+    {
+        //
     }
 
     public function ss_obat()

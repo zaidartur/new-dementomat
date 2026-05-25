@@ -221,6 +221,7 @@ class MobileSkriningController extends Controller
                     'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
                     'lokasi'    => $request->lokasi,
                     'user'      => [
+                        'uid_keluarga'  => $session->keluarga->uid_keluarga,
                         'nama'      => $session->keluarga->nama_lengkap,
                         'hubungan'  => $session->keluarga->status_keluarga,
                         'usia_saat_tes' => $session->umur_saat_skrining,
@@ -252,6 +253,7 @@ class MobileSkriningController extends Controller
                 'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
                 'lokasi'    => $session->location,
                 'user'      => [
+                    'uid_keluarga'  => $session->keluarga->uid_keluarga,
                     'nama'      => $session->keluarga->nama_lengkap,
                     'hubungan'  => $session->keluarga->status_keluarga,
                     'usia_saat_tes'  => $session->umur_saat_skrining,

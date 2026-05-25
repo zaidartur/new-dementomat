@@ -205,7 +205,7 @@
                         @endif
                         <div class="kt-form-actions">
                             <button type="button" class="kt-btn kt-btn-outline" data-kt-modal-dismiss="#modal_kontak">Batalkan</button>
-                            <button type="submit" class="kt-btn">Submit</button>
+                            <button type="submit" class="kt-btn bg-green-500">Submit</button>
                         </div>
                     </form>
                 </div>

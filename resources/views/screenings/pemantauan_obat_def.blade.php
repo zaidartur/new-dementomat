@@ -3,13 +3,9 @@
 @section('title', 'Pemantauan Obat')
 
 @section('css')
-{{-- <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" crossorigin> --}}
-
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-</style>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
 <style>
     .ibm-plex-mono-thin {
@@ -253,8 +249,6 @@
     <div class="kt-modal-content w-full ">
         <div class="kt-modal-header">
             <h3 class="kt-modal-title" id="title_modal">Detail Pemantauan Obat</h3>
-            {{-- <button class="kt-btn kt-btn-primary kt-btn-sm kt-btn-ghost" onclick="captureFullPage()">Download Gambar</button> --}}
-
             <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
                     <path d="M18 6 6 18"></path>
@@ -264,75 +258,90 @@
         </div>
         <div class="kt-modal-body">
             <div class="rounded-lg bg-muted w-full grow h-auto p-5">
-
-                <div class="flex flex-wrap gap-4 mb-5 justify-around rounded-lg border border-border bg-card p-5">
-                    <div class="w-[45%] min-h-[500px]">
-                        <h5 class="text-lg font-bold">Biodata</h5>
+                <div class="flex flex-wrap gap-4 mb-5 rounded-lg border border-border bg-card p-5">
+                    {{-- <h3 class="font-bold w-full">Biodata</h3> --}}
+                    <div class="w-[47%] mb-3">
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Nama Lengkap</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="nama">Lorem ipsum</label>
+                            {{-- <input type="text" class="kt-input w-[55%] ibm-plex-mono-semibold" value="Lorem ipsum" id="nama" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">NIK</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="nik"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="nik" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Telepon</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="telepon"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="telepon" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Alamat Sekarang</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="alamat"></label>
+                            {{-- <textarea name="alamat" id="alamat" class="kt-textarea w-[55%]" cols="30" rows="4" readonly></textarea> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Desa/Kelurahan</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="desa"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="desa" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Kecamatan</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="kecamatan"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="kecamatan" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Faskes</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="faskes"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="faskes" readonly /> --}}
                         </div>
+                    </div>
+                    <div class="w-[47%]">
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Tanggal Lahir</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="tgl_lahir"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="tgl_lahir" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Jenis Kelamin</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="jenkel"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="jenkel" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Status di Keluarga</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="status"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="status" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Status TBC</label>
                             <label for="" class="w-auto kt-badge kt-badge-warning kt-badge-light ibm-plex-mono-medium" id="tbc"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="tbc" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Tanggal Awal Obat</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="tgl_awal"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="tgl_awal" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Hari ke</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="hari_ke"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="tgl_awal" readonly /> --}}
                         </div>
                         <div class="w-full flex">
                             <label for="" class="w-[35%] ibm-plex-mono-regular">Fase</label>
                             <label for="" class="w-[55%] ibm-plex-mono-medium" id="fase"></label>
+                            {{-- <input type="text" class="kt-input w-[55%]" value="" id="tgl_awal" readonly /> --}}
                         </div>
                     </div>
-                    <div class="w-[45%] min-h-[500px]" id="chart_weight"></div>
                 </div>
 
                 <div class="flex flex-wrap gap-4 mb-5 justify-around rounded-lg border border-border bg-card p-5">
+                    <div class="w-[45%] h-[500px]" id="chart_weight"></div>
                     <div class="w-[45%]">
                         <div class="flex flex-wrap w-full text-center justify-center">
                             <div class="w-[25%]">
-                                <select id="kt_durasi_bulan" class="kt-select kt-select-sm w-40 w-full" onchange="_isBulan(this.value)">
+                                <select id="kt_bulan" class="kt-select kt-select-sm w-40 w-full" onchange="_isBulan(this.value)">
                                     @for ($i = 1; $i < 7; $i++)
                                         <option value="{{ $i }}">Bulan ke {{ $i }}</option>
                                     @endfor
@@ -341,45 +350,14 @@
                         </div>
                         <div class="w-full h-[500px]" id="chart_obat"></div>
                     </div>
-                    <div id="content_summary" class="w-[45%]"></div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 mb-5 justify-around rounded-lg border border-border bg-card p-5">
+                    <div id="content_summary"></div>
                 </div>
 
                 <div class="flex flex-wrap gap-4 justify-around rounded-lg border border-border bg-card p-5">
-                    {{-- <div id="content_logs"></div> --}}
-                    <div class="mb-3 w-full text-center">
-                        <h5 class="text-lg font-bold">Riwayat Pemantauan Obat Bulan ke <span id="blnke"></span></h5>
-                    </div>
-                    <div id="kt_datatable_logs" class="kt-card-table relative" data-kt-datatable-page-size="30">
-                        <div class="kt-table-wrapper kt-scrollable">
-                            <table class="kt-table" data-kt-datatable-table="true">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="w-20" data-kt-datatable-column="tanggal">
-                                            <span class="kt-table-col">
-                                                <span class="kt-table-col-label">Tanggal</span>
-                                            </span>
-                                        </th>
-                                        <th scope="col" class="w-10" data-kt-datatable-column="hari">
-                                            <span class="kt-table-col">
-                                                <span class="kt-table-col-label">Hari Ke</span>
-                                            </span>
-                                        </th>
-                                        <th scope="col" class="w-10" data-kt-datatable-column="bulan">
-                                            <span class="kt-table-col">
-                                                <span class="kt-table-col-label">Bulan Ke</span>
-                                            </span>
-                                        </th>
-                                        <th scope="col" class="w-10" data-kt-datatable-column="keluhan">
-                                            <span class="kt-table-col">
-                                                <span class="kt-table-col-label">Gejala Awal</span>
-                                            </span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="content_logs"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div id="content_logs"></div>
                 </div>
             </div>
         </div>
@@ -389,7 +367,6 @@
 
 
 @section('js')
-
 <script>
     function ktResolveDocsDatatableApiUrl() {
         var path = "/penanganan/tabel-pemantauan"
@@ -601,9 +578,7 @@
 </script>
 
 <script>
-    let uidTmp = null
     function _detail(uid) {
-        uidTmp = uid
         $.ajax({
             url: "{{ route('obat.detail') }}",
             type: 'POST',
@@ -613,24 +588,16 @@
                 if (res.data) {
                     fetch_biodata(res.data.pengguna, res.data.durasi)
                     fetch_chart_weight(res.data.berat)
-                    fetch_chart_heatmap(res.data.series, res.data.durasi.bulan_ke ?? 0)
+                    fetch_chart_heatmap(res.data.series)
                     fetch_summary(res.data.summary, res.data.durasi)
-                    fetch_logs(res.data.riwayat, res.data.durasi.bulan_ke ?? 0)
-
-                    const selectBulanKe = document.querySelector('#kt_durasi_bulan');
-                    selectBulanKe.value = res.data.durasi.bulan_ke ?? null
-                    const selectInstance = KTSelect.getInstance(selectBulanKe)
-                    if (selectInstance) {
-                        selectInstance.update()
-                    }
                 }
-                new KTModal('#modal_detail').show()
             },
             error: function(xhr, status, error) {
                 console.log(error)
                 Swal.fire('Error', xhr.responseJSON.message, 'error')
             }
         })
+        new KTModal('#modal_detail').show()
     }
 
     function fetch_biodata(datas, durasi) {
@@ -647,8 +614,8 @@
             $('#status').html(datas.status_keluarga ?? '')
             $('#tbc').html(datas.status_tbc ?? '')
             $('#tgl_awal').html(datas.tgl_mulai_obat ?? '')
-            $('#hari_ke').html(durasi.hari_ke ?? 0)
-            $('#fase').html(durasi.fase ?? '')
+            $('#hari_ke').html(durasi.hari_ke)
+            $('#fase').html(durasi.fase)
         }
     }
 
@@ -742,7 +709,6 @@
     }
 
     function fetch_chart_heatmap(datas, bln = 1) {
-        $('#chart_obat').html('')
         var options = {
             series: datas,
             chart: {
@@ -854,58 +820,58 @@
     }
 
     function fetch_summary(datas, days) {
-        const mual = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const mual = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.mual}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.mual} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Mual</span>
                         </div>
                     </div>`
-        const pipis = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const pipis = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.pipis}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.pipis} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Pipis Merah</span>
                         </div>
                     </div>`
-        const pendengaran = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const pendengaran = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.pendengaran}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.pendengaran} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Pendengaran</span>
                         </div>
                     </div>`
-        const penglihatan = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const penglihatan = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.penglihatan}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.penglihatan} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Penglihatan</span>
                         </div>
                     </div>`
-        const pegal = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const pegal = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.pegal}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.pegal} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Pegal</span>
                         </div>
                     </div>`
-        const batuk = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const batuk = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.batuk}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.batuk} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Batuk</span>
                         </div>
                     </div>`
-        const demam = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+        const demam = `<div class="kt-card flex flex-col justify-between gap-6 min-w-[200px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <div class="w-7 mt-4 ms-5">&nbsp;</div>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-semibold text-mono">${datas.demam}x</span>
+                            <span class="text-3xl font-semibold text-mono">${datas.demam} kali</span>
                             <span class="text-sm font-normal text-secondary-foreground">Efek Demam</span>
                         </div>
                     </div>`
 
         let text = `<div class="">
-                        <h5 class="mb-3 font-bold w-full text-center text-lg">Akumulasi Efek Samping Obat (Hari ke-${days.hari_ke ?? 0})</h5>
+                        <h5 class="mb-3 font-bold w-full text-center text-lg">Efek Samping Obat (Hari ke-${days.hari_ke})</h5>
                         <div class="flex flex-row flex-wrap justify-center items-stretch gap-5 lg:gap-7.5 w-full">`
                                 
             text += mual + pipis + pendengaran + penglihatan + pegal + batuk + demam
@@ -915,51 +881,8 @@
         $('#content_summary').html(text)
     }
 
-    function fetch_logs(datas, durasi) {
-        $('#blnke').html(durasi)
-        let text = ''
-        if (datas && datas.length > 0) {
-            // for (let index = 0; index < 16; index++) {
-            datas.forEach((dt, i) => {
-                text += `
-                    <tr>
-                        <td>${dt.translated_date}</td>
-                        <td>${dt.hari_ke ?? ''}</td>
-                        <td>${dt.bulan_ke ?? ''}</td>
-                        <td>${dt.gejala_awal}</td>
-                    </tr>
-                `
-            });
-            // }
-        } else {
-            text = '<tr><td colspan="4"><span class="w-full text-center">Tidak ada data riwayat</span></td></tr>'
-        }
-
-        $('#content_logs').html(text)
-    }
-
     function _isBulan(id) {
-        if (uidTmp) {
-            $.ajax({
-                url: "{{ route('obat.detail') }}?bulan_ke=" + id,
-                type: 'POST',
-                data: {uid: uidTmp, bulan_ke: id},
-                dataType: 'JSON',
-                success: function(res) {
-                    if (res.data) {
-                        // fetch_biodata(res.data.pengguna, res.data.durasi)
-                        // fetch_chart_weight(res.data.berat)
-                        fetch_chart_heatmap(res.data.series, id)
-                        // fetch_summary(res.data.summary, res.data.durasi)
-                        fetch_logs(res.data.riwayat, id)
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(error)
-                    Swal.fire('Error', xhr.responseJSON.message, 'error')
-                }
-            })
-        }
+        Swal.fire('Notify', id, 'info')
     }
 </script>
 @endsection

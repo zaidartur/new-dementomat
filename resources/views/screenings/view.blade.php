@@ -55,7 +55,7 @@
                     Apply filter
                 </button>
 
-                <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm kt-btn-primary kt-btn-outline" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm bg-green-500" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                     <i class="ki-filled ki-folder-down text-md"></i>
                     Export Data
                     <span data-kt-tooltip-content="true" class="kt-tooltip">
