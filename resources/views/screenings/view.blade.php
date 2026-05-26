@@ -2,6 +2,98 @@
 
 @section('title', 'Hasil Skrining')
 
+@section('css')
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+</style>
+
+<style>
+    .ibm-plex-mono-thin {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 100;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-extralight {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 200;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-light {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 300;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-regular {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-medium {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-semibold {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-bold {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    .ibm-plex-mono-thin-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 100;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-extralight-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 200;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-light-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 300;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-regular-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-medium-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-semibold-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 600;
+        font-style: italic;
+    }
+
+    .ibm-plex-mono-bold-italic {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 700;
+        font-style: italic;
+    }
+</style>
+@endsection
+
 
 @section('content')
 <div class="kt-container-fixed">
@@ -134,6 +226,82 @@
                     </div>
                 </div>
                 <template><!--end:pagination--></template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_detail">
+    <div class="kt-modal-content w-min-[650px] h-auto">
+        <div class="kt-modal-header">
+            <h3 class="kt-modal-title" id="title_detail">Data Skrining</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg w-full grow">
+                <div class="p-2" id="content_div">
+                    <div data-kt-accordion="true" class="kt-accordion">
+                        <div data-kt-accordion-item="true" class="kt-accordion-item active">
+                            <button id="accordion_toggle_0" data-kt-accordion-toggle="true" aria-controls="accordion_content_0" class="kt-accordion-toggle">
+                                <span class="kt-accordion-title">Data Pribadi</span>
+                                <span aria-hidden="true" class="kt-accordion-indicator">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus kt-accordion-indicator-on" aria-hidden="true">
+                                        <path d="M5 12h14"></path>
+                                        <path d="M12 5v14"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus kt-accordion-indicator-off" aria-hidden="true"><path d="M5 12h14"></path></svg>
+                                </span>
+                            </button>
+                            <div class="kt-accordion-content" aria-labelledby="accordion_toggle_0" id="accordion_content_0">
+                                <div class="kt-accordion-wrapper" id="dt_user">
+                                    Reui embraces flexible licensing options that empower you to choose the
+                                    perfect fit for your project&#x27;s needs and budget.
+                                </div>
+                            </div>
+                        </div>
+                        <div data-kt-accordion-item="true" class="kt-accordion-item">
+                            <button id="accordion_toggle_1" data-kt-accordion-toggle="true" aria-controls="accordion_content_1" class="kt-accordion-toggle">
+                                <span class="kt-accordion-title">Detail Skrining</span>
+                                <span aria-hidden="true" class="kt-accordion-indicator">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus kt-accordion-indicator-on" aria-hidden="true">
+                                        <path d="M5 12h14"></path>
+                                        <path d="M12 5v14"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus kt-accordion-indicator-off" aria-hidden="true"><path d="M5 12h14"></path></svg>
+                                </span>
+                            </button>
+                            <div class="kt-accordion-content hidden" aria-labelledby="accordion_toggle_1" id="accordion_content_1">
+                                <div class="kt-accordion-wrapper flex flex-wrap w-full text-center justify-center" id="dt_skrining">
+                                    Reui embraces flexible licensing options that empower you to choose the
+                                    perfect fit for your project&#x27;s needs and budget.
+                                </div>
+                            </div>
+                        </div>
+                        <div data-kt-accordion-item="true" class="kt-accordion-item">
+                            <button id="accordion_toggle_2" data-kt-accordion-toggle="true" aria-controls="accordion_content_2" class="kt-accordion-toggle">
+                            <span class="kt-accordion-title">Data Cek Dahak</span>
+                            <span aria-hidden="true" class="kt-accordion-indicator">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus kt-accordion-indicator-on" aria-hidden="true">
+                                        <path d="M5 12h14"></path>
+                                        <path d="M12 5v14"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus kt-accordion-indicator-off" aria-hidden="true"><path d="M5 12h14"></path></svg>
+                                </span>
+                            </button>
+                            <div class="kt-accordion-content hidden" aria-labelledby="accordion_toggle_2" id="accordion_content_2">
+                                <div class="kt-accordion-wrapper" id="dt_dahak">
+                                    Reui embraces flexible licensing options that empower you to choose the
+                                    perfect fit for your project&#x27;s needs and budget.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -357,8 +525,36 @@
     }
 </script>
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+
     function _detail(uid) {
-        //
+        if (uid) {
+            $.ajax({
+                url: "{{ route('skrining.detail') }}",
+                type: 'POST',
+                data: {uid: uid},
+                dataType: 'JSON',
+                success: function(res) {
+                    console.log('info', res.data)
+
+                    $('#title_detail').html(`Detail: ${res.data.keluarga.nama_lengkap}`)
+                    fetch_user(res.data.keluarga)
+                    fetch_skrining(res.data.data_response, res.data.kategori, res.data.triggered_rule)
+                    fetch_dahak(res.data)
+
+                    new KTModal('#modal_detail').show()
+                },
+                error: function(xhr, status, error) {
+                    console.log(error)
+                    // Swal.fire('Error', xhr.responseJSON.message, 'error')
+                    _swal_alert('error', xhr.responseJSON.message)
+                }
+            })
+        }
     }
 
     function _reset_status(uid) {
@@ -381,6 +577,130 @@
             cancelButtonText: 'Batalkan',
             confirmButtonText: 'Konfirmasi'
         })
+    }
+
+    function fetch_user(data) {
+        let user = ''
+        if (data) {
+            user = `<div class="flex flex-wrap gap-4 mb-5 justify-around rounded-lg border border-border bg-card p-5">
+                        <div class="w-[45%]">
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Nama Lengkap</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="nama">${data.nama_lengkap}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">NIK</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="nik">${data.nik}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Telepon</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="telepon">${data.telepon}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Alamat Sekarang</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="alamat">${data.alamat}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Desa/Kelurahan</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="desa">${data.desa?.desakel_name}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Kecamatan</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="kecamatan">${data.kecamatan?.kec_name}</label>
+                            </div>
+                        </div>
+                        <div class="w-[45%]">
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Faskes</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="faskes">${data.faskes?.nama_faskes}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Tanggal Lahir</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="tgl_lahir">${data.tgl_lahir ? (new Date(data.tgl_lahir).toLocaleString('en-GB')) : ''}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Jenis Kelamin</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="jenkel">${data.jenkel === 'L' ? 'Laki-Laki' : (data.jenkel === 'P' ? 'Perempuan' : '')}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Status di Keluarga</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="status">${data.status_keluarga}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Status TBC</label>
+                                <label for="" class="w-auto kt-badge kt-badge-warning kt-badge-light ibm-plex-mono-medium" id="tbc">${data.status_tbc}</label>
+                            </div>
+                            <div class="w-full flex">
+                                <label for="" class="w-[35%] ibm-plex-mono-regular">Tanggal Awal Obat</label>
+                                <label for="" class="w-[55%] ibm-plex-mono-medium" id="tgl_awal">${data.tgl_awal_obat ?? ''}</label>
+                            </div>
+                        </div>
+                    </div>`
+        } else {
+            user = '<h5 class="w-full text-center">Tidak ada data.</h5>'
+        }
+
+        $('#dt_user').html(user)
+    }
+
+    function fetch_skrining(data, cat, rule) {
+        let list = ''
+        if (data) {
+            list = `<div class="kt-card w-[50%]">
+                        <div class="kt-card-header">
+                            <div class="kt-card-heading">
+                                <h2 class="kt-card-title">${cat.nama_kategori}</h2>
+                            </div>
+                            <div class="kt-card-toolbar"></div>
+                        </div>
+                        <div class="kt-card-content py-1">`
+
+            data.forEach(dt => {
+                list += `
+                            <div class="flex items-center justify-between gap-2 py-2 border-b border-border border-dashed last:border-none">
+                                <div class="flex items-center gap-3">
+                                    <div>
+                                        <a href="javascript:void(0)" class="text-sm font-medium text-foreground hover:text-primary">${dt.parameter.pertanyaan}</a>
+                                    </div>
+                                </div>
+                                <span class="kt-badge kt-badge-outline kt-badge-${dt.is_yes === 1 ? 'destructive' : 'primary'}">${dt.is_yes === 1 ? 'Ya' : 'Tidak'}</span>
+                            </div>`
+            });
+                            
+            list += `   </div>
+                        <div class="kt-card-footer justify-center">
+                            <button class="kt-link kt-link-underlined underline-dashed">
+                                ${rule.rekomendasi}
+                            </button>
+                        </div>
+                    </div>`
+        }
+
+        $('#dt_skrining').html(list)
+    }
+
+    function fetch_dahak(data) {
+        let tcm = ''
+        if (data && data.jenis_tcm) {
+            tcm = `<div class="kt-card w-[400px]">
+                        <div class="kt-card-content space-y-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-foreground">${data.jenis_tcm === 'mandiri' ? 'Tes Mandiri' : ('Tes di Faskes ' + data.keluarga.faskes.nama_faskes)}</h3>
+                                <p class="mt-1 text-sm text-muted-foreground">
+                                    Hasil Tes <span class="kt-badge kt-badge-sm kt-badge-${data.hasil_tcm === 'positive' ? 'destructive' : 'success'} capitalize">${data.hasil_tcm}</span>
+                                    <br><br>
+                                    Lihat file <a class="kt-link kt-link-underlined underline-dashed" href="{{ asset('') }}storage/dokumen_tcm/${data.file_tcm}" target="_blank">di sini</a>
+                                </p>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-muted-foreground">Tanggal Tes</span>
+                                <span class="font-medium text-foreground">${data.tgl_tcm}</span>
+                            </div>
+                        </div>
+                    </div>`
+        }
+
+        $('#dt_dahak').html(tcm)
     }
 </script>
 @endsection

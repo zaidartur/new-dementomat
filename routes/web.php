@@ -41,6 +41,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
     Route::prefix('skrining/')->group(function() {
         Route::get('view', [SkriningController::class, 'view'])->name('skrining')->middleware('permission:view hasil skrining');
         Route::get('data-skrining', [SkriningController::class, 'ss_skrining'])->name('skrining.ss')->middleware('permission:view hasil skrining');
+        Route::post('detail', [SkriningController::class, 'detail'])->name('skrining.detail')->middleware('permission:view hasil skrining');
     });
 
     Route::prefix('penanganan/')->group(function() {
@@ -52,6 +53,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat');
         Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss');
         Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail');
+        Route::post('update-status-pengguna', [PantauanObatController::class, 'update_status_akhir'])->name('obat.status');
     });
 
     Route::prefix('kontak/')->group(function() {

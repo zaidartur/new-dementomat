@@ -30,6 +30,18 @@ class SkriningController extends Controller
         return view('screenings.view', $data);
     }
 
+    public function detail(Request $request)
+    {
+        $request->validate([
+            'uid'   => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $detail = DataSesiSkrining::with(['keluarga', 'keluarga.faskes', 'keluarga.kecamatan', 'keluarga.desa', 'kategori', 'triggeredRule', 'dataResponse', 'dataResponse.parameter'])
+                ->where('uid_sesi', $request->uid)->first();
+        
+        return send_200('Data sesi skrining', $detail);
+    }
+
     public function reset_status(Request $request)
     {
         $request->validate([

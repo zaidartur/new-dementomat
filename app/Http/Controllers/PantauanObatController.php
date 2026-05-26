@@ -200,6 +200,21 @@ class PantauanObatController extends Controller
         //
     }
 
+    public function update_status_akhir(Request $request)
+    {
+        $request->validate([
+            'uid'   => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid)->whereNull('deleted_at')->first();
+        if (!$sesi) return send_400('ID sesi skrining tidak terdaftar.');
+
+        $save = DataKeluarga::where('uid_keluarga', $sesi->uid_keluarga)->update(['status_tbc' => 'Aman']);
+        if (!$save) return send_400('Gagal memperbarui status');
+
+        return send_200('Data berhasil diperbarui.');
+    }
+
     public function ss_obat()
     {
         $request = Request();

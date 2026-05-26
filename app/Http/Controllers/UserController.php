@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
@@ -230,7 +231,38 @@ class UserController extends Controller
 
     public function update_keluarga(Request $request)
     {
-        //
+        $request->validate([
+            'uid'       => 'required|string|exists:data_keluargas,uid_keluarga',
+            'nama'      => 'required|string|max:100',
+            'alamat'    => 'required|string',
+            'kec'       => 'required|numeric|exists:kecamatans,kec_id',
+            'desa'      => 'required|numeric|exists:desas,desakel_id',
+            'telepon'   => 'required|numeric|min_digits:10|max_digits:15|starts_with:62',
+            'dob'       => 'required|date',
+            'jenkel'    => 'required|in:L,P',
+            'status'    => 'required|string',
+            'faskes'    => 'required|string|exists:faskes,faskes_id'
+        ]);
+
+        $data = [
+            'nama_lengkap'  => $request->nama,
+            'alamat'        => $request->alamat,
+            'telepon'       => $request->telepon,
+            'tgl_lahir'     => Carbon::parse($request->dob)->format('Y-m-d'),
+            'jenkel'        => $request->jenkel,
+            'status_keluarga' => $request->status,
+            'kec_id'        => $request->kec,
+            'desakel_id'    => $request->desa,
+            'id_faskes'     => $request->faskes,
+        ];
+
+        $save = DataKeluarga::where('uid_keluarga', $request->uid)->whereNotNull('parent_user')->update($data);
+
+        if ($save) {
+            return redirect()->back()->with('success', 'Data berhasil diperbarui.');
+        } else {
+            return redirect()->back()->with('error', 'Data gagal diperbarui.');
+        }
     }
 
     public function hapus_keluarga(Request $request)

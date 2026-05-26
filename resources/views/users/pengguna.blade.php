@@ -832,7 +832,7 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Kecamatan:</label>
                                 <div class="kt-form-control">
-                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onclick="_set_desa(this.value)" required>
+                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onchange="_set_desa(this.value)" required>
                                         <option value="">Pilih Kecamatan</option>
                                         ${kec}
                                     </select>
@@ -958,7 +958,7 @@
                             faskes += `<option value="${df.faskes_id}" ${(user.id_faskes ? (df.faskes_id === user.id_faskes ? 'selected' : '') : '')}>${df.nama_faskes}</option>`
                         })
 
-                        let txt = `<input type="hidden" id="uid" name="uid" value="${res.data.detail.uuid}">`
+                        let txt = `<input type="hidden" id="uid" name="uid" value="${user.uid_keluarga}">`
                         txt += `
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Nama Lengkap:</label>
@@ -980,7 +980,7 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Kecamatan:</label>
                                 <div class="kt-form-control">
-                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onclick="_set_desa(this.value)" required>
+                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onchange="_set_desa(this.value)" required>
                                         <option value="">Pilih Kecamatan</option>
                                         ${kec}
                                     </select>
@@ -1072,6 +1072,20 @@
                 }
             })
         }
+    }
+
+    async function _set_desa(id) {
+        $('#desa').html('<option value="">Pilih Desa</option>')
+
+        const desa = await get_desa(id)
+        let list_desa = ''
+        if (desa && desa.data) {
+            desa.data.forEach(ds => {
+                list_desa += `<option value="${ds.desakel_id}">${ds.desakel_name}</option>`
+            })
+        }
+
+        $('#desa').append(list_desa)
     }
 
     function get_desa(id, desa_id = null) {

@@ -391,6 +391,7 @@
 @section('js')
 
 <script>
+    var datatable
     function ktResolveDocsDatatableApiUrl() {
         var path = "/penanganan/tabel-pemantauan"
         if (typeof window === 'undefined') {
@@ -518,7 +519,7 @@
                     delete datatableEl.instance;
                 }
             }
-            var datatable = new KTDataTable(datatableEl, {
+            datatable = new KTDataTable(datatableEl, {
                 apiEndpoint: ktResolveDocsDatatableApiUrl(),
                 requestMethod: 'GET',
                 requestHeaders: {
@@ -957,6 +958,35 @@
                 error: function(xhr, status, error) {
                     console.log(error)
                     Swal.fire('Error', xhr.responseJSON.message, 'error')
+                }
+            })
+        }
+    }
+
+    function _verifikasi(uid, name) {
+        if (uid) {
+            Swal.fire({
+                title: 'Ubah Status Akhir?',
+                html: 'Status akhir TBC user akan berganti menjadi <b>Aman</b>.',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Batalkan',
+                confirmButtonText: 'Konfirmasi'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('obat.status') }}",
+                        type: 'POST',
+                        data: {uid: uid},
+                        dataType: 'JSON',
+                        success: function (res) {
+                            Swal.fire('Sukses', res.message, 'success').then(function() { location.reload() })
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(error)
+                            Swal.fire('Error', xhr.responseJSON.message, 'error')
+                        }
+                    })
                 }
             })
         }
