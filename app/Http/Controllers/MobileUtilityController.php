@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Berita;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
 use App\Models\Kontak;
+use App\Models\Slider;
+use App\Models\Youtube;
 use Illuminate\Http\Request;
 
 class MobileUtilityController extends Controller
@@ -99,16 +102,22 @@ class MobileUtilityController extends Controller
 
     public function data_youtube()
     {
-        //
+        $lists = Youtube::where('status', 'active')->get();
+
+        return send_200('Daftar video', $lists);
     }
 
     public function data_slider()
     {
-        //
+        $lists = Slider::where('status', 'active')->get();
+
+        return send_200('Data slider', $lists);
     }
 
     public function data_berita()
     {
-        //
+        $lists = Berita::where('status', 'active')->get();
+
+        return send_200('Data berita', $lists);
     }
 }
