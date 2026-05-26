@@ -543,7 +543,7 @@
 
                     $('#title_detail').html(`Detail: ${res.data.keluarga.nama_lengkap}`)
                     fetch_user(res.data.keluarga)
-                    fetch_skrining(res.data.data_response, res.data.kategori, (res.data.triggered_rule ? res.data.triggered_rule.rekomendasi ?? 'Aman'))
+                    fetch_skrining(res.data.data_response, res.data.kategori, (res.data.triggered_rule ? res.data.triggered_rule.rekomendasi : 'Aman'))
                     fetch_dahak(res.data)
 
                     new KTModal('#modal_detail').show()
