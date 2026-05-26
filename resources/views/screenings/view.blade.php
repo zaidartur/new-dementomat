@@ -365,7 +365,7 @@
         Swal.fire({
             title: 'Reset Status TBC?',
             html: 'Data Status TBC Pengguna akan berganti menjadi <b>"Aman"</b> dan semua hasil skriningnya akan <span class="text-destructive"><b>dihapus</b></span>.',
-            icon: 'question',
+            icon: 'warning',
             showCancelButton: true,
             cancelButtonText: 'Batalkan',
             confirmButtonText: 'Konfirmasi'
@@ -376,7 +376,7 @@
         Swal.fire({
             title: 'Ubah Hasil Skrining?',
             html: 'Data hasil skrining ini akan <span class="text-destructive"><b>dihapus</b></span>, dan status TBC Pengguna akan berganti ke hasil skrining sebelumnya (apabila ada).',
-            icon: 'question',
+            icon: 'warning',
             showCancelButton: true,
             cancelButtonText: 'Batalkan',
             confirmButtonText: 'Konfirmasi'

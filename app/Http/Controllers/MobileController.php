@@ -57,12 +57,16 @@ class MobileController extends Controller
             'device_name' => 'required|string',
         ]);
 
-        $detail = DataKeluarga::where('nik', $request->nik)->first();
+        $detail = DataKeluarga::where('nik', $request->nik)->exists();
         if ($detail) {
             // throw ValidationException::withMessages([
             //     'nik' => ['NIK sudah terdata pada database. Cobalah untuk login.'],
             // ]);
             send_400('NIK sudah terdata pada database. Cobalah untuk login.');
+        }
+
+        if (User::where('email', $request->email)->exists()) {
+            return send_400('Alamat email sudah digunakan.');
         }
 
         $username = $this->generateUniqueUsername($request->nama);
@@ -97,6 +101,7 @@ class MobileController extends Controller
 
         // 3. Create the Sanctum token
         $token = $user->createToken($request->device_name)->plainTextToken;
+        $user->nik = $request->nik;
 
         // 4. Return the user and token
         return response()->json([

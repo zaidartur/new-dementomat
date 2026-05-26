@@ -53,7 +53,6 @@
                     <i class="ki-filled ki-filter text-md"></i>
                     Apply filter
                 </button>
-
             </div>
             <div id="kt_datatable_remote_filters" class="kt-card-table relative" data-kt-datatable-page-size="10">
                 <div class="kt-table-wrapper kt-scrollable">
@@ -312,7 +311,10 @@
         <div class="kt-modal-body">
             <div class="rounded-lg w-full grow h-full">
                 <div class="p-2">
-                    <form method="POST" id="form_edit" class="kt-form">@csrf</form>
+                    <form method="POST" id="form_edit" class="kt-form">
+                        @csrf
+                        <div id="content_form"></div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -777,7 +779,7 @@
 
     // let desa = []
     function _edit(uid) {
-        $('#form_edit').html('')
+        $('#content_form').html('')
         if (uid) {
             $.ajax({
                 url: "{{ route('pengguna.edit') }}",
@@ -810,7 +812,7 @@
 
                         let txt = `<input type="hidden" id="uid" name="uid" value="${res.data.detail.uuid}">`
                         txt += `
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Nama Lengkap:</label>
                                 <div class="kt-form-control">
                                     <div class="kt-input">
@@ -820,14 +822,14 @@
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi nama.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Alamat Sekarang:</label>
                                 <div class="kt-form-control">
                                     <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat}</textarea>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi alamat.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Kecamatan:</label>
                                 <div class="kt-form-control">
                                     <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onclick="_set_desa(this.value)" required>
@@ -837,17 +839,17 @@
                                 </div>
                                 <div class="kt-form-message">Mohon memilih kecamatan.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Desa:</label>
                                 <div class="kt-form-control">
-                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih desa..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                    <select class="kt-select" data-kt-select="true" id="desa" name="desa" data-kt-select-placeholder="Pilih desa..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
                                         <option value="">Pilih Desa</option>
                                         ${list_desa}
                                     </select>
                                 </div>
                                 <div class="kt-form-message">Mohon memilih desa.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">No. Telepon:</label>
                                 <div class="kt-form-control">
                                     <div class="kt-input">
@@ -857,7 +859,7 @@
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi no. telepon.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Tanggal Lahir:</label>
                                 <div class="kt-form-control">
                                     <div class="kt-input">
@@ -867,7 +869,7 @@
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi tanggal lahir.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Jenis Kelamin:</label>
                                 <div class="kt-form-control">
                                     <select class="kt-select" data-kt-select="true" id="jenkel" name="jenkel" data-kt-select-placeholder="Pilih jenis kelamin..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
@@ -878,7 +880,7 @@
                                 </div>
                                 <div class="kt-form-message">Mohon memilih jenis kelamin.</div>
                             </div>
-                            <div class="kt-form-item">
+                            <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Status Keluarga:</label>
                                 <div class="kt-form-control">
                                     <div class="kt-input">
@@ -907,7 +909,7 @@
                         $('#title_edit').html(`Edit Pengguna: ${user.nama_lengkap}`)
                         $('#form_edit').attr('action', "{{ route('pengguna.update') }}")
                         setTimeout(() => {
-                            $('#form_edit').append(txt)
+                            $('#content_form').append(txt)
                         }, 1000);
 
                         new KTModal('#modal_edit').show()
@@ -925,8 +927,150 @@
     }
 
     function _edit_fams(uid) {
+        $('#content_form').html('')
         if (uid) {
-            location.href = '/user/edit-kaluarga/' + uid
+            $.ajax({
+                url: "{{ route('pengguna.keluarga.edit') }}",
+                type: 'POST',
+                data: {uid: uid},
+                dataType: 'JSON',
+                success: async function(res) {
+                    try {
+                        const user = res.data.detail
+                        const data_faskes = res.data.faskes
+                        const data_kec = res.data.kecamatan
+
+                        let kec = null
+                        data_kec.forEach(dk => {
+                            kec += `<option value="${dk.kec_id}" ${user.kec_id ? (dk.kec_id === user.kec_id ? 'selected' : '') : ''}>${dk.kec_name}</option>`
+                        })
+
+                        const desa = user.kec_id ? await get_desa(user.kec_id, user.desakel_id) : ''
+                        let list_desa = ''
+                        if (desa && desa.data) {
+                            desa.data.forEach(ds => {
+                                list_desa += `<option value="${ds.desakel_id}" ${user.desakel_id ? (ds.desakel_id === user.desakel_id ? 'selected' : '') : ''}>${ds.desakel_name}</option>`
+                            })
+                        }
+
+                        let faskes = ''
+                        data_faskes.forEach(df => {
+                            faskes += `<option value="${df.faskes_id}" ${(user.id_faskes ? (df.faskes_id === user.id_faskes ? 'selected' : '') : '')}>${df.nama_faskes}</option>`
+                        })
+
+                        let txt = `<input type="hidden" id="uid" name="uid" value="${res.data.detail.uuid}">`
+                        txt += `
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Nama Lengkap:</label>
+                                <div class="kt-form-control">
+                                    <div class="kt-input">
+                                        <i class="ki-filled ki-subtitle text-lg"></i>
+                                        <input type="text" class="kt-input" id="nama" name="nama" placeholder="Nama Lengkap" maxlength="100" value="${user.nama_lengkap}" required autofocus />
+                                    </div>
+                                </div>
+                                <div class="kt-form-message">Mohon mengisi nama.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Alamat Sekarang:</label>
+                                <div class="kt-form-control">
+                                    <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat}</textarea>
+                                </div>
+                                <div class="kt-form-message">Mohon mengisi alamat.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Kecamatan:</label>
+                                <div class="kt-form-control">
+                                    <select class="kt-select" data-kt-select="true" id="kec" name="kec" data-kt-select-placeholder="Pilih kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onclick="_set_desa(this.value)" required>
+                                        <option value="">Pilih Kecamatan</option>
+                                        ${kec}
+                                    </select>
+                                </div>
+                                <div class="kt-form-message">Mohon memilih kecamatan.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Desa:</label>
+                                <div class="kt-form-control">
+                                    <select class="kt-select" data-kt-select="true" id="desa" name="desa" data-kt-select-placeholder="Pilih desa..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                        <option value="">Pilih Desa</option>
+                                        ${list_desa}
+                                    </select>
+                                </div>
+                                <div class="kt-form-message">Mohon memilih desa.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">No. Telepon:</label>
+                                <div class="kt-form-control">
+                                    <div class="kt-input">
+                                        <i class="ki-filled ki-subtitle text-lg"></i>
+                                        <input type="number" class="kt-input" id="telepon" name="telepon" placeholder="628xxx" value="${user.telepon}" required />
+                                    </div>
+                                </div>
+                                <div class="kt-form-message">Mohon mengisi no. telepon.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Tanggal Lahir:</label>
+                                <div class="kt-form-control">
+                                    <div class="kt-input">
+                                        <i class="ki-filled ki-subtitle text-lg"></i>
+                                        <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="${user.tgl_lahir}" required />
+                                    </div>
+                                </div>
+                                <div class="kt-form-message">Mohon mengisi tanggal lahir.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Jenis Kelamin:</label>
+                                <div class="kt-form-control">
+                                    <select class="kt-select" data-kt-select="true" id="jenkel" name="jenkel" data-kt-select-placeholder="Pilih jenis kelamin..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="L" ${user.jenkel === 'L' ? 'selected' : ''}>Laki-Laki</option>
+                                        <option value="P" ${user.jenkel === 'P' ? 'selected' : ''}>Perempuan</option>
+                                    </select>
+                                </div>
+                                <div class="kt-form-message">Mohon memilih jenis kelamin.</div>
+                            </div>
+                            <div class="kt-form-item mb-3">
+                                <label class="kt-form-label">Status Keluarga:</label>
+                                <div class="kt-form-control">
+                                    <div class="kt-input">
+                                        <i class="ki-filled ki-subtitle text-lg"></i>
+                                        <input type="text" class="kt-input" id="status" name="status" placeholder="Status di keluarga" maxlength="100" value="${user.status_keluarga}" required />
+                                    </div>
+                                </div>
+                                <div class="kt-form-message">Mohon mengisi status keluarga.</div>
+                            </div>
+                            <div class="kt-form-item mb-5">
+                                <label class="kt-form-label">Faskes:</label>
+                                <div class="kt-form-control">
+                                    <select class="kt-select" data-kt-select="true" id="faskes" name="faskes" data-kt-select-placeholder="Pilih faskes..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                        <option value="">Pilih Faskes</option>
+                                        ${faskes}
+                                    </select>
+                                </div>
+                                <div class="kt-form-message">Mohon memilih faskes.</div>
+                            </div>
+                            <div class="kt-form-actions w-full">
+                                <button type="button" class="kt-btn kt-btn-outline" data-kt-modal-dismiss="#modal_kontak">Batalkan</button>
+                                <button type="submit" class="kt-btn bg-green-500">Submit</button>
+                            </div>
+                            `
+
+                        $('#title_edit').html(`Edit Keluarga: ${user.nama_lengkap}`)
+                        $('#form_edit').attr('action', "{{ route('pengguna.keluarga.update') }}")
+                        setTimeout(() => {
+                            $('#content_form').append(txt)
+                        }, 1000);
+
+                        new KTModal('#modal_edit').show()
+                    } catch (err) {
+                        console.log(err)
+                        return false
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('err', error, xhr)
+                    Swal.fire('Error', xhr.responseJSON.message, 'error')
+                }
+            })
         }
     }
 
@@ -995,5 +1139,6 @@
 
         return age + ' tahun';
     }
+
 </script>
 @endsection

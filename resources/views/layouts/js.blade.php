@@ -45,3 +45,34 @@
     }
 </script>
 <!-- End of Theme Mode -->
+
+<script>
+    function _swal_alert(icon, title) {
+        Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        }).fire({
+            icon: icon,
+            title: title
+        })
+    }
+
+    @if (session('error'))
+        setTimeout(() => {
+            _swal_alert('error', "{{ session('error') }}")
+        }, 1000);
+    @endif
+
+    @if (session('success'))
+        setTimeout(() => {
+            _swal_alert('success', "{{ session('success') }}")
+        }, 1000);
+    @endif
+</script>

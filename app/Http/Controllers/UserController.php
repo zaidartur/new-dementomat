@@ -92,7 +92,39 @@ class UserController extends Controller
 
     public function update_pengguna(Request $request)
     {
-        return 'oke';
+        $request->validate([
+            'uid'       => 'required|string|exists:users,uuid',
+            'nama'      => 'required|string|max:100',
+            'alamat'    => 'required|string',
+            'kec'       => 'required|numeric|exists:kecamatans,kec_id',
+            'desa'      => 'required|numeric|exists:desas,desakel_id',
+            'telepon'   => 'required|numeric|min_digits:10|max_digits:15|starts_with:62',
+            'dob'       => 'required|date',
+            'jenkel'    => 'required|in:L,P',
+            'status'    => 'required|string',
+            'faskes'    => 'required|string|exists:faskes,faskes_id'
+        ]);
+
+        User::where('uuid', $request->uid)->update(['name' => $request->nama]);
+        $data = [
+            'nama_lengkap'  => $request->nama,
+            'alamat'        => $request->alamat,
+            'telepon'       => $request->telepon,
+            'tgl_lahir'     => Carbon::parse($request->dob)->format('Y-m-d'),
+            'jenkel'        => $request->jenkel,
+            'status_keluarga' => $request->status,
+            'kec_id'        => $request->kec,
+            'desakel_id'    => $request->desa,
+            'id_faskes'     => $request->faskes,
+        ];
+
+        $save = DataKeluarga::where('uid_keluarga', $request->uid)->whereNull('parent_user')->update($data);
+
+        if ($save) {
+            return redirect()->back()->with('success', 'Data berhasil diperbarui.');
+        } else {
+            return redirect()->back()->with('error', 'Data gagal diperbarui.');
+        }
     }
 
     public function update_username_pengguna(Request $request)
@@ -178,9 +210,22 @@ class UserController extends Controller
         //
     }
 
-    public function edit_keluarga($uid)
+    public function edit_keluarga(Request $request)
     {
-        //
+        $request->validate([
+            'uid'   => 'required|string|exists:data_keluargas,uid_keluarga'
+        ]);
+
+        $detail = DataKeluarga::with(['kecamatan', 'desa', 'faskes'])->where('uid_keluarga', $request->uid)->whereNull('deleted_at')->first();
+        if (!$detail) return send_400('ID keluarga tidak ditemukan.');
+
+        $data = [
+            'detail'    => $detail,
+            'kecamatan' => Kecamatan::all(),
+            'faskes'    => Faskes::all(),
+        ];
+
+        return send_200('Data keluarga ' . $detail->name, $data);
     }
 
     public function update_keluarga(Request $request)
