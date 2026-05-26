@@ -543,7 +543,7 @@
 
                     $('#title_detail').html(`Detail: ${res.data.keluarga.nama_lengkap}`)
                     fetch_user(res.data.keluarga)
-                    fetch_skrining(res.data.data_response, res.data.kategori, res.data.triggered_rule)
+                    fetch_skrining(res.data.data_response, res.data.kategori, res.data.triggered_rule.rekomendasi ?? 'Aman')
                     fetch_dahak(res.data)
 
                     new KTModal('#modal_detail').show()
@@ -643,7 +643,7 @@
         $('#dt_user').html(user)
     }
 
-    function fetch_skrining(data, cat, rule) {
+    function fetch_skrining(data, cat, rekom) {
         let list = ''
         if (data) {
             list = `<div class="kt-card w-[50%]">
@@ -670,7 +670,7 @@
             list += `   </div>
                         <div class="kt-card-footer justify-center">
                             <button class="kt-link kt-link-underlined underline-dashed">
-                                ${rule.rekomendasi}
+                                ${rekom}
                             </button>
                         </div>
                     </div>`
