@@ -180,6 +180,7 @@ class PermissionSeeder extends Seeder
                 'view cek jantung lab', 
                 'view cek jantung nonlab', 
                 'view hasil skrining', 
+                'update hasil skrining',
                 'view cek dahak', 
                 'view pemantauan obat', 
                 'view profile', 'simpan profile', 'ubah profile',

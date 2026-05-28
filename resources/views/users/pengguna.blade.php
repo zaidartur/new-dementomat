@@ -1136,23 +1136,5 @@
         }
     }
 
-    function calculateAge(dobString) {
-        const today = new Date();
-        const birthDate = new Date(dobString);
-
-        // 1. Get the initial age difference based on years
-        let age = today.getFullYear() - birthDate.getFullYear();
-        
-        // 2. Get the month difference
-        const monthDifference = today.getMonth() - birthDate.getMonth();
-
-        // 3. If the birthday hasn't happened yet this year, subtract 1 from the age
-        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-
-        return age + ' tahun';
-    }
-
 </script>
 @endsection

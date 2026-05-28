@@ -37,6 +37,7 @@ return new class extends Migration
             $table->foreign('id_faskes')->references('faskes_id')->on('faskes');
 
             $table->string('status_tbc', '200')->nullable();
+            $table->text('catatan_perubahan_status')->nullable();
             $table->date('tgl_mulai_obat')->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->timestamps();

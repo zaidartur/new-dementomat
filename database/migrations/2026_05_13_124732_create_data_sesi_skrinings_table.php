@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreign('triggered_rule_id')->references('uid_rule')->on('data_rule_skrinings')->nullOnDelete()->cascadeOnUpdate();
 
             $table->string('location', '100')->nullable();
+            $table->enum('status_skrining', ['valid', 'batal'])->default('valid');
+            $table->text('alasan_batal')->nullable();
             $table->date('tgl_tcm')->nullable();
             $table->enum('hasil_tcm', ['positive', 'negative'])->nullable();
             $table->enum('jenis_tcm', ['mandiri', 'faskes'])->nullable();

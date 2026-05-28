@@ -161,21 +161,21 @@
                     <table class="kt-table" data-kt-datatable-table="true">
                         <thead>
                             <tr>
-                                <th scope="col" class="w-10" data-kt-datatable-column="nik">
+                                <th scope="col" class="w-20" data-kt-datatable-column="nik">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">NIK</span>
+                                        <span class="kt-table-col-label">Nama & NIK</span>
                                         {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
-                                <th scope="col" class="w-20" data-kt-datatable-column="nama">
+                                <th scope="col" class="w-10" data-kt-datatable-column="desakec">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Nama Lengkap</span>
+                                        <span class="kt-table-col-label">Desa, Kecamatan</span>
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="kec">
+                                <th scope="col" class="w-10" data-kt-datatable-column="faskes">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Kecamatan</span>
+                                        <span class="kt-table-col-label">Faskes</span>
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
@@ -185,22 +185,15 @@
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="hasil">
+                                <th scope="col" class="w-10" data-kt-datatable-column="skor">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Skor Gejala</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="hasil">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Hasil Skrining</span>
                                         <span class="kt-table-col-sort"></span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="w-20" data-kt-datatable-column="faskes">
-                                    <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Faskes</span>
-                                        <span class="kt-table-col-sort"></span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="status">
-                                    <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Status TBC</span>
-                                        {{-- <span class="kt-table-col-sort"></span> --}}
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="opsi">
@@ -235,7 +228,7 @@
     <div class="kt-modal-content w-min-[650px] h-auto">
         <div class="kt-modal-header">
             <h3 class="kt-modal-title" id="title_detail">Data Skrining</h3>
-            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_detail">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
                     <path d="M18 6 6 18"></path>
                     <path d="m6 6 12 12"></path>
@@ -302,6 +295,110 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_detail_user">
+    <div class="kt-modal-content w-[900px] h-auto">
+        <div class="kt-modal-header">
+            <div class="kt-modal-title">
+                <h3 class="kt-modal-title" id="title_user">Lembar Hasil Skrining</h3>
+                <p class="text-xs text-slate-400 mt-0.5">ID Sesi: <span id="title_id">SS-20260521-0004</span></p>
+            </div>
+            
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_detail_user">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg w-full grow">
+                <div class="p-2 flex justify-center" id="content_div">
+
+                    <div class="w-full max-w-4xl max-h-[400vh] flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden transform scale-100 transition-all">
+                        <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-1 border-b md:border-b-0 md:border-r border-slate-300 pb-6 md:pb-0 md:pr-6">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Biodata Warga</h4>            
+                                <div class="space-y-4" id="bio_content">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Nama Lengkap</label>
+                                        <span class="block text-sm font-semibold text-slate-800 mt-0.5">Budi Utomo</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Nomor Induk Kependudukan (NIK)</label>
+                                        <span class="block text-sm font-mono font-medium text-slate-700 mt-0.5">332110xxxxxx0003</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Umur & Jenis Kelamin</label>
+                                        <span class="block text-sm text-slate-800 mt-0.5">42 Tahun / Laki-laki</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Alamat Rumah</label>
+                                        <span class="block text-sm text-slate-800 mt-0.5 leading-relaxed">Rt 03 / Rw 02, Kec. Demak, Kabupaten Demak</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Nomor Telepon</label>
+                                        <span class="block text-sm text-slate-800 mt-0.5">0812-3456-7890</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400">Faskes</label>
+                                        <span class="block text-sm text-slate-800 mt-0.5">Puskesmas Karanganyar</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 space-y-5">
+                                <div>
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Rekapitulasi Kuesioner Awal</h4>
+                                    <div class="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between" id="res_content">
+                                        <div>
+                                            <span class="text-xs text-slate-400 block font-medium">Kesimpulan Rekomendasi Sistem</span>
+                                            <span class="text-sm font-bold text-red-600 mt-0.5 block">Suspek TBC (Rujuk Pemeriksaan Dahak TCM)</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-slate-400 block font-medium">Akumulasi Skor</span>
+                                            <span class="text-xl font-extrabold text-slate-800 block">5 <span class="text-xs text-slate-400 font-normal">/ 7 Gejala</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="list_content">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Detail Jawaban Indikasi</h4>
+                                    <div class="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">
+                                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
+                                            <span class="text-sm text-slate-700 font-medium">1. Batuk berdahak secara terus menerus selama &ge; 2 Minggu?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
+                                            <span class="text-sm text-slate-700 font-medium">2. Mengalami demam meriang sub-febris lebih dari satu bulan?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
+                                            <span class="text-sm text-slate-700 font-medium">3. Terjadi penurunan berat badan drastis tanpa alasan jelas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
+                                            <span class="text-sm text-slate-700 font-medium">4. Mengeluarkan keringat berlebih di malam hari tanpa aktivitas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Tidak</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="kt-modal-footer">
+            <div></div>
+            <div class="flex gap-4">
+                <button class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -452,13 +549,35 @@
                 columns: {
                     // nik: { title: 'NIK' },
                     nik: {
-                        render: function (_value, row) {
-                            return `<span class="kt-badge" style="color: ${row.color}">${row.nik}</span>`
+                        render: function(_val, row) {
+                            return `
+                                <h5>${row.nama}</h5>
+                                <small>
+                                    <span class="kt-badge kt-badge-sm font-medium hover:bg-[#a4a5a6] transition-all cursor-pointer" style="color: ${row.color}" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start" onclick="_detail('${row.sesi}')">
+                                        ${row.nik}
+                                        <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                            <span class="flex items-center gap-1.5">Lihat Detail ${row.nama}</span>
+                                        </span>
+                                    </span>
+                                </small>
+                            `
                         }
                     },
-                    nama: { title: 'Nama Lengkap' },
-                    kec: { title: 'Kecamatan' },
+                    desakec: { 
+                        render: function(_val, row) {
+                            return `
+                                <small>${row.desa ?? ''}</small>, <br>
+                                ${row.kec ?? ''}
+                            `
+                        }
+                     },
+                    faskes: { title: 'Kecamatan' },
                     tanggal: { title: 'Tanggal Skrining' },
+                    skor : {
+                        render: function(_val, row) {
+                            return row.skor
+                        }
+                    },
                     // hasil: { title: 'Hasil Skrining' },
                     hasil: {
                         render: function(_val, row) {
@@ -471,8 +590,6 @@
                             }
                         }
                     },
-                    faskes: { title: 'Faskes' },
-                    status: { title: 'Status Terakhir' },
                     opsi: {
                         render: function (_value, row) {
                             return row.opsi
@@ -539,14 +656,13 @@
                 data: {uid: uid},
                 dataType: 'JSON',
                 success: function(res) {
-                    console.log('info', res.data)
 
-                    $('#title_detail').html(`Detail: ${res.data.keluarga.nama_lengkap}`)
-                    fetch_user(res.data.keluarga)
-                    fetch_skrining(res.data.data_response, res.data.kategori, (res.data.triggered_rule ? res.data.triggered_rule.rekomendasi : 'Aman'))
-                    fetch_dahak(res.data)
+                    $('#title_id').html(res.data.uid_sesi)
+                    user_fetch(res.data.keluarga, res.data.umur_saat_skrining)
+                    recap_fetch((res.data.triggered_rule ? res.data.triggered_rule.rekomendasi : 'Aman'), res.data.data_response, (res.data.triggered_rule ? 'red' : 'green'))
+                    indication_fetch(res.data.data_response, res.data.kategori.nama_kategori)
 
-                    new KTModal('#modal_detail').show()
+                    new KTModal('#modal_detail_user').show()
                 },
                 error: function(xhr, status, error) {
                     console.log(error)
@@ -570,12 +686,67 @@
 
     function _reset_hasil(uid) {
         Swal.fire({
-            title: 'Ubah Hasil Skrining?',
-            html: 'Data hasil skrining ini akan <span class="text-destructive"><b>dihapus</b></span>, dan status TBC Pengguna akan berganti ke hasil skrining sebelumnya (apabila ada).',
+            title: 'Batalkan Hasil Skrining',
+            html: 'Tindakan ini akan membatalkan status <strong>validitas</strong> skrining ini. Sistem akan otomatis meninjau ulang <strong>status TBC</strong> pengguna berdasarkan riwayat valid terdahulu.',
             icon: 'warning',
             showCancelButton: true,
             cancelButtonText: 'Batalkan',
-            confirmButtonText: 'Konfirmasi'
+            confirmButtonText: 'Saya mengerti',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+        }).then(function(res) {
+            if (res.isConfirmed) {
+                Swal.fire({
+                    html: '<span class="font-bold text-2xl">Tulis alasan pembatalan</span> (min. 5 karakter)',
+                    input: 'textarea',
+                    inputAttributes: { autocapitalize: "off", placeholder: 'Tulis disini..' },
+                    showCancelButton: true,
+                    cancelButtonText: 'Batalkan',
+                    confirmButtonText: "Konfirmasi",
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    showLoaderOnConfirm: true,
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return 'Mohon untuk mengisi alasan pembatalan';
+                        }
+                    },
+                    preConfirm: async (reason) => {
+                        const cancelButton = Swal.getCancelButton()
+                        if (cancelButton) {
+                            cancelButton.style.display = 'none'
+                        }
+
+                        try {
+                            if (!reason || reason.trim() === '') throw new Error("Mohon untuk mengisi alasan pembatalan")
+
+                            const response = await $.ajax({
+                                url: "{{ route('skrining.revisi') }}",
+                                type: 'POST',
+                                data: {uid: uid, alasan: reason},
+                                dataType: 'JSON',
+                            })
+
+                            return response
+                        } catch (error) {
+                            // Swal.showValidationMessage(`Permintaan gagal: ${err}`);
+                            const message = error.responseJSON?.message || error.responseJSON?.error
+                            const fallbackMessage = `Error ${error.status}: ${error.statusText}`
+
+                            if (cancelButton) {
+                                cancelButton.style.display = 'inline-block'
+                            }
+                            Swal.showValidationMessage(message || fallbackMessage)
+                            return false
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        console.log('res', result)
+                        Swal.fire('Berhasil', result.value.message, 'success').then(function() { location.reload() })
+                    }
+                })
+            }
         })
     }
 
@@ -701,6 +872,94 @@
         }
 
         $('#dt_dahak').html(tcm)
+    }
+
+    function user_fetch(user, age) {
+        let text = ''
+        if (user) {
+            text += `
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Nama Lengkap</label>
+                    <span class="block text-sm font-semibold text-slate-800 mt-0.5">${user.nama_lengkap}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Nomor Induk Kependudukan (NIK)</label>
+                    <span class="block text-sm font-mono font-medium text-slate-700 mt-0.5">${user.nik}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Umur (saat skrining) & Jenis Kelamin</label>
+                    <span class="block text-sm text-slate-800 mt-0.5">${age} Tahun / ${user.jenkel ? (user.jenkel === 'L' ? 'Laki-Laki' : 'Perempuan') : '-'}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Alamat Rumah</label>
+                    <span class="block text-sm text-slate-800 mt-0.5 leading-relaxed">${user.alamat}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Desa, Kecamatan</label>
+                    <span class="block text-sm text-slate-800 mt-0.5 leading-relaxed">${user.desa?.desakel_name}, ${user.kecamatan?.kec_name}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Status Keluarga</label>
+                    <span class="block text-sm text-slate-800 mt-0.5">${user.status_keluarga}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Nomor Telepon</label>
+                    <span class="block text-sm text-slate-800 mt-0.5">${user.telepon}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Faskes</label>
+                    <span class="block text-sm text-slate-800 mt-0.5">${user.faskes.nama_faskes}</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400">Status TBC</label>
+                    <span class="block text-sm text-slate-800 mt-0.5">${user.status_tbc}</span>
+                </div>
+            `
+        }
+
+        $('#bio_content').html(text)
+    }
+
+    function recap_fetch(res, skor, color) {
+        let text = ''
+        if (res && Array.isArray(skor)) {
+            const active = skor.filter(isyes => isyes.is_yes === 1).length ?? 0
+            text += `
+                <div>
+                    <span class="text-xs text-slate-400 block font-medium">Kesimpulan Rekomendasi Sistem</span>
+                    <span class="text-sm font-bold text-${color ?? 'slate'}-600 mt-0.5 block">${res}</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 block font-medium">Akumulasi Skor</span>
+                    <span class="text-xl font-extrabold text-slate-800 block">${active} <span class="text-xs text-slate-400 font-normal">/ ${skor.length ?? 0} Gejala</span></span>
+                </div>
+            `
+        }
+
+        $('#res_content').html(text)
+    }
+
+    function indication_fetch(lists, cat) {
+        let text = ''
+        if (Array.isArray(lists) && cat) {
+            text += `
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Detail Jawaban Indikasi <span class="text-slate-800">${cat}</span></h4>
+                    <div class="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full scroll-smooth h-max-[370px]">`
+
+            lists.forEach(ls => {
+                text += `
+                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
+                            <span class="text-sm text-slate-700 font-medium">${ls.parameter?.pertanyaan}</span>
+                            <span class="inline-flex items-center rounded-full bg-${ls.is_yes === 1 ? 'red' : 'emerald'}-100 px-2.5 py-0.5 text-xs font-semibold text-${ls.is_yes === 1 ? 'red' : 'emerald'}-800">${ls.is_yes === 1 ? 'Ya' : 'Tidak'}</span>
+                        </div>
+                `
+            })
+
+            text += `</div>
+            `
+        }
+
+        $('#list_content').html(text)
     }
 </script>
 @endsection

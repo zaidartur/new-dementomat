@@ -42,6 +42,56 @@ class SkriningController extends Controller
         return send_200('Data sesi skrining', $detail);
     }
 
+    public function revisi_skrining(Request $request)
+    {
+        $request->validate([
+            'uid'       => 'required|string|exists:data_sesi_skrinings,uid_sesi',
+            'alasan'    => 'required|string|min:5',
+        ], [
+            'uid.required'      => 'ID Sesi diperlukan',
+            'uid.exists'        => 'ID Sesi tidak terdaftar',
+            'alasan.required'   => 'Alasan pembatalan harus diisi.',
+            'alasan.min'        => 'Alasan terlalu pendek (minimal 5 karakter).'
+        ]);
+
+        return send_200('Sesi skrining berhasil dibatalkan. Status pengguna telah disesuaikan kembali.');
+
+        $sesi = DataSesiSkrining::where('uid_sesi', $request->uid)->first();
+        $user = $sesi->keluarga;
+
+        $sesiTerbaru = DataSesiSkrining::where('uid_keluarga', $sesi->uid_keluarga)->where('status_skrining', 'valid')->latest()->first();
+        if ($sesi->uid_sesi != $sesiTerbaru->uid_sesi) return send_400('Ditolak: Anda hanya dapat membatalkan data skrining yang paling terakhir/terbaru.');
+
+        $upd = $sesi->update(['status_skrining' => 'batal', 'alasan_batal' => $request->alasan]);
+        if (!$upd) return send_400('Gagal merubah status hasil skrining.');
+
+        $skriningValidTerakhir = DataSesiSkrining::where('uid_keluarga', $user->uid_keluarga)
+                                ->where('status_skrining', 'valid')
+                                ->where('uid_sesi', '!=', $sesi->uid_sesi)
+                                ->latest()->first();
+
+        if ($skriningValidTerakhir) {
+            if ($skriningValidTerakhir->hasil_tcm === 'positive') {
+                $statusBaru = 'Dalam Pengobatan';
+            } elseif ($skriningValidTerakhir->hasil_tcm === 'negative') {
+                $statusBaru = 'Aman';
+            } else {
+                $statusBaru = 'Wajib Menghubungi Kader / Petugas Puskesmas';
+            }
+        } else {
+            $statusBaru = null;
+        }
+
+        $save = $user->update([
+            'status_tbc'        => $statusBaru,
+            'tgl_mulai_obat'    => ($statusBaru == 'Dalam Pengobatan' ? $user->tgl_mulai_obat : null),
+            'catatan_perubahan_status'  => Carbon::now()->locale('id')->translatedFormat('d F Y') . " - Status disesuaikan karena Pembatalan Sesi Skrining ID:" . $sesi->uid_sesi,
+        ]);
+        if (!$save) return send_400('Gagal merubah status terbaru pada pengguna.');
+
+        return send_200('Sesi skrining berhasil dibatalkan. Status pengguna telah disesuaikan kembali.');
+    }
+
     public function reset_status(Request $request)
     {
         $request->validate([
@@ -64,7 +114,7 @@ class SkriningController extends Controller
                 })
                 ->orderBy('created_at')->whereNull('deleted_at')->count();
 
-        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,deleted_at', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa']);
+        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,deleted_at', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa'])->withCount(['isYes', 'isNo']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -125,7 +175,10 @@ class SkriningController extends Controller
 
             return $record;
         });
+        
         $data   = [];
+        $latestSessionIds = DataSesiSkrining::where('status_skrining', 'valid')->selectRaw('MAX(uid_sesi) AS uid')->groupBy('uid_keluarga')->pluck('uid')->toArray();
+        
         foreach ($result as $value) {
             $nik = $request->nik == 'show' ? ($value->keluarga->nik ?? '-') : (!empty($value->keluarga->nik) ? substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4) : '-');
             $data[] = [
@@ -138,30 +191,32 @@ class SkriningController extends Controller
                 'hasil'     => $value->triggered_rule_id ? $value->triggeredRule->rekomendasi : 'Aman',
                 'faskes'    => $value->keluarga->faskes->nama_faskes,
                 'status'    => $value->keluarga->status_tbc,
+                'sesi'      => $value->uid_sesi,
+                'skor'      => '<span class="text-red-500">' . ($value->is_yes_count . '</span> / ' . ($value->is_yes_count + $value->is_no_count)),
                 'opsi'      => '
                         <span class="inline-flex gap-2.5">
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Lihat Detail</span>
+                                    <span class="flex items-center gap-1.5">Lihat Detail '. $value->keluarga->nama_lengkap .'</span>
                                 </span>
-                            </a>
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_reset_status(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil" aria-hidden="true">
-                                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
-                                    <path d="m15 5 4 4"></path>
-                                </svg>
-                                <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Reset Status TBC</span>
-                                </span>
-                            </a>
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-destructive" onclick="_reset_hasil(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
-                                <i class="ki-filled ki-disconnect text-lg"></i>
-                                <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Ubah Hasil Skrining</span>
-                                </span>
-                            </a>
-                        </span>
+                            </a>'.
+                            ((!empty($value->triggeredRule)) ? 
+                                '<a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_reset_status(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                    <i class="ki-filled ki-update-file text-lg"></i>
+                                    <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                        <span class="flex items-center gap-1.5">Revisi Status TBC '. $value->keluarga->nama_lengkap .'</span>
+                                    </span>
+                                </a>' .
+                                (in_array($value->uid_sesi, $latestSessionIds) ? '
+                                <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-destructive" onclick="_reset_hasil(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                    <i class="ki-filled ki-cross-circle text-lg"></i>
+                                    <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                        <span class="flex items-center gap-1.5">Batalkan Skrining Ini</span>
+                                    </span>
+                                </a>' : '')
+                             : '') .
+                        '</span>
                 ',
             ];
         }

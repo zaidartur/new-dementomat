@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id', 'location', 'tgl_tcm', 'hasil_tcm', 'file_tcm', 'jenis_tcm'])]
+#[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id', 'location', 'tgl_tcm', 'hasil_tcm', 'file_tcm', 'jenis_tcm', 'status_skrining', 'alasan_batal'])]
 class DataSesiSkrining extends Model
 {
     /**
@@ -48,5 +48,25 @@ class DataSesiSkrining extends Model
     public function dataResponse(): HasMany
     {
         return $this->hasMany(DataResponseSkrining::class, 'sesi_uid', 'uid_sesi');
+    }
+
+    /**
+     * Get all of the isYes for the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function isYes(): HasMany
+    {
+        return $this->hasMany(DataResponseSkrining::class, 'sesi_uid', 'uid_sesi')->where('is_yes', 1);
+    }
+
+    /**
+     * Get all of the isNo for the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function isNo(): HasMany
+    {
+        return $this->hasMany(DataResponseSkrining::class, 'sesi_uid', 'uid_sesi')->where('is_yes', 0);
     }
 }
