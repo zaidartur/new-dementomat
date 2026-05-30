@@ -16,6 +16,9 @@ return new class extends Migration
             $table->uuid('uid_keluarga')->nullable();
             $table->foreign('uid_keluarga')->references('uid_keluarga')->on('data_keluargas')->nullOnDelete()->cascadeOnUpdate();
 
+            $table->uuid('uid_sesi')->nullable();
+            $table->foreign('uid_sesi')->references('uid_sesi')->on('data_sesi_skrinings')->nullOnDelete()->cascadeOnDelete();
+
             $table->date('tanggal');
             $table->text('gejala_awal')->nullable();
             $table->boolean('efek_mual');

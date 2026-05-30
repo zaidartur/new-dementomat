@@ -51,6 +51,16 @@ class DataSesiSkrining extends Model
     }
 
     /**
+     * Get all of the logHarian for the DataSesiSkrining
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function logHarian(): HasMany
+    {
+        return $this->hasMany(PantauanObat::class, 'uid_sesi', 'uid_sesi');
+    }
+
+    /**
      * Get all of the isYes for the DataSesiSkrining
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

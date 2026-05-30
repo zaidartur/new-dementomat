@@ -126,7 +126,7 @@ if (!function_exists('hslToHex')) {
     }
 }
 
-if (!function_exists('upload_tcm')) {
+if (!function_exists('upload_tcm_image')) {
     // sanitize image
     function upload_tcm_image($file, $uid) {
         try {
@@ -166,7 +166,7 @@ if (!function_exists('upload_tcm')) {
     }
 }
 
-if (!function_exists('upload_tcm')) {
+if (!function_exists('upload_tcm_pdf')) {
     function upload_tcm_pdf($file, $uid) {
         try {
             $sanitizer = new PdfSanitizer();
@@ -214,3 +214,9 @@ if (!function_exists('upload_tcm')) {
         }
     }
 }
+
+if (!function_exists('hasil_akhir_pengobatan')) {
+    function hasil_akhir_pengobatan() {
+        return ['Sembuh', 'Pengobatan Lengkap', 'Putus Berobat', 'Gagal', 'Meninggal'];
+    }
+};

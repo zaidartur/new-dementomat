@@ -190,7 +190,12 @@
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="kec">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Kecamatan</span>
+                                        <span class="kt-table-col-label">Desa, Kecamatan</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="faskes">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Faskes</span>
                                         <span class="kt-table-col-sort"></span>
                                     </span>
                                 </th>
@@ -205,20 +210,14 @@
                                         <span class="kt-table-col-label">Tgl Mulai Obat</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="obat">
+                                <th scope="col" class="w-10" data-kt-datatable-column="hari">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Log Terakhir</span>
+                                        <span class="kt-table-col-label">Hari ke</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="berat">
+                                <th scope="col" class="w-10" data-kt-datatable-column="persen">
                                     <span class="kt-table-col">
-                                        <span class="kt-table-col-label">BB Terakhir</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="w-20" data-kt-datatable-column="faskes">
-                                    <span class="kt-table-col">
-                                        <span class="kt-table-col-label">Faskes</span>
-                                        <span class="kt-table-col-sort"></span>
+                                        <span class="kt-table-col-label">Tingkat Kepatuhan</span>
                                     </span>
                                 </th>
                                 <th scope="col" class="w-10" data-kt-datatable-column="opsi">
@@ -253,9 +252,8 @@
     <div class="kt-modal-content w-full ">
         <div class="kt-modal-header">
             <h3 class="kt-modal-title" id="title_modal">Detail Pemantauan Obat</h3>
-            {{-- <button class="kt-btn kt-btn-primary kt-btn-sm kt-btn-ghost" onclick="captureFullPage()">Download Gambar</button> --}}
 
-            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_three">
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_detail">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
                     <path d="M18 6 6 18"></path>
                     <path d="m6 6 12 12"></path>
@@ -381,6 +379,50 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_confirm" data-kt-modal-backdrop-static="true">
+    <div class="kt-modal-content max-w-[400px] top-[10%]">
+        <div class="kt-modal-header">
+            {{-- <h3 class="kt-modal-title" id="title_confirm">Konfirmasi Status</h3> --}}
+            <div class="kt-modal-title">
+                <h3 class="kt-modal-title" id="title_user">Konfirmasi Status</h3>
+                <p class="text-sm text-slate-400 mt-0.5">Nama: <span id="title_confirm"></span></p>
+            </div>
+
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_confirm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg bg-muted w-full grow h-auto p-5">
+                <div class="kt-form-item">
+                    <div class="kt-form-control mb-1">
+                        <div class="grid gap-2.5">
+                            @foreach ($btn_list as $i => $item)
+                                <div class="flex items-center gap-2.5 transition-colors duration-200 rounded-md p-2 hover:bg-gray-200">
+                                    <input type="radio" class="kt-radio" id="isconfirm_{{ $i }}" name="confirm" {{ $i == 0 ? 'checked=""' : '' }} value="{{ $item }}" />
+                                    <label class="kt-label cursor-pointer transition-colors duration-200 hover:text-emerald-500" for="isconfirm_{{ $i }}">
+                                        {{ $item }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="kt-modal-footer">
+            <div></div>
+            <div class="flex gap-4">
+                <button class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#modal">Tutup</button>
+                <button class="kt-btn bg-emerald-400 hover:bg-emerald-600" onclick="_confirm()">Konfirmasi</button>
             </div>
         </div>
     </div>
@@ -539,16 +581,33 @@
                             `
                         }
                     },
-                    kec: { title: 'Kecamatan' },
+                    kec: { 
+                        render: function(_val, row) {
+                            return `
+                                <small>${row.desa}</small> <br>
+                                <strong>${row.kec}</strong>
+                            `
+                        }
+                    },
+                    faskes: { title: 'Faskes' },
                     tanggal: { title: 'Tanggal Skrining' },
                     mulai: { title: 'Tanggal Mulai' },
-                    obat: { title: 'Pemantauan Obat' },
-                    berat: { 
+                    hari: { 
                         render: function (_val, row) {
-                            return `${(row.berat === '-') ? '-' : (row.berat + ' Kg')}`
+                            return `${row.hari} / 180`
                         }
                      },
-                    faskes: { title: 'Faskes' },
+                    persen: { 
+                        render: function(_val, row) {
+                            return `
+                                <span class="kt-badge kt-badge-lg kt-badge-light kt-badge-${row.patuh_clr} w-[30%] cursor-pointer" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                                    ${row.persen}%
+                                    <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                        <span class="flex items-center gap-1.5">${row.patuh_lbl}</span>
+                                    </span>
+                                </span>`
+                        }
+                     },
                     opsi: {
                         render: function (_value, row) {
                             return row.opsi
@@ -603,6 +662,9 @@
 
 <script>
     let uidTmp = null
+    const modalConf = document.querySelector('#modal_confirm')
+    const mConfirm = KTModal.getInstance(modalConf)
+    
     function _detail(uid) {
         uidTmp = uid
         $.ajax({
@@ -963,7 +1025,7 @@
         }
     }
 
-    function _verifikasi(uid, name) {
+    function __verifikasi(uid, name) {
         if (uid) {
             Swal.fire({
                 title: 'Ubah Status Akhir?',
@@ -987,6 +1049,51 @@
                             Swal.fire('Error', xhr.responseJSON.message, 'error')
                         }
                     })
+                }
+            })
+        }
+    }
+
+    let global_name = null
+    let global_uid  = null
+    function _verifikasi(uid, name) {
+        $('#title_confirm').html(`${name}`)
+        global_uid  = uid
+        global_name = name
+        // new KTModal('#modal_confirm').show()
+        mConfirm.show()
+    }
+
+    function _confirm() {
+        const status = $('[name="confirm"]:checked').val()
+        if (status && status.trim() !== '') {
+            mConfirm.hide()
+            Swal.fire({
+                title: 'Ubah Status',
+                html: `Anda ingin merubah status akhir pengobatan <b>${global_name}</b> menjadi <b>${status}</b>`,
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Batalkan',
+                confirmButtonText: 'Konfirmasi',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('obat.status') }}",
+                        type: 'POST',
+                        data: {uid: global_uid, hasil: status},
+                        dataType: 'JSON',
+                        success: function (res) {
+                            Swal.fire('Berhasil', res.message, 'success').then(function() { location.reload() })
+                        },
+                        error: function(xhr, status, error) {
+                            mConfirm.show()
+                            Swal.fire('Error', xhr.responseJSON.message, 'error')
+                        }
+                    })
+                } else {
+                    mConfirm.show()
                 }
             })
         }

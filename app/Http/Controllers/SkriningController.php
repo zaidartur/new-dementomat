@@ -54,8 +54,6 @@ class SkriningController extends Controller
             'alasan.min'        => 'Alasan terlalu pendek (minimal 5 karakter).'
         ]);
 
-        return send_200('Sesi skrining berhasil dibatalkan. Status pengguna telah disesuaikan kembali.');
-
         $sesi = DataSesiSkrining::where('uid_sesi', $request->uid)->first();
         $user = $sesi->keluarga;
 

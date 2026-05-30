@@ -321,6 +321,7 @@ class MobileSkriningController extends Controller
     {
         $request->validate([
             'uuid'      => 'required|string|exists:data_keluargas,uid_keluarga',
+            'id_sesi'   => 'required|string|exists:data_sesi_skrinings,uid_sesi',
             'tanggal'   => 'required|date',
             'gejala'    => 'nullable',
             'mual'      => 'required|boolean',
@@ -344,6 +345,7 @@ class MobileSkriningController extends Controller
 
         $data = [
             'uid_keluarga'  => $user->uid_keluarga,
+            'uid_sesi'      => $request->id_sesi,
             'tanggal'       => $tanggal,
             'gejala_awal'   => $request->gejala,
             'efek_mual'     => $request->mual,

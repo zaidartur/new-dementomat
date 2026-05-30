@@ -10,7 +10,9 @@ use App\Models\PantauanBeratBadan;
 use App\Models\PantauanObat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PantauanObatController extends Controller
 {
@@ -26,6 +28,7 @@ class PantauanObatController extends Controller
         $data = [
             'faskes'    => $faskes,
             'kecamatan' => Kecamatan::all(),
+            'btn_list'  => hasil_akhir_pengobatan(),
         ];
         return view('screenings.pemantauan_obat', $data);
     }
@@ -215,6 +218,57 @@ class PantauanObatController extends Controller
         return send_200('Data berhasil diperbarui.');
     }
 
+    public function simpan_hasil_akhir(Request $request)
+    {
+        $request->validate([
+            'hasil' => 'required|in:Sembuh,Pengobatan Lengkap,Putus Berobat,Gagal,Meninggal',
+            'uid'   => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $sesi  = DataSesiSkrining::with(['keluarga'])->where('uid_sesi', $request->uid)->first();
+        $hasil = $request->hasil;
+        $user  = $sesi->keluarga;
+
+        DB::transaction(function () use ($sesi, $hasil, $user) {
+            switch ($hasil) {
+                case 'Sembuh':
+                case 'Pengobatan Lengkap':
+                case 'Meninggal':
+                    $statusBaru = 'Aman';
+                    break;
+                case 'Putus Berobat':
+                case 'Gagal':
+                    $statusBaru = 'Wajib Menghubungi Kader / Petugas Puskesmas';
+                    break;
+                default:
+                    $statusBaru = 'Aman';
+            }
+
+            $user->update([
+                'status_tbc'                => $statusBaru,
+                'hasil_akhir_pengobatan'    => $hasil,
+                'tanggal_selesai_obat'      => now()->format('Y-m-d'),
+                'catatan_perubahan_status'  => now()->format('Y-m-d') . " - Selesai fase pengobatan dengan hasil: [" . $hasil . "].",
+            ]);
+
+            // Jika Gagal / Putus Obat, buat Record Sesi Baru di database
+            if (in_array($hasil, ['Putus Berobat', 'Gagal'])) {
+                $usia = !empty($user->tgl_lahir) ? Carbon::parse($user->tgl_lahir)->age : 0;
+                DataSesiSkrining::create([
+                    'uid_sesi'              => Str::uuid(),
+                    'uid_keluarga'          => $user->uid_keluarga,
+                    'umur_saat_skrining'    => $usia,
+                    'kategori_id'           => $sesi->kategori_id,
+                    'triggered_rule_id'     => $sesi->triggered_rule_id,
+                    'location'              => $sesi->location,
+                    'status_skrining'       => 'valid',
+                ]);
+            }
+        });
+
+        return send_200('Evaluasi berhasil disimpan dan sesi pelacakan baru telah dibuka.');
+    }
+
     public function ss_obat()
     {
         $request = Request();
@@ -231,7 +285,8 @@ class PantauanObatController extends Controller
                       ->whereNull('deleted_at');
                 })->count();
 
-        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,tgl_mulai_obat', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.obatTerakhir', 'keluarga.beratTerakhir']);
+        $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,tgl_mulai_obat', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.obatTerakhir', 'keluarga.beratTerakhir'])
+                    ->withCount(['logHarian']);
         
         if ($request->filled('search')) {
             $search = $request->search;
@@ -282,15 +337,44 @@ class PantauanObatController extends Controller
             ->whereNull('deleted_at');
         $totalFiltered = $query->count();
         $query->skip(intval($page)-1)->take(intval($size));
-        $totals = $query->get();
+        $totals = $query->latest()->get()->unique('uid_keluarga');
         $result = collect($totals)->map(function($record) {
             $user_uid = $record->uid_keluarga;
+            $tgl_mulai_obat = Carbon::parse($record->keluarga->tgl_mulai_obat);
+            $today = Carbon::now()->startOfDay();
+            $tgl_mulai = $tgl_mulai_obat->startOfDay();
+            $hariKe = $tgl_mulai->diffInDays($today) + 1;
+
+            $bulan  = $tgl_mulai_obat->startOfMonth();
+            $this_month = Carbon::now()->startOfMonth();
+            $bulan_ke   = $bulan->diffInMonths($this_month) + 1;
+            $persen = 0;
+
+            if ($hariKe > 0) {
+                $patuh  = round(($record->log_harian_count / $hariKe) * 100);
+                $persen = $patuh > 100 ? 100 : $patuh;
+            }
 
             $cleanHex = str_replace('-', '', $user_uid);
             $hexSegment = substr($cleanHex, 0, 6);
             $decValue = hexdec($hexSegment);
             $hue = $decValue % 360;
-            $record->color = hslToHex($hue, 80, 45);
+            $record->color      = hslToHex($hue, 80, 45);
+            $record->jml_logs   = $record->log_harian_count;
+            $record->total_hari = $hariKe;
+            $record->bulan_ke   = $bulan_ke;
+            $record->persen_kepatuhan = $persen;
+
+            if ($persen >= 90) {
+                $record->kepatuhan_color = 'success'; // Hijau: Sangat Baik
+                $record->kepatuhan_text = 'Disiplin';
+            } elseif ($persen >= 60) {
+                $record->kepatuhan_color = 'warning'; // Kuning: Mulai Sering Bolos
+                $record->kepatuhan_text = 'Kurang Disiplin';
+            } else {
+                $record->kepatuhan_color = 'destructive'; // Merah: Bahaya Putus Obat
+                $record->kepatuhan_text = 'Risiko Drop Out';
+            }
 
             return $record;
         });
@@ -298,6 +382,8 @@ class PantauanObatController extends Controller
         $data = [];
         foreach ($result as $key => $value) {
             $nik = $request->nik == 'show' ? ($value->keluarga->nik ?? '-') : (!empty($value->keluarga->nik) ? substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4) : '-');
+            $last_bulan = PantauanBeratBadan::where('uid_keluarga', $value->keluarga->uid_keluarga)->orderBy('bulan_ke', 'desc')->first();
+            $bulan_ke   = $last_bulan ? $last_bulan->bulan_ke : 0;
             $data[] = [
                 'nik'       => $nik,
                 'nama'      => $value->keluarga->nama_lengkap,
@@ -316,6 +402,12 @@ class PantauanObatController extends Controller
                 'obat'      => $value->keluarga->obatTerakhir ? Carbon::parse($value->keluarga->obatTerakhir->created_at)->locale('id')->translatedFormat('d F Y') : '-',
                 'berat'     => $value->keluarga->beratTerakhir->berat_badan ?? '-',
                 'uid'       => $value->uid_sesi,
+                'jml_log'   => $value->jml_logs,
+                'hari'      => $value->total_hari,
+                'bulan'     => $value->bulan_ke,
+                'persen'    => $value->persen_kepatuhan,
+                'patuh_clr' => $value->kepatuhan_color,
+                'patuh_lbl' => $value->kepatuhan_text,
                 'opsi'      => '
                         <span class="inline-flex gap-2.5">
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_keluarga. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
@@ -323,15 +415,15 @@ class PantauanObatController extends Controller
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
                                     <span class="flex items-center gap-1.5">Lihat Detail</span>
                                 </span>
-                            </a>
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_verifikasi(`' .$value->uid_sesi. '`, `' .$value->keluarga->nama_lengkap. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            </a>' .
+                            ($value->bulan_ke < 5 ?
+                            '<a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_verifikasi(`' .$value->uid_sesi. '`, `' .$value->keluarga->nama_lengkap. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <i class="ki-filled ki-shield-search text-lg"></i>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
                                     <span class="flex items-center gap-1.5">Ubah Status Akhir</span>
                                 </span>
-                            </a>
-                        </span>
-                ',
+                            </a>' : '') .
+                        '</span>',
             ];
         }
 

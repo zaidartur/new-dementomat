@@ -39,6 +39,8 @@ return new class extends Migration
             $table->string('status_tbc', '200')->nullable();
             $table->text('catatan_perubahan_status')->nullable();
             $table->date('tgl_mulai_obat')->nullable();
+            $table->date('tgl_selesai_obat')->nullable();
+            $table->enum('hasil_akhir_pengobatan', ['Sembuh', 'Pengobatan Lengkap', 'Putus Berobat', 'Gagal', 'Meninggal'])->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });

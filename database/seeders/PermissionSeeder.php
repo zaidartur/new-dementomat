@@ -60,7 +60,9 @@ class PermissionSeeder extends Seeder
 
         // Menu Cek Dahak
         $dahak = [
-            'view cek dahak'
+            'view cek dahak',
+            'input cek manual',
+            'verifikasi dahak'
         ];
         foreach ($dahak as $key => $value) {
             Permission::firstOrCreate(['name' => $value]);
@@ -68,7 +70,8 @@ class PermissionSeeder extends Seeder
 
         // Menu Pemantauan Obat
         $obat = [
-            'view pemantauan obat'
+            'view pemantauan obat',
+            'ubah status obat'
         ];
         foreach ($obat as $key => $value) {
             Permission::firstOrCreate(['name' => $value]);
@@ -181,8 +184,8 @@ class PermissionSeeder extends Seeder
                 'view cek jantung nonlab', 
                 'view hasil skrining', 
                 'update hasil skrining',
-                'view cek dahak', 
-                'view pemantauan obat', 
+                'view cek dahak', 'input cek manual', 'verifikasi dahak', 
+                'view pemantauan obat', 'ubah status obat',
                 'view profile', 'simpan profile', 'ubah profile',
                 'view slider', 'simpan slider', 'update slider', 'hapus slider',
                 'view video', 'simpan video', 'update video', 'hapus video',
@@ -192,8 +195,8 @@ class PermissionSeeder extends Seeder
             'faskes'    => [
                 'view pengguna', 'update pengguna', 'update password pengguna', 'hapus pengguna', 'view keluarga', 'simpan keluarga', 'update keluarga', 'hapus keluarga',
                 'view hasil skrining', 
-                'view cek dahak', 
-                'view pemantauan obat',
+                'view cek dahak', 'input cek manual', 'verifikasi dahak', 
+                'view pemantauan obat', 'ubah status obat',
                 'view tempat faskes', 'simpan tempat faskes', 'update tempat faskes', 'hapus tempat faskes',
                 'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya',
                 'view kontak', 'simpan kontak', 'update kontak', 'hapus kontak'

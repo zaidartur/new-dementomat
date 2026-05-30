@@ -8,6 +8,7 @@ use App\Http\Controllers\PantauanObatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkriningController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UtilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,15 +47,15 @@ Route::prefix('/')->middleware('auth')->group(function() {
     });
 
     Route::prefix('penanganan/')->group(function() {
-        Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak');
-        Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss');
-        Route::post('submit-manual', [CekDahakController::class, 'simpan_cek_manual'])->name('dahak.faskes');
-        Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify');
+        Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak')->middleware('permission: view cek dahak');
+        Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss')->middleware('permission: view cek dahak');
+        Route::post('submit-manual', [CekDahakController::class, 'simpan_cek_manual'])->name('dahak.faskes')->middleware('permission: input cek manual');
+        Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify')->middleware('permission: verifikasi dahak');
 
-        Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat');
-        Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss');
-        Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail');
-        Route::post('update-status-pengguna', [PantauanObatController::class, 'update_status_akhir'])->name('obat.status');
+        Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat')->middleware('permission: view pemantauan obat');
+        Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss')->middleware('permission: view pemantauan obat');
+        Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail')->middleware('permission: view pemantauan obat');
+        Route::post('update-status-pengguna', [PantauanObatController::class, 'simpan_hasil_akhir'])->name('obat.status')->middleware('permission: ubah status obat');
     });
 
     Route::prefix('kontak/')->group(function() {
@@ -63,6 +64,11 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::post('simpan', [KontakController::class, 'simpan'])->name('kontak.simpan')->middleware('permission:simpan kontak');
         Route::post('update', [KontakController::class, 'update'])->name('kontak.update')->middleware('permission:update kontak');
         Route::post('hapus', [KontakController::class, 'hapus'])->name('kontak.hapus')->middleware('permission:hapus kontak');
+    });
+
+    Route::prefix('pengaturan/')->group(function() {
+        Route::get('slider', [UtilityController::class, 'view_slider'])->name('slider')->middleware('permission:view slider');
+        Route::get('video', [UtilityController::class, 'view_youtube'])->name('video')->middleware('permission:view video');
     });
 
     Route::prefix('utility/')->group(function() {
