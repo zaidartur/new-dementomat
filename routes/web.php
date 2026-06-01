@@ -12,7 +12,6 @@ use App\Http\Controllers\UtilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    // return view('welcome');
     return redirect()->route('login');
 });
 
@@ -26,6 +25,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
             Route::get('detail-pengguna/{uid}', [UserController::class, 'detail_pengguna'])->name('pengguna.detail');
             Route::get('tabel-pengguna', [UserController::class, 'ss_pengguna'])->name('pengguna.ss');
         });
+
         Route::post('edit-pengguna', [UserController::class, 'edit_pengguna'])->name('pengguna.edit')->middleware('permission:update pengguna');
         Route::post('update-pengguna', [UserController::class, 'update_pengguna'])->name('pengguna.update')->middleware('permission:update pengguna');
         Route::post('update-username', [UserController::class, 'update_username_pengguna'])->name('pengguna.username')->middleware('permission:update username pengguna');
@@ -47,15 +47,15 @@ Route::prefix('/')->middleware('auth')->group(function() {
     });
 
     Route::prefix('penanganan/')->group(function() {
-        Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak')->middleware('permission: view cek dahak');
-        Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss')->middleware('permission: view cek dahak');
-        Route::post('submit-manual', [CekDahakController::class, 'simpan_cek_manual'])->name('dahak.faskes')->middleware('permission: input cek manual');
-        Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify')->middleware('permission: verifikasi dahak');
+        Route::get('cek-dahak', [CekDahakController::class, 'view'])->name('dahak')->middleware('permission:view cek dahak');
+        Route::get('tabel-dahak', [CekDahakController::class, 'ss_dahak'])->name('dahak.ss')->middleware('permission:view cek dahak');
+        Route::post('submit-manual', [CekDahakController::class, 'simpan_cek_manual'])->name('dahak.faskes')->middleware('permission:input cek manual');
+        Route::post('verifikasi', [CekDahakController::class, 'verifikasi_hasil'])->name('dahak.verify')->middleware('permission:verifikasi dahak');
 
-        Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat')->middleware('permission: view pemantauan obat');
-        Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss')->middleware('permission: view pemantauan obat');
-        Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail')->middleware('permission: view pemantauan obat');
-        Route::post('update-status-pengguna', [PantauanObatController::class, 'simpan_hasil_akhir'])->name('obat.status')->middleware('permission: ubah status obat');
+        Route::get('pemantauan-obat', [PantauanObatController::class, 'view'])->name('obat')->middleware('permission:view pemantauan obat');
+        Route::get('tabel-pemantauan', [PantauanObatController::class, 'ss_obat'])->name('obat.ss')->middleware('permission:view pemantauan obat');
+        Route::post('detail-pengguna', [PantauanObatController::class, 'detail_user'])->name('obat.detail')->middleware('permission:view pemantauan obat');
+        Route::post('update-status-pengguna', [PantauanObatController::class, 'simpan_hasil_akhir'])->name('obat.status')->middleware('permission:ubah status obat');
     });
 
     Route::prefix('kontak/')->group(function() {
