@@ -15,6 +15,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('slider-image/{uid}', [UtilityController::class, 'show_image']);
+
 
 Route::prefix('/')->middleware('auth')->group(function() {
     Route::get('dashboard', [DashboardController::class, 'view'])->name('dashboard');
@@ -68,7 +70,14 @@ Route::prefix('/')->middleware('auth')->group(function() {
 
     Route::prefix('pengaturan/')->group(function() {
         Route::get('slider', [UtilityController::class, 'view_slider'])->name('slider')->middleware('permission:view slider');
+        Route::post('simpan-slider', [UtilityController::class, 'save_slider'])->name('slider.save')->middleware('permission:simpan slider');
+        Route::post('ubah-slider', [UtilityController::class, 'update_slider'])->name('slider.update')->middleware('permission:update slider');
+        Route::post('hapus-slider', [UtilityController::class, 'hapus_slider'])->name('slider.drop')->middleware('permission:hapus slider');
+
         Route::get('video', [UtilityController::class, 'view_youtube'])->name('video')->middleware('permission:view video');
+        Route::post('simpan-video', [UtilityController::class, 'save_video'])->name('video.save')->middleware('permission:simpan video');
+        Route::post('ubah-video', [UtilityController::class, 'update_video'])->name('video.update')->middleware('permission:update video');
+        Route::post('hapus-video', [UtilityController::class, 'hapus_video'])->name('video.drop')->middleware('permission:hapus video');
     });
 
     Route::prefix('utility/')->group(function() {
