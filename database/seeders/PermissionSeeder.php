@@ -113,7 +113,11 @@ class PermissionSeeder extends Seeder
 
         // Menu Parameter Skrining
         $parameter = [
-            'view parameter skrining'
+            'view parameter skrining',
+            'simpan parameter skrining',
+            'update parameter skrining',
+            'hapus parameter skrining',
+            'update kategori',
         ];
         foreach ($parameter as $key => $value) {
             Permission::firstOrCreate(['name' => $value]);

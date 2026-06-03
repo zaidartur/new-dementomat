@@ -319,7 +319,7 @@
             <div class="rounded-lg w-full grow">
                 <div class="p-2 flex justify-center" id="content_div">
 
-                    <div class="w-full max-w-4xl max-h-[400vh] flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden transform scale-100 transition-all">
+                    <div class="w-full max-w-4xl max-h-[400vh] flex flex-col rounded-xl border border-slate-200 overflow-hidden transform scale-100 transition-all">
                         <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-1 border-b md:border-b-0 md:border-r border-slate-300 pb-6 md:pb-0 md:pr-6">
                                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Biodata Warga</h4>            
@@ -353,7 +353,7 @@
                             <div class="md:col-span-2 space-y-5">
                                 <div>
                                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Rekapitulasi Kuesioner Awal</h4>
-                                    <div class="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between" id="res_content">
+                                    <div class="rounded-lg bg-slate-50 dark:bg-gray-800 p-4 border border-slate-100 flex items-center justify-between" id="res_content">
                                         <div>
                                             <span class="text-xs text-slate-400 block font-medium">Kesimpulan Rekomendasi Sistem</span>
                                             <span class="text-sm font-bold text-red-600 mt-0.5 block">Suspek TBC (Rujuk Pemeriksaan Dahak TCM)</span>
@@ -880,39 +880,39 @@
             text += `
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Nama Lengkap</label>
-                    <span class="block text-sm font-semibold text-slate-800 mt-0.5">${user.nama_lengkap}</span>
+                    <span class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${user.nama_lengkap}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Nomor Induk Kependudukan (NIK)</label>
-                    <span class="block text-sm font-mono font-medium text-slate-700 mt-0.5">${user.nik}</span>
+                    <span class="block text-sm font-mono font-medium text-slate-700 dark:text-slate-200 mt-0.5">${user.nik}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Umur (saat skrining) & Jenis Kelamin</label>
-                    <span class="block text-sm text-slate-800 mt-0.5">${age} Tahun / ${user.jenkel ? (user.jenkel === 'L' ? 'Laki-Laki' : 'Perempuan') : '-'}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${age} Tahun / ${user.jenkel ? (user.jenkel === 'L' ? 'Laki-Laki' : 'Perempuan') : '-'}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Alamat Rumah</label>
-                    <span class="block text-sm text-slate-800 mt-0.5 leading-relaxed">${user.alamat}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5 leading-relaxed">${user.alamat}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Desa, Kecamatan</label>
-                    <span class="block text-sm text-slate-800 mt-0.5 leading-relaxed">${user.desa?.desakel_name}, ${user.kecamatan?.kec_name}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5 leading-relaxed">${user.desa?.desakel_name}, ${user.kecamatan?.kec_name}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Status Keluarga</label>
-                    <span class="block text-sm text-slate-800 mt-0.5">${user.status_keluarga}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.status_keluarga}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Nomor Telepon</label>
-                    <span class="block text-sm text-slate-800 mt-0.5">${user.telepon}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.telepon}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Faskes</label>
-                    <span class="block text-sm text-slate-800 mt-0.5">${user.faskes.nama_faskes}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.faskes.nama_faskes}</span>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Status TBC</label>
-                    <span class="block text-sm text-slate-800 mt-0.5">${user.status_tbc}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.status_tbc}</span>
                 </div>
             `
         }
@@ -931,7 +931,7 @@
                 </div>
                 <div class="text-right">
                     <span class="text-xs text-slate-400 block font-medium">Akumulasi Skor</span>
-                    <span class="text-xl font-extrabold text-slate-800 block">${active} <span class="text-xs text-slate-400 font-normal">/ ${skor.length ?? 0} Gejala</span></span>
+                    <span class="text-xl font-extrabold text-slate-800 dark:text-gray-100 block">${active} <span class="text-xs text-slate-400 font-normal">/ ${skor.length ?? 0} Gejala</span></span>
                 </div>
             `
         }
@@ -943,13 +943,13 @@
         let text = ''
         if (Array.isArray(lists) && cat) {
             text += `
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Detail Jawaban Indikasi <span class="text-slate-800">${cat}</span></h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Detail Jawaban Indikasi <span class="text-slate-800 dark:text-gray-200">${cat}</span></h4>
                     <div class="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full scroll-smooth h-max-[370px]">`
 
             lists.forEach(ls => {
                 text += `
-                        <div class="flex items-center justify-between p-3 bg-white hover:bg-slate-50/50">
-                            <span class="text-sm text-slate-700 font-medium">${ls.parameter?.pertanyaan}</span>
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                            <span class="text-sm text-slate-700 dark:text-gray-400 dark:hover:text-slate-700 font-medium">${ls.parameter?.pertanyaan}</span>
                             <span class="inline-flex items-center rounded-full bg-${ls.is_yes === 1 ? 'red' : 'emerald'}-100 px-2.5 py-0.5 text-xs font-semibold text-${ls.is_yes === 1 ? 'red' : 'emerald'}-800">${ls.is_yes === 1 ? 'Ya' : 'Tidak'}</span>
                         </div>
                 `

@@ -277,6 +277,7 @@ class UserController extends Controller
         $length = $request->length;
         $page   = $request->page;
         $size   = $request->size;
+        $skip   = (intval($page) - 1) * intval($size);
         $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
         $kec    = (isset($request->kecamatan) && !empty($request->kecamatan)) ? $request->kecamatan : null;
         $total  = User::where('level', 'user')->whereNull('deleted_at')->orderBy('name')->count();
@@ -307,7 +308,7 @@ class UserController extends Controller
         $totalFiltered = $query->count();
         $query->orderBy('created_at', 'desc');
         // $query->skip($start)->take($length);
-        $query->skip(intval($page)-1)->take(intval($size));
+        $query->skip($skip)->take(intval($size));
 
         $users  = $query->get();
         $data   = [];

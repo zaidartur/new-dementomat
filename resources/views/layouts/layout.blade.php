@@ -10,12 +10,12 @@
         <meta content="summary_large_image" name="twitter:card" />
         <meta content="Si Demen Tomat Terasi" name="twitter:title" />
         <meta content="" name="twitter:description" />
-        <meta content="assets/images/logos.png" name="twitter:image" />
+        <meta content="{{ route('logo') }}" name="twitter:image" />
         <meta content="id_ID" property="og:locale" />
         <meta content="website" property="og:type" />
         <meta content="Si Demen Tomat Terasi" property="og:title" />
         <meta content="" property="og:description" />
-        <meta content="assets/images/logos.png" property="og:image" />
+        <meta content="{{ route('logo') }}" property="og:image" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
         @include('layouts.css')

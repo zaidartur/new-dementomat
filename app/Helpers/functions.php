@@ -255,6 +255,40 @@ if (!function_exists('upload_slider')) {
     }
 }
 
+if (!function_exists('upload_logo')) {
+    // sanitize image
+    function upload_logo($file) {
+        try {
+            $image = Image::decode($file)->orient();
+            $encoded = $image->encodeUsingFormat(Format::PNG, quality: 90);
+
+            // 3. Save to temporary path
+            $extension = $file->getClientOriginalExtension();
+            $tempPath = storage_path('app/tmp/sanitized_' . date('YmdHis') .'.png');
+            File::ensureDirectoryExists(dirname($tempPath));
+            file_put_contents($tempPath, $encoded->toString());
+
+            // 4. Move to public folder
+            $fileName = date('YmdHis'). '.png';
+            $folder = public_path('storage/logo');
+            if (!is_dir($folder)) {
+                mkdir(public_path('storage/logo', 755));
+            }
+
+            $path = $folder . '/' . $fileName;
+            $move = File::move($tempPath, $path);
+
+            if (!$tempPath || !$move) {
+                return false;
+            }
+
+            return $fileName;
+        } catch(Exception $e) {
+            return false;
+        }
+    }
+}
+
 if (!function_exists('hasil_akhir_pengobatan')) {
     function hasil_akhir_pengobatan() {
         return ['Sembuh', 'Pengobatan Lengkap', 'Putus Berobat', 'Gagal', 'Meninggal'];

@@ -6,10 +6,24 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Override;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id', 'location', 'tgl_tcm', 'hasil_tcm', 'file_tcm', 'jenis_tcm', 'status_skrining', 'alasan_batal'])]
 class DataSesiSkrining extends Model
 {
+    use LogsActivity;
+
+    #[Override]
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+                ->logOnly(['uid_sesi', 'uid_keluarga', 'kategori_id', 'umur_saat_skrining', 'triggered_rule_id', 'location', 'tgl_tcm', 'hasil_tcm', 'file_tcm', 'jenis_tcm', 'status_skrining', 'alasan_batal'])
+                ->logOnlyDirty()
+                ->dontSubmitEmptyLogs();
+    }
+
     /**
      * Get the keluarga that owns the DataSesiSkrining
      *

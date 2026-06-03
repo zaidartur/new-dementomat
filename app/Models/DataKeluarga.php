@@ -8,11 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Activitylog\LogOptions;
+use Override;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable(['uid_keluarga', 'parent_user', 'is_auth', 'nama_lengkap', 'nik', 'alamat_nik', 'telepon', 'alamat', 'tgl_lahir', 'jenkel', 'status_keluarga', 'kec_id', 'desakel_id', 'id_faskes', 'status_tbc', 'tgl_mulai_obat', 'deleted_at'])]
 #[Hidden(['is_auth', 'id', 'parent_user', 'deleted_at'])]
 class DataKeluarga extends Model
 {
+    use LogsActivity;
+
+    #[Override]
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+                ->logOnly(['uid_keluarga', 'parent_user', 'is_auth', 'nama_lengkap', 'nik', 'alamat_nik', 'telepon', 'alamat', 'tgl_lahir', 'jenkel', 'status_keluarga', 'kec_id', 'desakel_id', 'id_faskes', 'status_tbc', 'tgl_mulai_obat', 'deleted_at'])
+                ->logOnlyDirty()
+                ->dontSubmitEmptyLogs();
+    }
+
     /**
      * Get the kecamatan associated with the DetailUser
      *

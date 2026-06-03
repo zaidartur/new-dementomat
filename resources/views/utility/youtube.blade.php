@@ -34,12 +34,12 @@
                     <table class="kt-table" data-kt-datatable-table="true">
                         <thead>
                             <tr>
-                                <th scope="col" class="w-30" data-kt-datatable-column="judul">
+                                <th scope="col" class="w-40" data-kt-datatable-column="judul">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Judul</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-50" data-kt-datatable-column="video">
+                                <th scope="col" class="w-30" data-kt-datatable-column="video">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Video</span>
                                     </span>
@@ -49,7 +49,7 @@
                                         <span class="kt-table-col-label">Status</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="w-10" data-kt-datatable-column="opsi">
+                                <th scope="col" class="w-20" data-kt-datatable-column="opsi">
                                     <span class="kt-table-col">
                                         <span class="kt-table-col-label">Opsi</span>
                                     </span>
@@ -198,7 +198,6 @@
     function _edit(datas) {
         const data = JSON.parse(atob(datas))
         if (data) {
-            console.log(data)
             myType = 'update'
             $('#title_add').html('Edit Video')
             $('#form_add')[0].reset()
@@ -254,6 +253,7 @@
             console.log(vid)
             const text = `<iframe width="480" height="320" src="${vid.replace('watch?v=', 'embed/')}" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
             $('#video_frame').append(text)
+            $('#video').val(vid)
         } else {
             console.log('kosong')
             const text = `<div class="kt-alert kt-alert-light kt-alert-destructive">

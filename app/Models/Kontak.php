@@ -7,11 +7,25 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Activitylog\LogOptions;
+use Override;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable(['judul_kontak', 'nama_kontak', 'nomor_wa', 'id_faskes', 'uid_user', 'jenis_kontak'])]
 #[Hidden(['uid_user'])]
 class Kontak extends Model
 {
+    use LogsActivity;
+
+    #[Override]
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+                ->logOnly(['judul_kontak', 'nama_kontak', 'nomor_wa', 'id_faskes', 'uid_user', 'jenis_kontak'])
+                ->logOnlyDirty()
+                ->dontSubmitEmptyLogs();
+    }
+
     /**
      * Get the faskes that owns the Kontak
      *

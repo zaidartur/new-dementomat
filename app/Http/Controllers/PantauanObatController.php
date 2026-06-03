@@ -274,6 +274,7 @@ class PantauanObatController extends Controller
         $request = Request();
         $page   = intval($request->page) < 1 ? 1 : $request->page;
         $size   = $request->size ?? 10;
+        $skip   = (intval($page) - 1) * intval($size);
         $sort   = ($request->filled('sortField') && $request->sortField != 'null') ? $request->sortField : null;
         $order  = $request->sortOrder ?? 'asc';
         $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
@@ -336,7 +337,7 @@ class PantauanObatController extends Controller
             })
             ->whereNull('deleted_at');
         $totalFiltered = $query->count();
-        $query->skip(intval($page)-1)->take(intval($size));
+        $query->skip($skip)->take(intval($size));
         $totals = $query->latest()->get()->unique('uid_keluarga');
         $result = collect($totals)->map(function($record) {
             $user_uid = $record->uid_keluarga;

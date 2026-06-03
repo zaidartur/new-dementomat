@@ -102,6 +102,7 @@ class SkriningController extends Controller
         $request = Request();
         $page   = intval($request->page) < 1 ? 1 : $request->page;
         $size   = $request->size ?? 10;
+        $skip   = (intval($page) - 1) * intval($size);
         $sort   = ($request->filled('sortField') && $request->sortField != 'null') ? $request->sortField : null;
         $order  = $request->sortOrder ?? 'asc';
         $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
@@ -160,7 +161,7 @@ class SkriningController extends Controller
         });
         $totalFiltered = $query->count();
         // $query->orderBy('created_at', 'desc');
-        $query->skip(intval($page)-1)->take(intval($size));
+        $query->skip($skip)->take(intval($size));
         $totals = $query->get();
         $result = collect($totals)->map(function($record) {
             $user_uid = $record->uid_keluarga;

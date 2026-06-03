@@ -131,7 +131,8 @@
                                 <div class="space-y-1">
                                     <div class="text-sm font-medium text-mono">File Gambar*</div>
                                     <p class="text-xs text-muted-foreground">
-                                        Format gambar yang diperbolehkan adalah <b>jpg, jpeg, png</b>. Untuk ukuran, maksimum <b>3Mb</b>
+                                        Format gambar yang diperbolehkan adalah <b>jpg, jpeg, png</b>, dan ukuran maksimum <b>3Mb</b>. <br>
+                                        <span class="text-destructive">Gunakan rasio 16:9 agar gambar tidak terpotong saat ditampilkan.</span>
                                     </p>
                                 </div>
                                  <div class="kt-image-input inline-flex flex-col size-32 gap-3 rounded-lg" data-kt-image-input="true">
@@ -227,10 +228,18 @@
             let gambar = document.getElementById('gambar')
             var formAction = $('#form_add').attr('action')
             const MAX_SIZE = 3 * 1024 * 1024; // 3MB
+            let filename   = gambar.value
+            let extension  = filename.split('.').pop().toLowerCase()
+            const allowed  = ['jpg', 'jpeg', 'png']
 
             const file = gambar.files[0]
             if (myType === 'save' && (!file || file === undefined)) {
                 $('#alert_image').removeClass('hidden')
+            }
+
+            if (!allowed.includes(extension)) {
+                _swal_alert('error', 'Jenis file gambar tidak sesuai. Hanya boleh menggunakna format jpg, jpeg, dan png')
+                return
             }
 
             if (myType === 'save' && (file && file.size > MAX_SIZE)) {

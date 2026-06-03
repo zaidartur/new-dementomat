@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email', '50')->nullable();
             $table->string('website', '150')->nullable();
             $table->string('koordinat', '100')->nullable();
+            $table->string('logo');
             $table->timestamps();
         });
     }

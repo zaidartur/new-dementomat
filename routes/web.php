@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\MobileUtilityController;
 use App\Http\Controllers\PantauanObatController;
+use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkriningController;
 use App\Http\Controllers\UserController;
@@ -16,6 +17,7 @@ Route::get('/', function () {
 });
 
 Route::get('slider-image/{uid}', [UtilityController::class, 'show_image']);
+Route::get('assets/web-logos', [UtilityController::class, 'show_logo'])->name('logo');
 
 
 Route::prefix('/')->middleware('auth')->group(function() {
@@ -69,6 +71,16 @@ Route::prefix('/')->middleware('auth')->group(function() {
     });
 
     Route::prefix('pengaturan/')->group(function() {
+        Route::get('profile', [UtilityController::class, 'view_profile'])->name('profile')->middleware('permission:view profile');
+        Route::post('profile-update', [UtilityController::class, 'update_profile'])->name('profile.update')->middleware('permission:ubah profile');
+
+        Route::get('parameter', [ParameterController::class, 'view'])->name('params')->middleware('permission:view parameter skrining');
+        Route::get('tabel-parameter', [ParameterController::class, 'ss_param'])->name('params.ss')->middleware('permission:view parameter skrining');
+        Route::post('simpan-parameter', [ParameterController::class, 'save_param'])->name('params.save')->middleware('permission:simpan parameter skrining');
+        Route::post('update-parameter', [ParameterController::class, 'update_param'])->name('params.update')->middleware('permission:update parameter skrining');
+        Route::post('hapus-parameter', [ParameterController::class, 'drop_param'])->name('params.drop')->middleware('permission:hapus parameter skrining');
+        Route::post('update-kategori', [ParameterController::class, 'update_kategori'])->name('cat.update')->middleware('permission:update kategori');
+
         Route::get('slider', [UtilityController::class, 'view_slider'])->name('slider')->middleware('permission:view slider');
         Route::post('simpan-slider', [UtilityController::class, 'save_slider'])->name('slider.save')->middleware('permission:simpan slider');
         Route::post('ubah-slider', [UtilityController::class, 'update_slider'])->name('slider.update')->middleware('permission:update slider');
