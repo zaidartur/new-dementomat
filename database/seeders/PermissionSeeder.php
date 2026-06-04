@@ -118,6 +118,9 @@ class PermissionSeeder extends Seeder
             'update parameter skrining',
             'hapus parameter skrining',
             'update kategori',
+            'simpan rule',
+            'update rule',
+            'hapus rule'
         ];
         foreach ($parameter as $key => $value) {
             Permission::firstOrCreate(['name' => $value]);

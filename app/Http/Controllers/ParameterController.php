@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataRuleKondisi;
+use App\Models\DataRuleSkrining;
 use App\Models\MasterKategoriSkrining;
 use App\Models\MasterParameterSkrining;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ParameterController extends Controller
@@ -16,9 +20,22 @@ class ParameterController extends Controller
         $data = [
             'params'     => MasterParameterSkrining::with('category')->get(),
             'categories' => MasterKategoriSkrining::all(),
+            'rules'      => DataRuleSkrining::with(['rule_kondisi', 'rule_kondisi.parameter', 'categories'])->get(),
         ];
 
         return view('settings.parameter', $data);
+    }
+
+    public function detail_param(Request $request)
+    {
+        $request->validate([
+            'uid'   => 'required|integer|exists:master_kategori_skrinings,id'
+        ]);
+
+        $find = MasterParameterSkrining::where('kategori_id', $request->uid)->get();
+        if (!$find) return send_400('Data parameter tidak ditemukan.');
+
+        return send_200('Daftar parameter', $find);
     }
 
     public function save_param(Request $request)
@@ -26,14 +43,14 @@ class ParameterController extends Controller
         $request->validate([
             'kategori'      => 'required|numeric|exists:master_kategori_skrinings,id',
             'kode'          => 'required|string|max:10',
-            'pertanyaan'    => 'required|string|min:5',
+            'judul'         => 'required|string|min:5',
         ]);
 
         $save = MasterParameterSkrining::create([
             'uid_parameter'     => Str::uuid(),
             'kategori_id'       => $request->kategori,
             'kode'              => $request->kode,
-            'pertanyaan'        => $request->pertanyaan,
+            'pertanyaan'        => $request->judul,
         ]);
 
         if ($save) {
@@ -49,7 +66,7 @@ class ParameterController extends Controller
             'uid'           => 'required|string|exists:master_parameter_skrinings,uid_parameter',
             'kategori'      => 'required|numeric|exists:master_kategori_skrinings,id',
             'kode'          => 'required|string|max:10',
-            'pertanyaan'    => 'required|string|min:5',
+            'judul'         => 'required|string|min:5',
         ]);
 
         $find = MasterParameterSkrining::where('uid_parameter', $request->uid)->first();
@@ -58,7 +75,7 @@ class ParameterController extends Controller
         $upd = $find->update([
             'kategori_id'       => $request->kategori,
             'kode'              => $request->kode,
-            'pertanyaan'        => $request->pertanyaan,
+            'pertanyaan'        => $request->judul,
         ]);
 
         if ($upd) {
@@ -104,6 +121,89 @@ class ParameterController extends Controller
         if (!$upd) return send_400('Gagal memperbarui kategori.');
 
         return send_200('Berhasil memperbarui kategori.');
+    }
+
+    public function save_rule(Request $request)
+    {
+        $request->validate([
+            'nama'      => 'required|string|max:150',
+            'kategori'  => 'required|numeric|exists:master_kategori_skrinings,id',
+            'rekom'     => 'required|string|min:10',
+            'parameter' => 'required|array',
+        ]);
+
+        $uuid = Str::uuid();
+        $rule = DataRuleSkrining::create([
+            'uid_rule'      => $uuid,
+            'kategori_id'   => $request->kategori,
+            'nama_aturan'   => $request->nama,
+            'rekomendasi'   => $request->rekom,
+        ]);
+        if (!$rule) return send_400('Gagal menyimpan data rule.');
+
+        foreach ($request->parameter as $key => $value) {
+            DataRuleKondisi::create([
+                'rule_uid'      => $uuid,
+                'parameter_uid' => $value,
+            ]);
+        }
+
+        return send_201('Data rule berhasil di simpan.');
+    }
+
+    public function update_rule(Request $request)
+    {
+        $request->validate([
+            'uid'       => 'required|string|exists:data_rule_skrinings,uid_rule',
+            'nama'      => 'required|string|max:150',
+            'kategori'  => 'required|numeric|exists:master_kategori_skrinings,id',
+            'rekom'     => 'required|string|min:10',
+            'parameter' => 'required|array',
+        ]);
+
+        $rule = DataRuleSkrining::where('uid_rule', $request->uid)->first();
+        if (!$rule) return send_400('ID rule tidak terdaftar.');
+
+        $rule->update([
+            'kategori_id'   => $request->kategori,
+            'nama_aturan'   => $request->nama,
+            'rekomendasi'   => $request->rekom,
+        ]);
+
+        // reset tabel kondisi
+        DataRuleKondisi::where('rule_uid', $request->uid)->delete();
+        
+        foreach ($request->parameter as $key => $value) {
+            DataRuleKondisi::create([
+                'rule_uid'      => $request->uid,
+                'parameter_uid' => $value,
+            ]);
+        }
+
+        return send_200('Data rule berhasil diperbarui.');
+    }
+
+    public function drop_rule(Request $request)
+    {
+        $request->validate([
+            'uid'       => 'required|string',
+        ]);
+
+        try {
+            $id   = Crypt::decryptString($request->uid);
+            Log::info($id);
+            $rule = DataRuleSkrining::where('uid_rule', $id)->first();
+            if (!$rule) return send_400('ID rule tidak terdaftar.');
+
+            $drop = DataRuleKondisi::where('rule_uid', $id)->delete();
+            if (!$drop) return send_400('Gagal menghapus data rule.');
+
+            DataRuleSkrining::where('uid_rule', $id)->delete();
+
+            return send_200('Data rule berhasil dihapus.');
+        } catch (Exception $e) {
+            return send_400('Gagal menghapus data regulasi skrining.');
+        }
     }
 
     public function ss_param()

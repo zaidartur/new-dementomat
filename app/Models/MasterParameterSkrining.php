@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['kategori_id', 'pertanyaan', 'kode', 'uid_parameter'])]
 class MasterParameterSkrining extends Model
 {
     /**

@@ -40,5 +40,20 @@ class UserSeeder extends Seeder
 
         $admin = User::firstOrCreate($data_admin);
         $admin->assignRole('admin');
+
+
+        // faskes
+        $data_faskes = [
+            'uuid'      => Str::uuid(),
+            'name'      => 'Karanganyar',
+            'username'  => 'karanganyar',
+            'password'  => '12345678',
+            'email'     => 'karanganyar@faskes.com',
+            'level'     => 'faskes',
+            'faskes_id' => '7b4c919d-102b-4b64-bebd-e59d6345a8ff',
+        ];
+
+        $faskes = User::firstOrCreate($data_faskes);
+        $faskes->assignRole('faskes');
     }
 }

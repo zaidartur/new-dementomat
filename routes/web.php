@@ -76,10 +76,14 @@ Route::prefix('/')->middleware('auth')->group(function() {
 
         Route::get('parameter', [ParameterController::class, 'view'])->name('params')->middleware('permission:view parameter skrining');
         Route::get('tabel-parameter', [ParameterController::class, 'ss_param'])->name('params.ss')->middleware('permission:view parameter skrining');
+        Route::post('detail-parameter', [ParameterController::class, 'detail_param'])->name('params.detail')->middleware('permission:view parameter skrining');
         Route::post('simpan-parameter', [ParameterController::class, 'save_param'])->name('params.save')->middleware('permission:simpan parameter skrining');
         Route::post('update-parameter', [ParameterController::class, 'update_param'])->name('params.update')->middleware('permission:update parameter skrining');
         Route::post('hapus-parameter', [ParameterController::class, 'drop_param'])->name('params.drop')->middleware('permission:hapus parameter skrining');
         Route::post('update-kategori', [ParameterController::class, 'update_kategori'])->name('cat.update')->middleware('permission:update kategori');
+        Route::post('simpan-regulasi', [ParameterController::class, 'save_rule'])->name('rule.save')->middleware('permission:simpan rule');
+        Route::post('update-regulasi', [ParameterController::class, 'update_rule'])->name('rule.update')->middleware('permission:update rule');
+        Route::post('hapus-regulasi', [ParameterController::class, 'drop_rule'])->name('rule.drop')->middleware('permission:hapus rule');
 
         Route::get('slider', [UtilityController::class, 'view_slider'])->name('slider')->middleware('permission:view slider');
         Route::post('simpan-slider', [UtilityController::class, 'save_slider'])->name('slider.save')->middleware('permission:simpan slider');
