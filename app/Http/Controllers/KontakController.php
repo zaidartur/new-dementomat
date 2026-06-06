@@ -39,7 +39,7 @@ class KontakController extends Controller
         if (Request()->user()->hasAnyRole(['superadmin', 'admin'])) {
             return send_200('Detail kontak', $kontak);
         } else {
-            if ($kontak->uid_user == Request()->user()->uuid) {
+            if ($kontak->id_faskes == Request()->user()->faskes_id) {
                 return send_200('Detail kontak', $kontak);
             } else {
                 return send_400('Data tidak ditemukan.');

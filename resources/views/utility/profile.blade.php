@@ -18,7 +18,8 @@
     </div>
 </div>
 
-<div class="kt-container-fixed">
+@hasanyrole(['superadmin', 'admin'])
+<div class="kt-container-fixed mb-10">
     <div class="grid w-full space-y-5">
         <div class="rounded-lg w-full grow">
             <div class="p-2 flex justify-center">
@@ -97,7 +98,91 @@
         </div>
     </div>
 </div>
+@endhasanyrole
 
+@role('superadmin')
+<div class="kt-container-fixed">
+    <div class="grid w-full space-y-5">
+        <div class="kt-card">
+            <div class="kt-card-header min-h-16">
+                <h2>Riwayat Login Pengguna</h2>
+                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" />
+            </div>
+            <div id="kt_datatable_remote_filters" class="kt-card-table relative" data-kt-datatable-page-size="10">
+                <div class="kt-table-wrapper kt-scrollable">
+                    <table class="kt-table" data-kt-datatable-table="true">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="w-10" data-kt-datatable-column="nik">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">NIK</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="nama">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Nama Lengkap</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-10" data-kt-datatable-column="username">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Username</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="faskes">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Faskes</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-10" data-kt-datatable-column="keluarga">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Jml. Keluarga</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-20" data-kt-datatable-column="desa">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Desa</span>
+                                        <span class="kt-table-col-sort"></span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="w-10" data-kt-datatable-column="opsi">
+                                    <span class="kt-table-col">
+                                        <span class="kt-table-col-label">Opsi</span>
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <template><!--begin:pagination--></template>
+                <div class="kt-datatable-toolbar">
+                    <div class="kt-datatable-length">
+                        Show
+                        <select class="kt-select kt-select-sm w-16" name="perpage" data-kt-datatable-size="true"></select>
+                        per page
+                    </div>
+                    <div class="kt-datatable-info">
+                        <span data-kt-datatable-info="true"></span>
+                        <div class="kt-datatable-pagination" data-kt-datatable-pagination="true"></div>
+                    </div>
+                </div>
+                <template><!--end:pagination--></template>
+            </div>
+        </div>
+    </div>
+</div>
+@endrole
+
+@hasrole('faskes')
+<div></div>
+@endhasrole
+
+@hasanyrole(['superadmin', 'admin'])
 <div class="kt-modal" data-kt-modal="true" id="modal_edit">
     <div class="kt-modal-content w-[500px] top-[5%]">
         <div class="kt-modal-header">
@@ -136,10 +221,6 @@
                         <div class="kt-form-item">
                             <label class="kt-form-label">Alamat Kantor* :</label>
                             <div class="kt-form-control">
-                                {{-- <div class="kt-input">
-                                    <i class="ki-filled ki-subtitle text-lg"></i>
-                                    <input type="text" class="kt-input" id="alamat" name="alamat" placeholder="Alamat" maxlength="200" value="{{ $profile->alamat }}" required />
-                                </div> --}}
                                 <textarea name="alamat" id="alamat" class="kt-textarea" cols="30" rows="4">{{ $profile->alamat }}</textarea>
                             </div>
                         </div>
@@ -235,6 +316,8 @@
         </div>
     </div>
 </div>
+@endhasanyrole
+
 @endsection
 
 

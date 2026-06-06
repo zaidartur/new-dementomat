@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Faskes;
+use App\Models\Kecamatan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +22,11 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $data = [
+            'kecs'   => Kecamatan::all(),
+            'faskes' => Faskes::all(),
+        ];
+        return view('auth.register_user', $data);
     }
 
     /**

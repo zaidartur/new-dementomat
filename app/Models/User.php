@@ -65,4 +65,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(DataKeluarga::class, 'parent_user', 'uuid');
     }
+
+    /**
+     * Get the faskes associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function faskes(): HasOne
+    {
+        return $this->hasOne(Faskes::class, 'faskes_id', 'faskes_id');
+    }
 }

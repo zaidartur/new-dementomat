@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CekDahakController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontakController;
@@ -16,8 +17,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Route::get('registrasi/pengguna', [RegisteredUserController::class, 'show_logo'])->name('logo');
 Route::get('slider-image/{uid}', [UtilityController::class, 'show_image']);
 Route::get('assets/web-logos', [UtilityController::class, 'show_logo'])->name('logo');
+Route::get('data-desa-kecamatan/{kec}', [MobileUtilityController::class, 'data_desa_by_kecamatan']);
 
 
 Route::prefix('/')->middleware('auth')->group(function() {

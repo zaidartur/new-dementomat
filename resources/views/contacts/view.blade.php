@@ -12,7 +12,13 @@
                 Contact Person
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Data kontak / nomor telepon petugas faskes dan admin dinkes
+                @hasanyrole(['admin', 'superadmin'])
+                Data kontak / nomor telepon PIC petugas faskes dan admin dinkes
+                @endhasanyrole
+
+                @role('faskes')
+                Data kontak PIC untuk Faskes {{ Auth::user()->faskes->nama_faskes }}
+                @endrole
             </div>
         </div>
     </div>
@@ -22,9 +28,10 @@
     <div class="grid w-full space-y-5">
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
-                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" />
+                {{-- <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50" data-kt-datatable-search="#kt_datatable_remote_filters" /> --}}
 
                 <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary" onclick="_new_contact()">
+                    <i class="ki-filled ki-plus-circle text-md"></i>
                     Tambah Kontak
                 </button>
             </div>
@@ -113,7 +120,7 @@
                         </tbody>
                     </table>
                 </div>
-                <template><!--begin:pagination--></template>
+                {{-- <template><!--begin:pagination--></template>
                 <div class="kt-datatable-toolbar">
                     <div class="kt-datatable-length">
                         Show
@@ -125,7 +132,7 @@
                         <div class="kt-datatable-pagination" data-kt-datatable-pagination="true"></div>
                     </div>
                 </div>
-                <template><!--end:pagination--></template>
+                <template><!--end:pagination--></template> --}}
             </div>
         </div>
     </div>
