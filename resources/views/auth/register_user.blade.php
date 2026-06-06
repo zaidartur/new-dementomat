@@ -45,11 +45,10 @@
             }
         </style>
     </head>
-    <body class="antialiased flex h-full text-base text-foreground bg-background">
-    
+    <body class="antialiased flex text-base text-foreground bg-background h-auto md:h-full">
         <div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
-            <div class="kt-card max-w-[870px] w-full">
-                <form action="{{ route('login') }}" class="kt-card-content kt-form flex flex-col gap-5 p-10" id="sign_in_form" method="POST">
+            <div class="kt-card w-full md:w-[870px]">
+                <form action="{{ route('login') }}" class="kt-card-content kt-form flex flex-col gap-5 p-4 md:p-10" id="sign_in_form" method="POST">
                     @csrf
                     <div class="text-center mb-2.5">
                         <h3 class="text-lg font-medium text-mono leading-none mb-2.5">Registrasi Skrining Pengguna</h3>
@@ -117,12 +116,12 @@
                                 <div class="kt-card-content px-5 py-5">
                                     <div class="" id="stepper_1">
                                         <div class="flex items-start justify-center text-lg font-semibold text-mono">
-                                            <div class="px-3 py-3 w-[75%]">
-                                                <div class="flex flex-row gap-4">
+                                            <div class="px-3 py-3 w-[95%]">
+                                                <div class="flex md:flex-row flex-col gap-4">
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Nama Lengkap*</label>
-                                                        <input class="kt-input" @error('name') aria-invalid="true" @enderror placeholder="Masukkan nama" name="nama" type="text" maxlength="50" value="{{ old('name') }}" autofocus required>
-                                                        @error('name')
+                                                        <input class="kt-input" @error('nama') aria-invalid="true" @enderror placeholder="Masukkan nama" name="nama" type="text" maxlength="50" value="{{ old('nama') }}" autofocus required>
+                                                        @error('nama')
                                                             <div class="kt-form-message">
                                                                 <strong>{{ $message }}</strong>
                                                             </div>
@@ -130,7 +129,7 @@
                                                     </div>
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Tanggal Lahir*</label>
-                                                        <input class="kt-input" @error('bod') aria-invalid="true" @enderror placeholder="Masukkan nama" name="bod" type="date" max="{{ date('Y-m-d') }}" value="{{ old('bod') }}" required>
+                                                        <input class="kt-input" @error('bod') aria-invalid="true" @enderror placeholder="Tanggal lahir" name="bod" type="date" max="{{ date('Y-m-d') }}" value="{{ old('bod') }}" required>
                                                         @error('bod')
                                                             <div class="kt-form-message">
                                                                 <strong>{{ $message }}</strong>
@@ -147,10 +146,10 @@
                                                         </div>
                                                     @enderror
                                                 </div>
-                                                <div class="flex flex-row gap-4">
+                                                <div class="flex md:flex-row flex-col gap-4">
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Kecamatan*</label>
-                                                        <select class="kt-select" data-kt-select="true" id="kecamatan" name="kecamatan" @error('kecamatan') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onchange="_mykec(this.value)" required>
+                                                        <select class="kt-select" data-kt-select="true" id="kecamatan" name="kecamatan" @error('kecamatan') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Kecamatan..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' onchange="_mykec(this.value)" value="{{ old('kecamatan') }}" required>
                                                             @foreach ($kecs as $item)
                                                                 <option value="{{ $item->kec_id }}">{{ $item->kec_name }}</option>
                                                             @endforeach
@@ -163,7 +162,7 @@
                                                     </div>
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Desa*</label>
-                                                        <select class="kt-select" data-kt-select="true" id="desa" name="desa" @error('desa') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Desa..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                                        <select class="kt-select" data-kt-select="true" id="desa" name="desa" @error('desa') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Desa..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' value="{{ old('desa') }}" required>
                                                             <option value="">Pilih Kecamatan</option>
                                                         </select>
                                                         @error('desa')
@@ -173,10 +172,10 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="flex flex-row gap-4">
+                                                <div class="flex md:flex-row flex-col gap-4">
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Jenis Kelamin*</label>
-                                                        <select class="kt-select" data-kt-select="true" id="jenkel" name="jenkel" @error('jenkel') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Jenis Kelamin..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                                        <select class="kt-select" data-kt-select="true" id="jenkel" name="jenkel" @error('jenkel') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih Jenis Kelamin..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' value="{{ old('jenkel') }}" required>
                                                             <option value="L">Laki-Laki</option>
                                                             <option value="P">Perempuan</option>
                                                         </select>
@@ -196,7 +195,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="flex flex-row gap-4">
+                                                <div class="flex md:flex-row flex-col gap-4">
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">No. Telepon*</label>
                                                         <input class="kt-input" @error('telepon') aria-invalid="true" @enderror placeholder="628xxx" name="telepon" type="number" value="{{ old('telepon') }}" required>
@@ -225,11 +224,11 @@
                                     </div>
                                     <div class="hidden" id="stepper_2">
                                         <div class="flex items-center justify-center text-lg font-semibold text-mono">
-                                            <div class="px-3 py-3 w-[75%]">
+                                            <div class="px-3 py-3 w-[95%]">
                                                 <div class="flex flex-col gap-1 kt-form-item mb-2">
-                                                    <label class="kt-form-label font-normal text-mono mb-1">Nomor Induk Keluarga <small>(16 digit)</small></label>
+                                                    <label class="kt-form-label font-normal text-mono mb-1">Nomor Induk Keluarga* <small>(16 digit)</small></label>
                                                     <input class="kt-input" @error('nik') aria-invalid="true" @enderror placeholder="Masukkan NIK" name="nik" type="number" value="{{ old('nik') }}" required>
-                                                    @error('alamat')
+                                                    @error('nik')
                                                         <div class="kt-form-message">
                                                             <strong>{{ $message }}</strong>
                                                         </div>
@@ -237,7 +236,7 @@
                                                 </div>
                                                 <div class="flex flex-col gap-1 kt-form-item mb-2">
                                                     <label class="kt-form-label font-normal text-mono mb-1">Email <small>(opsional)</small></label>
-                                                    <input class="kt-input" @error('email') aria-invalid="true" @enderror placeholder="Masukkan Email" name="email" type="email" value="{{ old('email') }}">
+                                                    <input class="kt-input" @error('email') aria-invalid="true" @enderror placeholder="email@email.com" name="email" type="email" value="{{ old('email') }}">
                                                     @error('email')
                                                         <div class="kt-form-message">
                                                             <strong>{{ $message }}</strong>
@@ -247,7 +246,7 @@
                                                 <div class="flex flex-col gap-1 kt-form-item mb-2">
                                                     <div class="flex items-center justify-between gap-1">
                                                         <label class="kt-form-label font-normal text-mono">
-                                                            Password
+                                                            Password*
                                                         </label>
                                                     </div>
                                                     <div class="kt-input" data-kt-toggle-password="true">
@@ -265,7 +264,7 @@
                                                 <div class="flex flex-col gap-1 kt-form-item mb-2">
                                                     <div class="flex items-center justify-between gap-1">
                                                         <label class="kt-form-label font-normal text-mono">
-                                                            Konfirmasi Password
+                                                            Konfirmasi Password*
                                                         </label>
                                                     </div>
                                                     <div class="kt-input" data-kt-toggle-password="true">
@@ -488,6 +487,7 @@
                                             // Cari label terdekat untuk memberikan informasi konteks error ke pengguna
                                             var labelNode = input.closest('.kt-form-item')?.querySelector('label');
                                             var labelText = labelNode ? labelNode.innerText : "Kolom pilihan";
+                                            console.log('label', labelNode)
                                             
                                             // Opsional: Beri border merah pada pembungkus komponen select biar estetik
                                             var selectWrapper = input.closest('.kt-form-item');
@@ -500,7 +500,7 @@
                                             // Bersihkan border merah jika sudah diisi
                                             var selectWrapper = input.closest('.kt-form-item');
                                             if (selectWrapper) {
-                                                selectWrapper.classList.remove('border', 'border-danger', 'rounded-lg', 'p-1');
+                                                selectWrapper.classList.remove('border', 'border-destructive', 'rounded-lg', 'p-1');
                                             }
                                         }
                                     } else {
@@ -720,6 +720,18 @@
                     }
                 })
             }
+
+            @if (session('error'))
+                setTimeout(() => {
+                    _swal_alert('error', "{{ session('error') }}")
+                }, 1000);
+            @endif
+
+            @if (session('success'))
+                setTimeout(() => {
+                    _swal_alert('success', "{{ session('success') }}")
+                }, 1000);
+            @endif
         </script>
     </body>
 </html>
