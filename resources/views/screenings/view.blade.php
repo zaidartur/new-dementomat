@@ -104,12 +104,17 @@
                 Data Hasil Skrining
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Data hasil skrining terbaru
+                @hasanyrole(['faskes', 'admin', 'superadmin'])
+                    Data hasil skrining terbaru
+                @endhasanyrole
+
+                @hasrole('user') Data hasil skrining Anda @endrole
             </div>
         </div>
     </div>
 </div>
 
+@hasanyrole(['faskes', 'admin', 'superadmin'])
 <div class="kt-container-fixed">
     <div class="grid w-full space-y-5">
         <div class="kt-card">
@@ -403,6 +408,7 @@
         </div>
     </div>
 </div>
+@endhasanyrole
 @endsection
 
 

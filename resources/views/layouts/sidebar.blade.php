@@ -86,7 +86,7 @@
                 </div>
                 @endcan
 
-                @canany(['view hasil skrining', 'view cek dahak', 'view pemantauan obat'])
+                @canany(['view hasil skrining', 'view cek dahak', 'view pemantauan obat', 'user skrining'])
                 <div class="kt-menu-item pt-2.25 pb-px">
                     <span
                         class="kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]">
@@ -94,6 +94,18 @@
                     </span>
                 </div>
                 @endcanany
+                @can('user skrining')
+                <div class="kt-menu-item {{ request()->routeIs('skrining.user') ? 'active' : '' }}" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
+                    <a href="{{ route('skrining.user') }}" class="kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg" tabindex="0">
+                        <span class="kt-menu-icon items-start text-muted-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary w-[20px]">
+                            <i class="ki-filled ki-shield-tick text-lg"></i>
+                        </span>
+                        <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                            Skrining TBC
+                        </span>
+                    </a>
+                </div>
+                @endcan
                 @can('view hasil skrining')
                 <div class="kt-menu-item {{ request()->routeIs('skrining') ? 'active' : '' }}" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
                     <a href="{{ route('skrining') }}" class="kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg" tabindex="0">
@@ -230,3 +242,37 @@
         </div>
     </div>
 </div>
+
+
+{{-- bottom navbar for mobile user --}}
+@hasrole('user')
+    <nav class="lg:hidden fixed bottom-0 left-0 w-full bg-background border-t border-t-border z-[99] pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="grid grid-cols-4 h-16">
+            
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('dashboard') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
+                <i class="ki-filled ki-element-11 text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Beranda</span>
+            </a>
+
+            @can('user skrining')
+            <a href="{{ route('skrining.user') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('skrining.user') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
+                <i class="ki-filled ki-shield-tick text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Skrining TBC</span>
+            </a>
+            @endcan
+
+            @can('view hasil skrining')
+            <a href="{{ route('skrining') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('skrining') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
+                <i class="ki-filled ki-cheque text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Hasil Skrining</span>
+            </a>
+            @endcan
+
+            <a href="{{ route('profile') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('profile') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
+                <i class="ki-filled ki-profile-circle text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Profil</span>
+            </a>
+
+        </div>
+    </nav>
+@endrole

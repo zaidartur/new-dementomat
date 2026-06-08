@@ -1,4 +1,4 @@
-<footer class="kt-footer">
+<footer class="kt-footer hidden lg:flex">
     <!-- Container -->
     <div class="kt-container-fixed">
         <div class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-3 py-5">

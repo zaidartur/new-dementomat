@@ -52,7 +52,8 @@ class PermissionSeeder extends Seeder
             'view hasil skrining',
             'download hasil skrining',
             'update hasil skrining',
-            'hapus hasil skrining'
+            'hapus hasil skrining',
+            'user skrining',
         ];
         foreach ($skrining as $key => $value) {
             Permission::firstOrCreate(['name' => $value]);
@@ -210,7 +211,7 @@ class PermissionSeeder extends Seeder
             ],
             'user'      => [
                 'view profile saya', 'update profile saya', 'ubah username saya', 'ubah password saya',
-                'view hasil skrining'
+                'view hasil skrining', 'user skrining'
             ]
         ];
 

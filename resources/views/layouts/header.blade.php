@@ -4,11 +4,11 @@
         <!-- Mobile Logo -->
         <div class="flex gap-2.5 lg:hidden items-center -ms-1">
             <a class="shrink-0" href="#">
-                <img class="max-h-[25px] w-full" src="{{ asset('assets/media/app/mini-logo.svg') }}" />
+                <img class="max-h-[25px] w-full" src="{{ route('logo') }}" />
             </a>
             <div class="flex items-center">
                 <button class="kt-btn kt-btn-icon kt-btn-ghost" data-kt-drawer-toggle="#sidebar">
-                    <i class="ki-filled ki-menu">
+                    <i class="ki-filled ki-menu text-xl">
                     </i>
                 </button>
             </div>

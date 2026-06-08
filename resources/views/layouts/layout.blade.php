@@ -39,7 +39,7 @@
                 <!-- End of Header -->
 
                 <!-- Content -->
-                <main class="grow pt-5" id="content" role="content">
+                <main class="grow pt-5 overflow-y-auto pb-20 lg:pb-0" id="content" role="content">
                     <div class="kt-container-fixed" id="contentContainer"></div>
                     @yield('content')
                 </main>

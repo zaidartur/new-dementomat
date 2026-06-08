@@ -30,6 +30,18 @@ class SkriningController extends Controller
         return view('screenings.view', $data);
     }
 
+    public function view_user()
+    {
+        $request = Request();
+
+        $data = [
+            'faskes'    => [],
+            'kecamatan' => Kecamatan::all(),
+        ];
+
+        return view('screenings.users', $data);
+    }
+
     public function detail(Request $request)
     {
         $request->validate([
@@ -100,6 +112,8 @@ class SkriningController extends Controller
     public function ss_skrining()
     {
         $request = Request();
+        if ($request->user()->hasAnyRole(['user'])) return abort(404);
+        
         $page   = intval($request->page) < 1 ? 1 : $request->page;
         $size   = $request->size ?? 10;
         $skip   = (intval($page) - 1) * intval($size);

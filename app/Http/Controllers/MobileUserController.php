@@ -34,7 +34,7 @@ class MobileUserController extends Controller
     public function keluarga()
     {
         $request = Request();
-        $users = User::with(['detail', 'detail.sesiTerakhir', 'keluarga', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes', 'keluarga.faskes.kecamatan', 'keluarga.faskes.desa', 'keluarga.sesiTerakhir'])
+        $users = User::with(['detail', 'detail.sesiTerakhir', 'detail.kontak', 'keluarga', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes', 'keluarga.faskes.kecamatan', 'keluarga.faskes.desa', 'keluarga.sesiTerakhir', 'keluarga.kontak'])
                 ->where('uuid', $request->user()->uuid)
                 ->select('uuid', 'username', 'name', 'email', 'created_at')
                 ->first()

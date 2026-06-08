@@ -3,3 +3,7 @@
 @tailwind utilities;
 
 @import 'sweetalert2/dist/sweetalert2.min.css';
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}

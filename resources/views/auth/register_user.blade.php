@@ -48,7 +48,7 @@
     <body class="antialiased flex text-base text-foreground bg-background h-auto md:h-full">
         <div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
             <div class="kt-card w-full md:w-[870px]">
-                <form action="{{ route('login') }}" class="kt-card-content kt-form flex flex-col gap-5 p-4 md:p-10" id="sign_in_form" method="POST">
+                <form action="{{ route('register') }}" class="kt-card-content kt-form flex flex-col gap-5 p-4 md:p-10" id="sign_in_form" method="POST">
                     @csrf
                     <div class="text-center mb-2.5">
                         <h3 class="text-lg font-medium text-mono leading-none mb-2.5">Registrasi Skrining Pengguna</h3>
@@ -139,7 +139,7 @@
                                                 </div>
                                                 <div class="flex flex-col gap-1 kt-form-item mb-2">
                                                     <label class="kt-form-label font-normal text-mono mb-1">Alamat*</label>
-                                                    <textarea name="alamat" id="alamat" class="kt-textarea" @error('alamat') aria-invalid="true" @enderror cols="30" rows="3" required placeholder="Tulis alamat disini.."></textarea>
+                                                    <textarea name="alamat" id="alamat" class="kt-textarea" @error('alamat') aria-invalid="true" @enderror cols="30" rows="3" required placeholder="Tulis alamat disini..">{{ old('alamat') }}</textarea>
                                                     @error('alamat')
                                                         <div class="kt-form-message">
                                                             <strong>{{ $message }}</strong>

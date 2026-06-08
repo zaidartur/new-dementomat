@@ -7,6 +7,7 @@ use App\Models\DataKeluarga;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,16 +40,16 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'nama'      => ['required', 'string', 'max:255'],
+            'nama'      => ['required', 'string', 'max:50'],
             'bod'       => ['required', 'date'],
             'alamat'    => ['required', 'string'],
             'kecamatan' => ['required', 'numeric', 'exists:kecamatans,kec_id'],
             'desa'      => ['required', 'numeric', 'exists:desas,desakel_id'],
             'jenkel'    => ['required', 'string', 'in:L,P'],
             'status'    => ['required', 'string', 'max:50'],
-            'telepon'   => ['required', 'numeric', 'starts_with:628'],
+            'telepon'   => ['required', 'numeric', 'starts_with:628', 'digits_between:9,14'],
             'faskes'    => ['required', 'string', 'exists:faskes,faskes_id'],
-            'nik'       => ['required', 'numeric', 'min:15', 'max:16', 'unique:data_keluargas,nik'],
+            'nik'       => ['required', 'numeric', 'digits_between:15,16', 'unique:data_keluargas,nik'],
             'email'     => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password'  => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -58,7 +59,7 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'uuid'      => $uuid,
             'username'  => $name,
-            'name'      => $request->name,
+            'name'      => $request->nama,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
             'level'     => 'user'
@@ -73,7 +74,7 @@ class RegisteredUserController extends Controller
             'nama_lengkap'  => $request->nama,
             'alamat'        => $request->alamat,
             'alamat_nik'    => $request->alamat,
-            'tgl_lahir'     => $request->bod,
+            'tgl_lahir'     => Carbon::parse($request->bod)->format('Y-m-d'),
             'jenkel'        => $request->jenkel,
             'telepon'       => $request->telepon,
             'status_keluarga' => $request->status,
@@ -81,6 +82,8 @@ class RegisteredUserController extends Controller
             'desakel_id'    => $request->desa,
             'id_faskes'     => $request->faskes,
         ]);
+
+        $user->assignRole('user');
 
         event(new Registered($user));
 
