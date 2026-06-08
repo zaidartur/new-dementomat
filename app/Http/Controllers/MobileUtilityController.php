@@ -10,6 +10,7 @@ use App\Models\Kontak;
 use App\Models\Slider;
 use App\Models\Youtube;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class MobileUtilityController extends Controller
 {
@@ -109,9 +110,16 @@ class MobileUtilityController extends Controller
 
     public function data_slider()
     {
-        $lists = Slider::where('status', 'active')->get();
+        $lists = Slider::where('status', 'active')->get()->makeHidden(['id', 'foto_slider']);
+        $slide = $lists->collect($lists)->map(function($ls) {
+            $encUid     = Crypt::encryptString($ls->slider_id);
+            $imageUrl   = route('slider.url', $encUid);
+            $ls->image_url = $imageUrl;
 
-        return send_200('Data slider', $lists);
+            return $ls;
+        });
+
+        return send_200('Data slider', $slide);
     }
 
     public function data_berita()

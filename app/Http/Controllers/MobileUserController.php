@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DataKeluarga;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -33,8 +34,9 @@ class MobileUserController extends Controller
     public function keluarga()
     {
         $request = Request();
-        $users = User::with(['detail', 'keluarga', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes', 'keluarga.faskes.kecamatan', 'keluarga.faskes.desa'])
+        $users = User::with(['detail', 'detail.sesiTerakhir', 'keluarga', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes', 'keluarga.faskes.kecamatan', 'keluarga.faskes.desa', 'keluarga.sesiTerakhir'])
                 ->where('uuid', $request->user()->uuid)
+                ->select('uuid', 'username', 'name', 'email', 'created_at')
                 ->first()
                 ->makeHidden('level');
         if (!$users) {
@@ -44,12 +46,22 @@ class MobileUserController extends Controller
             ], 400);
         }
 
-        $usia  = !empty($users->detail->tgl_lahir) ? Carbon::parse($users->detail->tgl_lahir)->age : null;
-        $users->detail->usia = $usia;
+        $usia  = !empty($users->detail->tgl_lahir) ? Carbon::parse($users->detail->tgl_lahir) : null;
+        $users->detail->usia = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::now()))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) : null;
+        if (!empty($users->detail->sesiTerakhir)) {
+            $age = CarbonInterval::instance(Carbon::parse($users->detail->tgl_lahir)->diff(Carbon::parse($users->detail->sesiTerakhir->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) ?? 0;
+            $users->detail->sesiTerakhir->umur_lengkap_saat_skrining = $age;
+        }
+
         if (count($users->keluarga) > 0) {
             foreach ($users->keluarga as $key => $value) {
-                $umur = !empty($value->tgl_lahir) ? Carbon::parse($value->tgl_lahir)->age : null;
-                $value->usia = $umur;
+                $umur = !empty($value->tgl_lahir) ? Carbon::parse($value->tgl_lahir) : null;
+                $value->usia = !empty($umur) ? CarbonInterval::instance($umur->diff(Carbon::now()))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) : null;
+
+                if (!empty($value->sesiTerakhir)) {
+                $age = CarbonInterval::instance(Carbon::parse($value->tgl_lahir)->diff(Carbon::parse($value->sesiTerakhir->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) ?? 0;
+                $value->sesiTerakhir->umur_lengkap_saat_skrining = $age;
+            }
             }
         }
 

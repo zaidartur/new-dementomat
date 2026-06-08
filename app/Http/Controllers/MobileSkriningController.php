@@ -317,6 +317,35 @@ class MobileSkriningController extends Controller
         }
     }
 
+    public function list_efek(Request $request)
+    {
+        $request->validate([
+            'uuid'   => 'required|string|exists:data_keluargas,uid_keluarga'
+        ]);
+
+        $user = DataKeluarga::where('uid_keluarga', $request->uuid)->first();
+        if (!$user) return send_400('Pengguna tidak terdaftar.');
+
+        if ($user->status_tbc != 'Dalam Pengobatan') return send_400('Anda sedang tidak dalam masa pengobatan aktif.');
+
+        // $tanggal    = now()->format('Y-m-d');
+        // $tanggal    = Carbon::parse($request->tanggal)->format('Y-m-d');
+        // $sudah_isi  = PantauanObat::where('uid_keluarga', $request->uuid)->whereDate('tanggal', $tanggal)->exists();
+        // if ($sudah_isi) return send_400('Anda sudah mengisi pemantauan gejala tanggal ' . $tanggal . '.');
+        
+        $lists = [
+            ['name' => 'mual', 'label'  => 'Efek Mual'],
+            ['name' => 'pipis', 'label' => 'Efek Pipis Merah'],
+            ['name' => 'pendengaran', 'label'  => 'Efek Pendengaran'],
+            ['name' => 'penglihatan', 'label'  => 'Efek Penglihatan'],
+            ['name' => 'pegal', 'label'  => 'Efek Pegal'],
+            ['name' => 'batuk', 'label'  => 'Efek Batuk'],
+            ['name' => 'demam', 'label'  => 'Efek Demam'],
+        ];
+
+        return send_200('Daftar parameter efek samping', $lists);
+    }
+
     public function submit_log_obat(Request $request)
     {
         $request->validate([
@@ -367,6 +396,7 @@ class MobileSkriningController extends Controller
     {
         $request->validate([
             'uuid'      => 'required|string|exists:data_keluargas,uid_keluarga',
+            'id_sesi'   => 'required|string|exists:data_sesi_skrinings,uid_sesi',
             'berat'     => 'required|decimal:2',
         ]);
 
@@ -402,5 +432,43 @@ class MobileSkriningController extends Controller
                 'tanggal' => date('Y-m-d')
             ]
         );
+    }
+
+    public function logs_pemantauan_obat(Request $request)
+    {
+        $request->validate([
+            'uuid'      => 'required|string|exists:data_keluargas,uid_keluarga',
+            'uid_sesi'  => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $lists = PantauanObat::where('uid_keluarga', $request->uuid)->where('uid_sesi', $request->uid_sesi)->orderBy('created_at', 'desc')->get();
+        $logs  = collect($lists)->map(function($query) {
+            $detail = [
+                ['name' => 'mual', 'label'  => 'Efek Mual', 'result' => $query->efek_mual],
+                ['name' => 'pipis', 'label' => 'Efek Pipis Merah', 'result' => $query->efek_pipis_merah],
+                ['name' => 'pendengaran', 'label'  => 'Efek Pendengaran', 'result' => $query->efek_pendengaran],
+                ['name' => 'penglihatan', 'label'  => 'Efek Penglihatan', 'result' => $query->efek_penglihatan],
+                ['name' => 'pegal', 'label'  => 'Efek Pegal', 'result' => $query->efek_pegal],
+                ['name' => 'batuk', 'label'  => 'Efek Batuk', 'result' => $query->efek_batuk],
+                ['name' => 'demam', 'label'  => 'Efek Demam', 'result' => $query->efek_demam],
+            ];
+            $query->detail = $detail;
+
+            return $query;
+        });
+
+        return send_200('Daftar riwayat pemantauan obat', $logs);
+    }
+
+    public function logs_berat_badan(Request $request)
+    {
+        $request->validate([
+            'uuid'      => 'required|string|exists:data_keluargas,uid_keluarga',
+            'uid_sesi'  => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $lists = PantauanBeratBadan::where('uid_keluarga', $request->uuid)->where('uid_sesi', $request->uid_sesi)->orderByDesc('bulan_ke')->get();
+
+        return send_200('Daftar riwayat pemantauan obat', $lists);
     }
 }

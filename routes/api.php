@@ -32,8 +32,11 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::post('/riwayat', [MobileSkriningController::class, 'riwayat_skrining']);
 
         Route::post('/tes-dahak', [MobileSkriningController::class, 'submit_dahak']);
+        Route::post('/daftar-efek-samping', [MobileSkriningController::class, 'list_efek'])->middleware('throttle:api');
         Route::post('/pemantauan-obat', [MobileSkriningController::class, 'submit_log_obat'])->middleware('throttle:api');
+        Route::post('/riwayat-pemantauan-obat', [MobileSkriningController::class, 'logs_pemantauan_obat']);
         Route::post('/berat-badan-bulanan', [MobileSkriningController::class, 'submit_berat_badan'])->middleware('throttle:api');
+        Route::post('/riwayat-berat-badan', [MobileSkriningController::class, 'logs_berat_badan']);
     });
 
     Route::prefix('/user')->group(function() {

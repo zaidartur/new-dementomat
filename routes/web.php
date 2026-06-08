@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 // Route::get('registrasi/pengguna', [RegisteredUserController::class, 'show_logo'])->name('logo');
-Route::get('slider-image/{uid}', [UtilityController::class, 'show_image']);
+Route::get('slider-image/{uid}', [UtilityController::class, 'show_image'])->name('slider.url');
 Route::get('assets/web-logos', [UtilityController::class, 'show_logo'])->name('logo');
 Route::get('data-desa-kecamatan/{kec}', [MobileUtilityController::class, 'data_desa_by_kecamatan']);
 

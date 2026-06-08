@@ -9,7 +9,7 @@ use Spatie\Activitylog\LogOptions;
 use Override;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-#[Fillable(['uid_keluarga', 'bulan_live', 'bulan_ke', 'berat_badan'])]
+#[Fillable(['uid_keluarga', 'uid_sesi', 'bulan_live', 'bulan_ke', 'berat_badan'])]
 class PantauanBeratBadan extends Model
 {
     use LogsActivity;
