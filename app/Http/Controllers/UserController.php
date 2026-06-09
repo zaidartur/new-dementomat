@@ -303,6 +303,12 @@ class UserController extends Controller
             });
         }
 
+        if ($request->user()->hasAnyRole(['faskes'])) {
+            $query->whereHas('keluarga', function($q) use ($request) {
+                $q->where('id_faskes', $request->user()->faskes_id);
+            });
+        }
+
         $query->whereNull('deleted_at');
         $query->where('level', 'user');
         $totalFiltered = $query->count();

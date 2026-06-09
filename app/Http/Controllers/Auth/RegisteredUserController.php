@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
             'status'    => ['required', 'string', 'max:50'],
             'telepon'   => ['required', 'numeric', 'starts_with:628', 'digits_between:9,14'],
             'faskes'    => ['required', 'string', 'exists:faskes,faskes_id'],
-            'nik'       => ['required', 'numeric', 'digits_between:15,16', 'unique:data_keluargas,nik'],
+            'nik'       => ['required', 'numeric', 'digits:16', 'unique:data_keluargas,nik'],
             'email'     => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password'  => ['required', 'confirmed', Rules\Password::defaults()],
         ]);

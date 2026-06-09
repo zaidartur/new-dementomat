@@ -2,13 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataKeluarga;
+use App\Models\DataResponseSkrining;
+use App\Models\DataRuleSkrining;
 use App\Models\DataSesiSkrining;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\MasterKategoriSkrining;
+use App\Models\MasterParameterSkrining;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SkriningController extends Controller
 {
@@ -33,13 +42,176 @@ class SkriningController extends Controller
     public function view_user()
     {
         $request = Request();
+        // $lists = DataSesiSkrining::where('uid_keluarga', Auth::user()->uuid)->whereNull('deleted_at')->get();
+        $userId = Auth::user()->uuid;
+        $lists = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,tgl_lahir,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'dataResponse', 'dataResponse.parameter'])
+                ->withCount(['isYes', 'isNo'])
+                ->where('uid_keluarga', Auth::user()->uuid)
+                ->whereNull('deleted_at')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+        collect($lists)->map(function($ls) {
+            $usia  = !empty($ls->keluarga->tgl_lahir) ? Carbon::parse($ls->keluarga->tgl_lahir) : null;
+            $ls->umur_lengkap_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($ls->tgl_tcm)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+            $ls->tgl_lengkap_tcm = !empty($ls->tgl_tcm) ? Carbon::parse($ls->tgl_tcm)->locale('id')->translatedFormat('d F Y') : '';
+        });
 
         $data = [
-            'faskes'    => [],
-            'kecamatan' => Kecamatan::all(),
+            'logs'    => $lists,
         ];
 
         return view('screenings.users', $data);
+    }
+
+    public function user_parameter(Request $request)
+    {
+        $uuid = $request->user()->uuid;
+
+        $user = DataKeluarga::with(['faskes'])->select('uid_keluarga', 'nik', 'nama_lengkap', 'alamat', 'jenkel', 'status_keluarga', 'tgl_lahir', 'kec_id', 'desakel_id', 'created_at')->where('uid_keluarga', $uuid)->where('is_auth', 1)->first();
+        if (!$user) return send_400('User ID tidak ditemukan.');
+
+        if (empty($user->nik) || empty($user->alamat) || empty($user->tgl_lahir) || empty($user->jenkel) || empty($user->kec_id) || empty($user->desakel_id)) return send_400('Mohon untuk melengkapi biodata terlebih dahulu.');
+
+        $lastSession = DataSesiSkrining::where('uid_keluarga', $user->uid_keluarga)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($lastSession) {
+            $tanggalBisaSkrining = !empty($lastSession->created_at) ? Carbon::parse($lastSession->created_at)->addDays(7)->locale('id')->translatedFormat('d F Y') : Carbon::parse('now')->locale('id')->translatedFormat('d F Y');
+            return send_400('Anda sudah melakukan skrining dalam 7 hari terakhir. Cobalah lagi setelah ' . $tanggalBisaSkrining);
+        }
+
+        $usia  = !empty($user->tgl_lahir) ? Carbon::parse($user->tgl_lahir) : null;
+        $user->umur_detail = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::now()))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+        $user->nik = substr($user->nik, 0, 4) . str_repeat("*", strlen($user->nik) - 4);
+
+        // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
+        $statusTerkunci = [
+            'Wajib Menghubungi Kader / Petugas Puskesmas',
+            'Menunggu Tes Dahak',
+            'Menunggu Verifikasi Admin/Petugas',
+            'Dalam Pengobatan'
+        ];
+        if (in_array($user->status_tbc, $statusTerkunci)) return send_400("Anda sedang berstatus {$user->status_tbc}. Tidak perlu melakukan skrining awal lagi.");
+
+        $usia = !empty($user->tgl_lahir) ? Carbon::parse($user->tgl_lahir)->age : 0;
+        $kategori   = MasterKategoriSkrining::where('min_age', '<=', $usia)->where('max_age', '>=', $usia)->firstOrFail();
+        $parameter  = MasterParameterSkrining::where('kategori_id', $kategori->id)->orderBy('id', 'asc')->get()->makeHidden(['id', 'kategori_id']);
+
+        return send_200('Data parameter ' . $kategori->nama_kategori, ['params' => $parameter, 'kategori' => $kategori, 'bio' => $user]);
+    }
+
+    public function save_user_param(Request $request)
+    {
+        $request->validate([
+            'parameter' => 'required|array',
+        ]);
+
+        $uuid = $request->user()->uuid;
+        $user = DataKeluarga::where('uid_keluarga', $uuid)->where('is_auth', 1)->whereNull('deleted_at')->firstOrFail();
+        if (!$user) return back()->with('error', 'User ID tidak ditemukan.');
+
+        $lastSession = DataSesiSkrining::where('uid_keluarga', $user->uid_keluarga)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($lastSession) {
+            $tanggalBisaSkrining = !empty($lastSession->created_at) ? Carbon::parse($lastSession->created_at)->addDays(7)->locale('id')->translatedFormat('d F Y') : Carbon::parse('now')->locale('id')->translatedFormat('d F Y');
+            return send_400('Anda sudah melakukan skrining dalam 7 hari terakhir. Cobalah lagi setelah ' . $tanggalBisaSkrining);
+        }
+
+        // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
+        $statusTerkunci = [
+            'Wajib Menghubungi Kader / Petugas Puskesmas',
+            'Menunggu Tes Dahak',
+            'Menunggu Verifikasi Admin/Petugas',
+            'Dalam Pengobatan'
+        ];
+        if (in_array($user->status_tbc, $statusTerkunci)) return send_400("Anda sedang berstatus {$user->status_tbc}. Tidak perlu melakukan skrining awal lagi.");
+
+        $usia = !empty($user->tgl_lahir) ? Carbon::parse($user->tgl_lahir)->age : 0;
+        $kategori   = MasterKategoriSkrining::where('min_age', '<=', $usia)->where('max_age', '>=', $usia)->firstOrFail();
+        $parameter  = MasterParameterSkrining::where('kategori_id', $kategori->id)->orderBy('id', 'asc')->get()->makeHidden(['id', 'kategori_id']);
+
+        $list = [];
+        foreach ($request->parameter as $key => $value) {
+            $list[] = $key;
+        }
+
+        return DB::transaction(function () use ($list, $request, $usia, $user, $kategori, $parameter) {
+            $session    = DataSesiSkrining::create([
+                'uid_sesi'      => Str::uuid(),
+                'uid_keluarga'  => $user->uid_keluarga,
+                'umur_saat_skrining' => $usia,
+                'kategori_id'   => $kategori->id,
+                'triggered_rule_id'  => null,
+                'location'      => null,
+            ]);
+
+            $yesParameterIds = $list;
+            $responsesToInsert = [];
+
+            foreach ($parameter as $key => $value) {
+                $responsesToInsert[] = [
+                    'sesi_uid'      => $session->uid_sesi,
+                    'parameter_uid' => $value->uid_parameter,
+                    'is_yes'       => in_array($value->uid_parameter, $list) ? 1 : 0,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ];
+            }
+
+            DataResponseSkrining::insert($responsesToInsert);
+
+            $rules = DataRuleSkrining::with('rule_kondisi')
+                ->where('kategori_id', $kategori->id)
+                ->get();
+
+            $triggeredRuleId = null;
+
+            foreach ($rules as $rule) {
+                $requiredParameters = $rule->rule_kondisi->pluck('parameter_uid')->toArray();
+
+                // Cek apakah parameter yang wajib ada, semuanya terjawab Ya oleh pasien
+                if (!empty($requiredParameters) && empty(array_diff($requiredParameters, $yesParameterIds))) {
+                    $triggeredRuleId = $rule->uid_rule;
+                    break; 
+                }
+            }
+
+            if ($triggeredRuleId) {
+                $session->update(['triggered_rule_id' => $triggeredRuleId]);
+            }
+
+            $session->load([
+                'keluarga:uid_keluarga,nama_lengkap,nik,status_keluarga',
+                'kategori:id,nama_kategori',
+                'triggeredRule:uid_rule,nama_aturan,rekomendasi'
+            ]);
+            DataKeluarga::where('uid_keluarga', $request->uuid)->update(['status_tbc' => ($session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman')]);
+
+            return response()->json([
+                'status'    => 'success',
+                'message'   => 'Data skrining berhasil di simpan.',
+                'data'      => [
+                    'uid_sesi'  => $session->uid_sesi,
+                    'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
+                    'lokasi'    => $request->lokasi,
+                    'user'      => [
+                        'uid_keluarga'  => $session->keluarga->uid_keluarga,
+                        'nama'      => $session->keluarga->nama_lengkap,
+                        'hubungan'  => $session->keluarga->status_keluarga,
+                        'usia_saat_tes' => $session->umur_saat_skrining,
+                    ],
+                    'kategori'  => $session->kategori->nama_kategori,
+                    'status_rujuk' => $session->triggered_rule_id ? true : false,
+                    'rekomendasi'  => $session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman. Tetap jaga kesehatan dan pola hidup bersih.'
+                ]
+            ], 201);
+        });
     }
 
     public function detail(Request $request)
@@ -167,6 +339,12 @@ class SkriningController extends Controller
             }
         } else {
             $query->orderBy('created_at', 'desc');
+        }
+
+        if ($request->user()->hasAnyRole(['faskes'])) {
+            $query->whereHas('keluarga', function($q) use ($request) {
+                $q->where('id_faskes', $request->user()->faskes_id);
+            });
         }
 
         $query->whereNull('deleted_at');

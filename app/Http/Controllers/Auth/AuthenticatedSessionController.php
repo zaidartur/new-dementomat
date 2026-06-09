@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         // CEK ROLE: Jika yang login BUKAN admin, langsung tendang keluar!
-        if ($request->user()->level == 'user' || empty($request->user()->level)) { // Sesuaikan nama kolom role Anda
+        if ($request->user()->level == 'users' || empty($request->user()->level)) { // Sesuaikan nama kolom role Anda
             // Hancurkan sesi web-nya
             Auth::guard('web')->logout();
             $request->session()->invalidate();

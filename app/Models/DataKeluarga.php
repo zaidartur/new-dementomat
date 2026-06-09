@@ -28,6 +28,16 @@ class DataKeluarga extends Model
     }
 
     /**
+     * Get the user that owns the DataKeluarga
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uid_keluarga', 'uuid');
+    }
+
+    /**
      * Get the kecamatan associated with the DetailUser
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

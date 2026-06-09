@@ -261,16 +261,21 @@
             </a>
             @endcan
 
-            @can('view hasil skrining')
+            {{-- @can('view hasil skrining')
             <a href="{{ route('skrining') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('skrining') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
                 <i class="ki-filled ki-cheque text-2xl mb-1"></i>
                 <span class="text-[10px] font-medium">Hasil Skrining</span>
             </a>
-            @endcan
+            @endcan --}}
 
             <a href="{{ route('profile') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('profile') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
                 <i class="ki-filled ki-profile-circle text-2xl mb-1"></i>
                 <span class="text-[10px] font-medium">Profil</span>
+            </a>
+
+            <a href="javascript:void(0)" class="flex flex-col items-center justify-center w-full h-full transition" onclick="__logout()">
+                <i class="ki-filled ki-exit-right text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Logout</span>
             </a>
 
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\DataKeluarga;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -55,11 +56,36 @@ class LoginRequest extends FormRequest
         //     ]);
         // }
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        $username = $this->input('username');
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
+
+        $isNik = preg_match('/^[0-9]{16}$/', $username);
+        if ($isNik) {
+            // if using NIK
+            $find = DataKeluarga::with('user')->where('nik', $username)->where('is_auth', 1)->whereNull('deleted_at')->first();
+            if ($find) {
+                $loginSuccess = Auth::attempt(['username' => $find->user->username, 'password' => $password], $remember);
+            } else {
+                $loginSuccess = false;
+            }
+        } else {
+            $loginSuccess = Auth::attempt(['username' => $username, 'password' => $password], $remember);
+        }
+
+        // if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        //     RateLimiter::hit($this->throttleKey());
+
+        //     throw ValidationException::withMessages([
+        //         'username' => trans('auth.failed'),
+        //     ]);
+        // }
+
+        if (!$loginSuccess) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => trans('auth.failed'),
+                'username' => 'Kredensial yang Anda masukkan tidak sesuai dengan data kami.',
             ]);
         }
 

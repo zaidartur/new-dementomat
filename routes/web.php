@@ -48,10 +48,13 @@ Route::prefix('/')->middleware('auth')->group(function() {
 
     Route::prefix('skrining/')->group(function() {
         Route::get('view', [SkriningController::class, 'view'])->name('skrining')->middleware('permission:view hasil skrining');
-        Route::get('pengguna', [SkriningController::class, 'view_user'])->name('skrining.user')->middleware('permission:user skrining');
         Route::get('data-skrining', [SkriningController::class, 'ss_skrining'])->name('skrining.ss')->middleware('permission:view hasil skrining');
         Route::post('detail', [SkriningController::class, 'detail'])->name('skrining.detail')->middleware('permission:view hasil skrining');
         Route::post('revisi-hasil-skrining', [SkriningController::class, 'revisi_skrining'])->name('skrining.revisi')->middleware('permission:update hasil skrining');
+
+        Route::get('pengguna', [SkriningController::class, 'view_user'])->name('skrining.user')->middleware('permission:user skrining');
+        Route::post('buat-skrining', [SkriningController::class, 'user_parameter'])->name('skrining.user.add')->middleware('permission:user skrining simpan');
+        Route::post('simpan-skrining', [SkriningController::class, 'save_user_param'])->name('skrining.user.save')->middleware('permission:user skrining simpan');
     });
 
     Route::prefix('penanganan/')->group(function() {

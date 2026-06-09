@@ -918,7 +918,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400">Status TBC</label>
-                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.status_tbc}</span>
+                    <span class="block text-sm text-slate-800 dark:text-slate-200 mt-0.5">${user.status_tbc ?? '-'}</span>
                 </div>
             `
         }

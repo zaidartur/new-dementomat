@@ -329,6 +329,11 @@ class PantauanObatController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
+        if ($request->user()->hasAnyRole(['faskes'])) {
+            $query->whereHas('keluarga', function($q) use ($request) {
+                $q->where('id_faskes', $request->user()->faskes_id);
+            });
+        }
 
         $query->whereNotNull('jenis_tcm')
             ->whereHas('keluarga', function($q) {
