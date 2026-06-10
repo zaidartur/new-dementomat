@@ -191,7 +191,7 @@ class SkriningController extends Controller
                 'kategori:id,nama_kategori',
                 'triggeredRule:uid_rule,nama_aturan,rekomendasi'
             ]);
-            DataKeluarga::where('uid_keluarga', $request->uuid)->update(['status_tbc' => ($session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman')]);
+            DataKeluarga::where('uid_keluarga', $uuid)->update(['status_tbc' => ($session->triggered_rule_id ? $session->triggeredRule->rekomendasi : 'Aman')]);
 
             return response()->json([
                 'status'    => 'success',
@@ -199,7 +199,7 @@ class SkriningController extends Controller
                 'data'      => [
                     'uid_sesi'  => $session->uid_sesi,
                     'tanggal'   => Carbon::parse($session->created_at)->locale('id')->translatedFormat('d F Y, H:i'),
-                    'lokasi'    => $request->lokasi,
+                    'lokasi'    => null,
                     'user'      => [
                         'uid_keluarga'  => $session->keluarga->uid_keluarga,
                         'nama'      => $session->keluarga->nama_lengkap,

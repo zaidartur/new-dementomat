@@ -8,6 +8,7 @@ use App\Models\Faskes;
 use App\Models\Kecamatan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CekDahakController extends Controller
 {
@@ -98,6 +99,9 @@ class CekDahakController extends Controller
                 ->whereHas('keluarga', function($q) {
                     $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin atau Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
                       ->whereNull('deleted_at');
+                    if (Auth::user()->hasAnyRole(['faskes'])) {
+                        $q->where('id_faskes', Auth::user()->faskes_id);
+                    }
                 })->count();
 
         $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa']);
@@ -147,6 +151,9 @@ class CekDahakController extends Controller
             ->whereHas('keluarga', function($q) {
                 $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin atau Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
                   ->whereNull('deleted_at');
+                if (Auth::user()->hasAnyRole(['faskes'])) {
+                    $q->where('id_faskes', Auth::user()->faskes_id);
+                }
             })
             ->whereNull('deleted_at');
         $totalFiltered = $query->count();

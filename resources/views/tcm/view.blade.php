@@ -30,6 +30,7 @@
                     </label>
                 </div>
 
+                @hasanyrole(['admin', 'superadmin'])
                 <label class="flex items-center gap-2 text-sm">
                     <span class="text-muted-foreground">Faskes</span>
                     <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
@@ -48,6 +49,7 @@
                         @endforeach
                     </select>
                 </label>
+                @endhasanyrole
 
                 <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary">
                     <i class="ki-filled ki-filter text-md"></i>

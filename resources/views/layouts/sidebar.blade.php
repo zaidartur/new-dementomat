@@ -125,7 +125,7 @@
                             <i class="ki-filled ki-test-tubes text-lg"></i>
                         </span>
                         <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
-                            Cek Dahak
+                            Cek Dahak (TCM)
                         </span>
                     </a>
                 </div>

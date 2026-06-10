@@ -119,15 +119,16 @@
     <div class="grid w-full space-y-5">
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
-                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-2" data-kt-datatable-search="#kt_datatable_remote_filters" />
+                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-1" data-kt-datatable-search="#kt_datatable_remote_filters" />
 
                 <div class="flex items-center gap-1">
                     <input type="checkbox" class="kt-checkbox" id="check_nik" value="1" />
                     <label class="kt-label" for="check_nik">
-                        Lihat NIK Pengguna
+                        Lihat NIK
                     </label>
                 </div>
 
+                @hasanyrole(['admin', 'superadmin'])
                 <label class="flex items-center gap-1 text-sm">
                     <span class="text-muted-foreground">Faskes</span>
                     <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
@@ -146,13 +147,25 @@
                         @endforeach
                     </select>
                 </label>
+                @endhasanyrole
 
-                <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary gap-2">
+                <label class="flex items-center gap-1 text-sm">
+                    <span class="text-muted-foreground">Status</span>
+                    <select id="kt_datatable_remote_filters_status" class="kt-select kt-select-sm w-40">
+                        <option value="all" selected>Semua</option>
+                        <option value="Aman">Aman</option>
+                        <option value="Wajib Menghubungi Kader (Petugas) Puskesmas">Wajib Menghubungi Kader / Petugas Puskesmas</option>
+                        {{-- <option value="Menunggu Hasil TCM">Menunggu Hasil TCM</option>
+                        <option value="Dalam Pengobatan">Dalam Pengobatan</option> --}}
+                    </select>
+                </label>
+
+                <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary gap-1">
                     <i class="ki-filled ki-filter text-md"></i>
                     Apply filter
                 </button>
 
-                <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm bg-green-500" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm bg-green-500 hover:bg-green-600" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                     <i class="ki-filled ki-folder-down text-md"></i>
                     Export Data
                     <span data-kt-tooltip-content="true" class="kt-tooltip">

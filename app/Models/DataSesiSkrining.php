@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\LogOptions;
 use Override;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -72,6 +73,16 @@ class DataSesiSkrining extends Model
     public function logHarian(): HasMany
     {
         return $this->hasMany(PantauanObat::class, 'uid_sesi', 'uid_sesi');
+    }
+
+    /**
+     * Get the sesiTerakhir associated with the DataKeluarga
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function obatTerakhir(): HasOne
+    {
+        return $this->hasOne(PantauanObat::class, 'uid_sesi', 'uid_sesi')->latestOfMany('created_at');
     }
 
     /**

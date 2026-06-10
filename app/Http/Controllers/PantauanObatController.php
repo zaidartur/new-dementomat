@@ -10,6 +10,7 @@ use App\Models\PantauanBeratBadan;
 use App\Models\PantauanObat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -284,6 +285,9 @@ class PantauanObatController extends Controller
                 ->whereHas('keluarga', function($q) {
                     $q->whereIn('status_tbc', ['Dalam Pengobatan'])
                       ->whereNull('deleted_at');
+                    if (Auth::user()->hasAnyRole(['faskes'])) {
+                        $q->where('id_faskes', Auth::user()->faskes_id);
+                    }
                 })->count();
 
         $query  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,tgl_mulai_obat', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.obatTerakhir', 'keluarga.beratTerakhir'])
@@ -332,6 +336,9 @@ class PantauanObatController extends Controller
         if ($request->user()->hasAnyRole(['faskes'])) {
             $query->whereHas('keluarga', function($q) use ($request) {
                 $q->where('id_faskes', $request->user()->faskes_id);
+                if (Auth::user()->hasAnyRole(['faskes'])) {
+                    $q->where('id_faskes', Auth::user()->faskes_id);
+                }
             });
         }
 

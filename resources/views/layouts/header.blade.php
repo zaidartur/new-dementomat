@@ -196,14 +196,11 @@
                                     {{ Auth::user()->name }}
                                 </span>
                                 <a class="text-xs text-secondary-foreground hover:text-primary font-medium leading-none"
-                                    href="#">
-                                    {{ Auth::user()->email }}
+                                    href="javascript:void(0)">
+                                    {{ Auth::user()->hasRole('user') ? 'Pengguna' : (Auth::user()->hasRole('faskes') ? 'admin ' . Auth::user()->level : Auth::user()->level) }}
                                 </a>
                             </div>
                         </div>
-                        <span class="kt-badge kt-badge-sm kt-badge-primary kt-badge-outline">
-                            Pro
-                        </span>
                     </div>
                     <ul class="kt-dropdown-menu-sub">
                         <li>
@@ -212,19 +209,11 @@
                         </li>
                         <li>
                             <a class="kt-dropdown-menu-link" href="#">
-                                <i class="ki-filled ki-badge">
-                                </i>
-                                Public Profile
+                                <i class="ki-filled ki-profile-circle"></i>
+                                Profile Saya
                             </a>
                         </li>
-                        <li>
-                            <a class="kt-dropdown-menu-link" href="#">
-                                <i class="ki-filled ki-profile-circle">
-                                </i>
-                                My Profile
-                            </a>
-                        </li>
-                        <li data-kt-dropdown="true" data-kt-dropdown-placement="right-start"
+                        {{-- <li data-kt-dropdown="true" data-kt-dropdown-placement="right-start"
                             data-kt-dropdown-trigger="hover">
                             <button class="kt-dropdown-menu-toggle" data-kt-dropdown-toggle="true">
                                 <i class="ki-filled ki-setting-2">
@@ -324,7 +313,7 @@
                         <li>
                             <div class="kt-dropdown-menu-separator">
                             </div>
-                        </li>
+                        </li> --}}
                     </ul>
                     <div class="px-2.5 pt-1.5 mb-2.5 flex flex-col gap-3.5">
                         <div class="flex items-center gap-2 justify-between">

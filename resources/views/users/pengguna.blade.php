@@ -30,6 +30,7 @@
                     </label>
                 </div>
 
+                @hasanyrole(['admin', 'superadmin'])
                 <label class="flex items-center gap-2 text-sm">
                     <span class="text-muted-foreground">Faskes</span>
                     <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
@@ -46,6 +47,16 @@
                         @foreach ($kec as $kc)
                             <option value="{{ $kc->kec_id }}">{{ $kc->kec_name }}</option>
                         @endforeach
+                    </select>
+                </label>
+                @endhasanyrole
+
+                <label class="flex items-center gap-2 text-sm">
+                    <span class="text-muted-foreground">Usia</span>
+                    <select id="kt_datatable_remote_filters_jenkel" class="kt-select kt-select-sm w-40">
+                        <option value="" selected="">Semua</option>
+                        <option value="dewasa">Dewasa</option>
+                        <option value="anak">Anak-Anak</option>
                     </select>
                 </label>
 
