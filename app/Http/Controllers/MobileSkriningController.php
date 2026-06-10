@@ -11,6 +11,7 @@ use App\Models\MasterParameterSkrining;
 use App\Models\PantauanBeratBadan;
 use App\Models\PantauanObat;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -62,9 +63,9 @@ class MobileSkriningController extends Controller
 
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $statusTerkunci = [
-            'Wajib Menghubungi Kader / Petugas Puskesmas',
+            'Wajib Menghubungi Kader (Petugas) Puskesmas',
             'Menunggu Tes Dahak',
-            'Menunggu Verifikasi Admin/Petugas',
+            'Menunggu Verifikasi Admin atau Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($user->status_tbc, $statusTerkunci)) {
@@ -113,9 +114,9 @@ class MobileSkriningController extends Controller
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $check = DataKeluarga::where('uid_keluarga', $request->uuid)->first();
         $statusTerkunci = [
-            'Wajib Menghubungi Kader / Petugas Puskesmas', 
+            'Wajib Menghubungi Kader (Petugas) Puskesmas', 
             'Menunggu Tes Dahak', 
-            'Menunggu Verifikasi Admin/Petugas',
+            'Menunggu Verifikasi Admin atau Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($check->status_tbc, $statusTerkunci)) {
@@ -275,6 +276,22 @@ class MobileSkriningController extends Controller
         ], 200);
     }
 
+    public function detail_skrining(Request $request)
+    {
+        $request->validate([
+            'uid_sesi'   => 'required|string|exists:data_sesi_skrinings,uid_sesi'
+        ]);
+
+        $detail = DataSesiSkrining::with(['keluarga', 'keluarga.faskes', 'keluarga.kecamatan', 'keluarga.desa', 'kategori', 'triggeredRule', 'dataResponse', 'dataResponse.parameter'])
+                ->withCount(['isYes', 'isNo'])
+                ->where('uid_sesi', $request->uid_sesi)->first();
+
+        $usia  = !empty($detail->keluarga->tgl_lahir) ? Carbon::parse($detail->keluarga->tgl_lahir) : null;
+        $detail->umur_detail_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($detail->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+        
+        return send_200('Detail riwayat skrining', $detail);
+    }
+
     public function submit_dahak(Request $request)
     {
         $request->validate([
@@ -311,7 +328,7 @@ class MobileSkriningController extends Controller
                 'tgl_tcm'   => Carbon::parse($request->tanggal)->format('Y-m-d'),
                 'file_tcm'  => $fileName,
             ]);
-            DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Verifikasi Admin/Petugas']);
+            DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Verifikasi Admin atau Petugas']);
 
             return send_200('Dokumen berhasil diunggah. Mohon tunggu verifikasi dari petugas.');
         }

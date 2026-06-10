@@ -96,7 +96,7 @@ class CekDahakController extends Controller
         $total  = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'keluarga.kecamatan', 'keluarga.desa'])
                 ->whereNotNull('jenis_tcm')
                 ->whereHas('keluarga', function($q) {
-                    $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin/Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
+                    $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin atau Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
                       ->whereNull('deleted_at');
                 })->count();
 
@@ -145,7 +145,7 @@ class CekDahakController extends Controller
 
         $query->whereNotNull('jenis_tcm')
             ->whereHas('keluarga', function($q) {
-                $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin/Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
+                $q->whereIn('status_tbc', ['Menunggu Verifikasi Admin atau Petugas', 'Menunggu Tes Dahak', 'Dalam Pengobatan', 'Aman'])
                   ->whereNull('deleted_at');
             })
             ->whereNull('deleted_at');

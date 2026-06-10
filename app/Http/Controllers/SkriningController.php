@@ -53,7 +53,7 @@ class SkriningController extends Controller
 
         collect($lists)->map(function($ls) {
             $usia  = !empty($ls->keluarga->tgl_lahir) ? Carbon::parse($ls->keluarga->tgl_lahir) : null;
-            $ls->umur_lengkap_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($ls->tgl_tcm)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+            $ls->umur_lengkap_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($ls->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
             $ls->tgl_lengkap_tcm = !empty($ls->tgl_tcm) ? Carbon::parse($ls->tgl_tcm)->locale('id')->translatedFormat('d F Y') : '';
         });
 
@@ -89,9 +89,9 @@ class SkriningController extends Controller
 
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $statusTerkunci = [
-            'Wajib Menghubungi Kader / Petugas Puskesmas',
+            'Wajib Menghubungi Kader (Petugas) Puskesmas',
             'Menunggu Tes Dahak',
-            'Menunggu Verifikasi Admin/Petugas',
+            'Menunggu Verifikasi Admin atau Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($user->status_tbc, $statusTerkunci)) return send_400("Anda sedang berstatus {$user->status_tbc}. Tidak perlu melakukan skrining awal lagi.");
@@ -125,9 +125,9 @@ class SkriningController extends Controller
 
         // BLOKIR JIKA STATUS MEDIS SEDANG AKTIF
         $statusTerkunci = [
-            'Wajib Menghubungi Kader / Petugas Puskesmas',
+            'Wajib Menghubungi Kader (Petugas) Puskesmas',
             'Menunggu Tes Dahak',
-            'Menunggu Verifikasi Admin/Petugas',
+            'Menunggu Verifikasi Admin atau Petugas',
             'Dalam Pengobatan'
         ];
         if (in_array($user->status_tbc, $statusTerkunci)) return send_400("Anda sedang berstatus {$user->status_tbc}. Tidak perlu melakukan skrining awal lagi.");

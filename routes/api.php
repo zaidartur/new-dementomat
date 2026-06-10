@@ -30,6 +30,7 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::post('/baru', [MobileSkriningController::class, 'show_parameter']);
         Route::post('/simpan', [MobileSkriningController::class, 'save_parameter'])->middleware('throttle:api');
         Route::post('/riwayat', [MobileSkriningController::class, 'riwayat_skrining']);
+        Route::post('/detail-skrining', [MobileSkriningController::class, 'detail_skrining']);
 
         Route::post('/tes-dahak', [MobileSkriningController::class, 'submit_dahak']);
         Route::post('/daftar-efek-samping', [MobileSkriningController::class, 'list_efek'])->middleware('throttle:api');
