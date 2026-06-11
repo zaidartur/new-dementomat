@@ -3,6 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('css')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
      .channel-stats-bg {
           background-image: url('{{ asset("assets/media/images/2600x1600/bg-3.png") }}');
@@ -42,25 +43,49 @@
                     <div class="kt-card flex flex-col justify-between border border-red-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <i class="ki-filled ki-virus text-4xl text-red-500 w-7 mt-4 ms-5"></i>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-bold text-mono text-red-500">{{ count($darurat) }} orang</span>
+                            <span class="text-3xl font-bold text-mono text-red-500">{{ count($darurat) }} jiwa</span>
                             <span class="text-sm font-medium text-red-500">Tindakan Darurat (Warga Suspek Baru)</span>
                         </div>
                     </div>
                     <div class="kt-card flex flex-col justify-between border border-sky-600 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <i class="ki-filled ki-watch text-4xl text-sky-600 w-7 mt-4 ms-5"></i>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-bold text-mono text-sky-600">{{ $tcm }} orang</span>
+                            <span class="text-3xl font-bold text-mono text-sky-600">{{ $tcm }} jiwa</span>
                             <span class="text-sm font-medium text-sky-600">Menunggu Hasil TCM dari Petugas</span>
                         </div>
                     </div>
                     <div class="kt-card flex flex-col justify-between border border-orange-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
                         <i class="ki-filled ki-information-1 text-4xl text-orange-500 w-7 mt-4 ms-5"></i>
                         <div class="flex flex-col gap-1 pb-4 px-5">
-                            <span class="text-3xl font-bold text-mono text-orange-500">{{ count($lists) ?? 0 }} orang</span>
+                            <span class="text-3xl font-bold text-mono text-orange-500">{{ count($lists) ?? 0 }} jiwa</span>
                             <span class="text-sm font-medium text-orange-500">Resiko Putus Obat</span>
                         </div>
                     </div>
                     @endhasrole
+
+                    @hasanyrole(['admin', 'superadmin'])
+                    <div class="kt-card flex flex-col justify-between border border-orange-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                        <i class="ki-filled ki-syringe text-4xl text-orange-500 w-7 mt-4 ms-5"></i>
+                        <div class="flex flex-col gap-1 pb-4 px-5">
+                            <span class="text-3xl font-bold text-mono text-orange-500">{{ $aktif }} jiwa</span>
+                            <span class="text-sm font-medium text-orange-500">Total Pasien Aktif (Dalam Pengobatan)</span>
+                        </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-emerald-600 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                        <i class="ki-filled ki-pulse text-4xl text-emerald-600 w-7 mt-4 ms-5"></i>
+                        <div class="flex flex-col gap-1 pb-4 px-5">
+                            <span class="text-3xl font-bold text-emerald-600">{{ $rate }}%</span>
+                            <span class="text-sm font-medium text-emerald-600">Angka Kesembuhan <i>(Cure Rate)</i> Tahun Ini<br>(Target Nasional <b>85%</b>) dari {{ $evaluasi }} pasien</span>
+                        </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-red-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                        <i class="ki-filled ki-mask text-4xl text-red-500 w-7 mt-4 ms-5"></i>
+                        <div class="flex flex-col gap-1 pb-4 px-5">
+                            <span class="text-3xl font-bold text-mono text-red-500">{{ $suspek }} jiwa</span>
+                            <span class="text-sm font-medium text-red-500">Total Suspek Terjaring Bulan Ini ({{ $bulan }})</span>
+                        </div>
+                    </div>
+                    @endhasanyrole
 
                </div>
           </div>
@@ -68,6 +93,7 @@
 </div>
 <!-- End of Container -->
 
+@hasrole('faskes')
 <div class="kt-container-fixed mt-10">
      <div class="grid w-full space-y-5">
           <div class="kt-card">
@@ -284,4 +310,141 @@
           </div>
      </div>
 </div>
+@endhasrole
+
+@hasanyrole(['admin', 'superadmin'])
+<div class="kt-container-fixed mt-10">
+     <div class="grid w-full space-y-5">
+          <div class="kt-card">
+               <div class="kt-card-header min-h-16">
+                    <h1 class="font-medium text-lg">
+                         Perbandingan Suspek vs Positif TBC tiap Faskes
+                    </h1>
+               </div>
+               <div class="kt-card-content space-y-5">
+                    <div id="faskes" class="h-100 w-full"></div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<div class="kt-container-fixed mt-10">
+     <div class="grid w-full space-y-5">
+          <div class="kt-card">
+               <div class="kt-card-header min-h-16">
+                    <h1 class="font-medium text-lg">
+                         Peta Sebaran <i>(Heatmap)</i> di Desa/Kelurahan yang Terdampak
+                    </h1>
+               </div>
+               <div class="kt-card-content space-y-5">
+                    <div id="sebaran" class="h-124 w-full"></div>
+               </div>
+          </div>
+     </div>
+</div>
+@endhasanyrole
+@endsection
+
+
+@section('js')
+@hasanyrole(['admin', 'superadmin'])
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+     document.addEventListener("DOMContentLoaded", function() {
+
+          // ==========================================
+          // 1. RENDER GRAFIK BATANG (APEXCHARTS)
+          // ==========================================
+          var chartOptions = {
+               series: [{
+                    name: 'Suspek Terjaring',
+                    data: {!! json_encode($grafik['suspek']) !!} // Data dari Laravel
+               }, {
+                    name: 'Positif (Dalam Pengobatan)',
+                    data: {!! json_encode($grafik['positif']) !!} // Data dari Laravel
+               }],
+               chart: {
+                    type: 'bar',
+                    height: 420,
+                    toolbar: { show: false }, // Sembunyikan tombol download agar UI bersih
+                    fontFamily: 'Inter, sans-serif'
+               },
+               plotOptions: {
+                    bar: {
+                         horizontal: false,
+                         columnWidth: '50%',
+                         borderRadius: 4
+                    },
+               },
+               colors: ['#f97316', '#10b981'], // Orange (Suspek) dan Emerald (Positif)
+               dataLabels: { enabled: false },
+               stroke: { show: true, width: 2, colors: ['transparent'] },
+               xaxis: {
+                    categories: {!! json_encode($grafik['label']) !!}, // Nama Puskesmas
+                    labels: { style: { colors: '#64748b', fontSize: '10px' } }
+               },
+               yaxis: {
+                    title: { text: 'Jumlah Warga', style: { color: '#64748b', fontSize: '12px', fontWeight: 500 } }
+               },
+               fill: { opacity: 1 },
+               tooltip: {
+                    y: { formatter: function (val) { return val + " Warga" } }
+               }
+          };
+
+          var barChart = new ApexCharts(document.querySelector("#faskes"), chartOptions);
+          barChart.render();
+
+
+          // ==========================================
+          // 2. RENDER PETA SEBARAN (LEAFLET.JS)
+          // ==========================================
+          // Set view default ke koordinat tengah Kabupaten Anda (Contoh: area Karanganyar/Jateng)
+          // Ubah latitude & longitude ini sesuai pusat pemerintahan kabupaten Anda.
+          var map = L.map('sebaran').setView([-7.5959, 110.9525], 12); 
+
+          // Menggunakan peta dasar OpenStreetMap yang gratis dan detail
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+               maxZoom: 14,
+               attribution: '© OpenStreetMap'
+          }).addTo(map);
+
+          // Ambil data dari Controller Laravel
+          var dataDesa = {!! json_encode($grafik['sebaran']) !!};
+
+          // Melakukan perulangan (loop) untuk menggambar titik di setiap Desa
+          dataDesa.forEach(function(desa) {
+               // Warna juga bisa dinamis (merah gelap jika kasus > 10)
+               var warnaLingkaran = desa.total_kasus > 10 ? '#ef4444' : '#f59e0b'; // Red / Amber
+
+               var koordinatMentah = desa.areal
+
+               var arrayPoligon = koordinatMentah.split('|').map(function(titik) {
+                    var pecah = titik.split(',');
+                    // Ekstrak angka dari format "lng:angka" dan "lat:angka"
+                    var lng = parseFloat(pecah[0].split(':')[1]);
+                    var lat = parseFloat(pecah[1].split(':')[1]);
+                    return [lat, lng]; // Posisi dibalik karena format string Anda lng dulu baru lat
+               });
+
+               var areaDesa = L.polygon(arrayPoligon, {
+                    color: '#9f2d00',      // Warna garis tepi (Merah)
+                    weight: 2,             // Ketebalan garis
+                    // fillColor: '#bb4d00',  // Warna isian dalam area (Heatmap color)
+                    fillColor: warnaLingkaran,
+                    fillOpacity: 0.5       // Tingkat transparansi isian
+               }).addTo(map);
+
+               areaDesa.bindPopup(`
+                    <b>Zona Risiko TBC (${desa.desakel_name}) &middot; ${desa.total_kasus} Jiwa</b>
+                    <br>
+                    Terdapat beberapa kasus aktif terdeteksi di area ini.`
+               )
+               map.fitBounds(areaDesa.getBounds());
+          });
+
+    });
+</script>
+@endhasanyrole
 @endsection

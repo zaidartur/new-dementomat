@@ -350,7 +350,7 @@ class MobileSkriningController extends Controller
         if (! $request->user()->hasRole('user')) return null;
         try {
             $id  = Crypt::decryptString($uid);
-            if (!$id) return abort(404);
+            if (!$id) return null;
 
             $sesi = DataSesiSkrining::where('uid_sesi', $id)->whereNull('deleted_at')->whereNotNull('file_tcm')->first();
             if (!$sesi) return null;

@@ -4,20 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Models\DataKeluarga;
 use App\Models\DataSesiSkrining;
+use App\Models\Faskes;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function view()
     {
-        $data = [
-            'darurat'   => $this->darurat(),
-            'tcm'       => $this->waiting_tcm(),
-            'lists'     => $this->radar_pantauan(),
-        ];
+        if (Auth::user()->hasRole('faskes')) {
+            $data = [
+                'darurat'   => $this->darurat(),
+                'tcm'       => $this->waiting_tcm(),
+                'lists'     => $this->radar_pantauan(),
+            ];
+        } elseif (Auth::user()->hasAnyRole(['admin', 'superadmin'])) {
+            $totalEvaluasiTahunIni  = DataKeluarga::whereNotNull('hasil_akhir_pengobatan')->whereYear('tgl_selesai_obat', now()->year)->count();
+            $totalSembuhTahunIni    = DataKeluarga::where('hasil_akhir_pengobatan', 'Sembuh')->whereYear('tgl_selesai_obat', now()->year)->count();
+            $cureRate = 0;
+            if ($totalEvaluasiTahunIni > 0) {
+                $cureRate = round(($totalSembuhTahunIni / $totalEvaluasiTahunIni) * 100);
+            }
+            $data = [
+                'aktif'     => DataKeluarga::where('status_tbc', 'Dalam Pengobatan')->whereNull('deleted_at')->count(),
+                'evaluasi'  => $totalEvaluasiTahunIni,
+                'suspek'    => DataSesiSkrining::whereNotNull('triggered_rule_id')->whereNull('deleted_at')->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+                'rate'      => $cureRate,
+                'bulan'     => Carbon::now()->locale('id')->translatedFormat('F Y'),
+                'grafik'    => $this->grafik_perbandingan(),
+            ];
+        }
         return view('dashboard', $data);
     }
 
@@ -163,5 +182,39 @@ class DashboardController extends Controller
                 ->whereHas('keluarga', function($data) {
                     $data->where('id_faskes', Auth::user()->faskes_id);
                 })->count();
+    }
+
+    private function grafik_perbandingan()
+    {
+        $bulan = now()->month;
+        $tahun = now()->year;
+
+        $grafikFaskes = Faskes::withCount([
+            'sesi_skrining AS suspek_count' => function ($query) use ($bulan, $tahun) {
+                $query->whereNotNull('data_sesi_skrinings.triggered_rule_id')
+                    ->whereMonth('data_sesi_skrinings.created_at', $bulan)
+                    ->whereYear('data_sesi_skrinings.created_at', $tahun);
+            },
+            'keluarga AS positif_count' => function ($query) {
+                $query->where('data_keluargas.status_tbc', 'Dalam Pengobatan');
+            }
+        ])->get();
+
+        $chartLabels = $grafikFaskes->pluck('nama_faskes'); 
+        $chartSuspek = $grafikFaskes->pluck('suspek_count');
+        $chartPositif = $grafikFaskes->pluck('positif_count');
+
+        $petaSebaran = DB::table('data_keluargas AS dk')->leftJoin('desas AS d', 'd.desakel_id', '=', 'dk.desakel_id')
+                    ->select('d.desakel_name', 'd.areal', DB::raw('COUNT(dk.id) AS total_kasus'))
+                    ->where('dk.status_tbc', 'Dalam Pengobatan')
+                    ->groupBy('d.desakel_id', 'd.desakel_name', 'd.areal')
+                    ->get();
+        
+        return [
+            'label'     => $chartLabels,
+            'suspek'    => $chartSuspek,
+            'positif'   => $chartPositif,
+            'sebaran'   => $petaSebaran
+        ];
     }
 }

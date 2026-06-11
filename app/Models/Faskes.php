@@ -55,4 +55,27 @@ class Faskes extends Model
     {
         return $this->hasMany(Kontak::class, 'id_faskes', 'faskes_id');
     }
+
+    /**
+     * Get the keluarga associated with the Faskes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function keluarga(): HasOne
+    {
+        return $this->hasOne(DataKeluarga::class, 'id_faskes', 'faskes_id');
+    }
+
+    public function sesi_skrining()
+    {
+        // Konsep: (Model Target, Model Perantara, foreign_key_di_perantara, foreign_key_di_target)
+        return $this->hasManyThrough(
+            DataSesiSkrining::class,
+            DataKeluarga::class,
+            'id_faskes',
+            'uid_keluarga',
+            'faskes_id',
+            'uid_keluarga'
+        );
+    }
 }
