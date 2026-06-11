@@ -293,8 +293,13 @@ class MobileSkriningController extends Controller
 
         $usia  = !empty($detail->keluarga->tgl_lahir) ? Carbon::parse($detail->keluarga->tgl_lahir) : null;
         $detail->umur_detail_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($detail->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+        $detail->url_file_tcm = !empty($detail->file_tcm) ? route('tcm.file', Crypt::encryptString($detail->uid_sesi)) : null;
         
-        return send_200('Detail riwayat skrining', $detail);
+        // return send_200('Detail riwayat skrining', $detail);
+        return response()->json([
+            'message'   => 'Detail riwayat skrining',
+            'data'      => $detail
+        ], 200, [], JSON_UNESCAPED_SLASHES);
     }
 
     public function submit_dahak(Request $request)
