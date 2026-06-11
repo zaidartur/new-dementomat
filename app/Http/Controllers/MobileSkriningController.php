@@ -12,7 +12,9 @@ use App\Models\PantauanBeratBadan;
 use App\Models\PantauanObat;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -239,7 +241,7 @@ class MobileSkriningController extends Controller
     {
         $userId = $request->user()->uuid;
 
-        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak'])
+        $history = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes', 'keluarga.faskes.kontak'])
                     ->whereNull('deleted_at')
                     ->whereHas('keluarga', function($query) use ($userId) {
                         $query->where('parent_user', $userId)
@@ -258,7 +260,10 @@ class MobileSkriningController extends Controller
                     'nama'      => $session->keluarga->nama_lengkap,
                     'hubungan'  => $session->keluarga->status_keluarga,
                     'usia_saat_tes'  => $session->umur_saat_skrining,
-                    'status_tbc'=> $session->keluarga->status_tbc ?? 'Belum ada status'
+                    'status_tbc'=> $session->keluarga->status_tbc ?? 'Belum ada status',
+                    'tgl_tcm'   => !empty($session->tgl_tcm) ? Carbon::parse($session->tgl_tcm)->locale('id')->translatedFormat('d F Y') : null,
+                    'jenis_tcm' => !empty($session->jenis_tcm) ? ($session->jenis_tcm === 'faskes' ? $session->keluarga->faskes->nama_faskes : 'Mandiri') : null,
+                    'url_file_tcm' => !empty($session->file_tcm) ? (route('tcm.file', Crypt::encryptString($session->uid_sesi))) : null,
                 ],
                 'kategori'  => $session->kategori->nama_kategori,
                 'status_rujuk' => $session->triggered_rule_id ? true : false,
@@ -273,7 +278,7 @@ class MobileSkriningController extends Controller
             'status'    => 'success',
             'message'   => 'Data riwayat skrining user dan keluarga.',
             'data'      => $history,
-        ], 200);
+        ], 200, [], JSON_UNESCAPED_SLASHES);
     }
 
     public function detail_skrining(Request $request)
@@ -331,6 +336,27 @@ class MobileSkriningController extends Controller
             DataKeluarga::where('uid_keluarga', $user)->update(['status_tbc' => 'Menunggu Verifikasi Admin atau Petugas']);
 
             return send_200('Dokumen berhasil diunggah. Mohon tunggu verifikasi dari petugas.');
+        }
+    }
+
+    public function file_dahak($uid)
+    {
+        $request = Request();
+        if (! $request->user()->hasRole('user')) return null;
+        try {
+            $id  = Crypt::decryptString($uid);
+            if (!$id) return abort(404);
+
+            $sesi = DataSesiSkrining::where('uid_sesi', $id)->whereNull('deleted_at')->whereNotNull('file_tcm')->first();
+            if (!$sesi) return null;
+
+            $location = public_path('storage/dokumen_tcm/' . $sesi->file_tcm);
+            if (!file_exists($location)) return null;
+
+            return response()->file($location);
+        } catch (Exception $e) {
+            // return response()->json($e);
+            return null;
         }
     }
 

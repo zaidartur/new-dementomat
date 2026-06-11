@@ -119,7 +119,11 @@ class MobileUtilityController extends Controller
             return $ls;
         });
 
-        return send_200('Data slider', $slide);
+        // return send_200('Data slider', $slide);
+        return response()->json([
+            'message'   => 'Data slider',
+            'data'      => $slide,
+        ], 200, [], JSON_UNESCAPED_SLASHES);
     }
 
     public function data_berita()

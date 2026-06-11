@@ -33,6 +33,7 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::post('/detail-skrining', [MobileSkriningController::class, 'detail_skrining']);
 
         Route::post('/tes-dahak', [MobileSkriningController::class, 'submit_dahak']);
+        Route::get('/file-hasil-tes-dahak/{uid}', [MobileSkriningController::class, 'file_dahak'])->name('tcm.file');
         Route::post('/daftar-efek-samping', [MobileSkriningController::class, 'list_efek'])->middleware('throttle:api');
         Route::post('/pemantauan-obat', [MobileSkriningController::class, 'submit_log_obat'])->middleware('throttle:api');
         Route::post('/riwayat-pemantauan-obat', [MobileSkriningController::class, 'logs_pemantauan_obat']);

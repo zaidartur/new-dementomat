@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class MobileUserController extends Controller
@@ -51,6 +52,7 @@ class MobileUserController extends Controller
         if (!empty($users->detail->sesiTerakhir)) {
             $age = CarbonInterval::instance(Carbon::parse($users->detail->tgl_lahir)->diff(Carbon::parse($users->detail->sesiTerakhir->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) ?? 0;
             $users->detail->sesiTerakhir->umur_lengkap_saat_skrining = $age;
+            $users->detail->sesiTerakhir->url_file = route('tcm.file', Crypt::encryptString($users->detail->sesiTerakhir->uid_sesi));
         }
 
         if (count($users->keluarga) > 0) {
@@ -59,13 +61,14 @@ class MobileUserController extends Controller
                 $value->usia = !empty($umur) ? CarbonInterval::instance($umur->diff(Carbon::now()))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) : null;
 
                 if (!empty($value->sesiTerakhir)) {
-                $age = CarbonInterval::instance(Carbon::parse($value->tgl_lahir)->diff(Carbon::parse($value->sesiTerakhir->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) ?? 0;
-                $value->sesiTerakhir->umur_lengkap_saat_skrining = $age;
-            }
+                    $age = CarbonInterval::instance(Carbon::parse($value->tgl_lahir)->diff(Carbon::parse($value->sesiTerakhir->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ', ']) ?? 0;
+                    $value->sesiTerakhir->umur_lengkap_saat_skrining = $age;
+                    $value->sesiTerakhir->url_file_tcm = route('tcm.file', Crypt::encryptString($value->sesiTerakhir->uid_sesi));
+                }
             }
         }
 
-        return response()->json($users, 200);
+        return response()->json($users, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
     public function update_username(Request $request)
