@@ -20,6 +20,7 @@
 <div class="kt-container-fixed">
      <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
           <div class="flex flex-col justify-center gap-2">
+               @if (Auth::user()->hasAnyRole(['admin', 'superadmin', 'faskes']))
                <h1 class="text-xl font-medium leading-none text-mono">
                     <i class="ki-filled ki-element-11 text-lg"></i>
                     Dashboard
@@ -28,6 +29,17 @@
                     {{-- Selamat datang, {{ Auth::user()->name }}.  --}}
                     Ringkasan pantauan wilayah Anda hari ini
                </div>
+               
+               @elseif (Auth::user()->hasAnyRole(['user']))
+
+               <h1 class="text-xl font-medium leading-none text-mono">
+                    <i class="ki-filled ki-element-11 text-lg"></i>
+                    Dashboard
+               </h1>
+               <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                    Selamat datang, <b>{{ Auth::user()->name }}</b>. 
+               </div>
+               @endif
           </div>
      </div>
 </div>
@@ -87,11 +99,105 @@
                     </div>
                     @endhasanyrole
 
+                    @hasrole('user')
+                    <div class="kt-card flex flex-col justify-center border {{ $verify ? 'border-primary' : 'border-slate-500' }} gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                         <div class="text-center w-full md:text-left">
+                              @if ($verify)
+                                  <i class="ki-filled ki-verify text-4xl {{ $verify ? 'text-primary' : 'text-slate-500' }} w-7 mt-4 md:ms-5"></i>
+                              @else
+                                   <i class="ki-filled ki-question text-4xl {{ $verify ? 'text-primary' : 'text-slate-500' }} w-7 mt-4 md:ms-5"></i>
+                              @endif
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-mono {{ $verify ? 'text-primary' : 'text-slate-500' }}">{{ Auth::user()->name }}</span>
+                            <span class="text-sm font-medium {{ $verify ? 'text-primary' : 'text-slate-500' }}">{{ $verify ? 'Akun Anda telah terverifikasi' : 'Akun Anda belum terverifikasi, silahkan lengkapi di profile Anda' }}</span>
+                         </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-orange-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-300 dark:hover:shadow-gray-700" onclick="{{ $verify ? ('location.href=`' .route('skrining.user'). '`') : '_error()' }}">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-questionnaire-tablet text-4xl text-orange-500 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-mono text-orange-500">Skrining TBC</span>
+                            <span class="text-sm font-medium text-orange-500">Cek gejala berkala (klik untuk memilih)</span>
+                         </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-emerald-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-300 dark:hover:shadow-gray-700" onclick="{{ $verify ? ('location.href=`' .route('profile'). '`') : '_error()' }}">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-questionnaire-tablet text-4xl text-emerald-500 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-emerald-500">Edit Biodata</span>
+                            <span class="text-sm font-medium text-emerald-500">Perbarui data diri (klik untuk memilih)</span>
+                         </div>
+                    </div>
+                    @endhasrole
+
                </div>
           </div>
      </div>
 </div>
 <!-- End of Container -->
+
+@hasrole('user')
+<div class="kt-container-fixed mt-5 mb-5">
+     <div class="w-full">
+          <div class="grid gap-5 lg:gap-7.5">
+               <h1 class="w-full font-medium text-gray-600 uppercase text-xl md:text-lg -mb-4 dark:text-gray-200">
+                    Layanan Lanjutan 
+                    <span class="capitalize italic">(Android Apps.)</span>
+               </h1>
+               <div class="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
+                    <div class="kt-card flex flex-col justify-between border border-gray-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-test-tubes text-4xl text-gray-500 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-gray-500">Cek Dahak</span>
+                            <span class="text-sm font-medium text-gray-500">Laporan pemeriksaan dahak mandiri/faskes</span>
+                         </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-gray-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-people text-4xl text-gray-500 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-gray-500">Input Keluarga</span>
+                            <span class="text-sm font-medium text-gray-500">Tambahkan keluarga Anda untuk mendapatkan hasil dari skrining mereka</span>
+                         </div>
+                    </div>
+                    <div class="kt-card flex flex-col justify-between border border-gray-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-capsule text-4xl text-gray-500 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-gray-500">Pantauan Obat</span>
+                            <span class="text-sm font-medium text-gray-500">Faskes dapat memantau perkembangan pengobatan Anda apabila hasil TCM Anda positif</span>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<div class="kt-container-fixed mt-10 mb-5">
+     <div class="w-full">
+          <div class="grid gap-5 lg:gap-7.5">
+               <div class="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
+                    <div class="kt-card flex flex-col justify-between border border-green-600 hover:bg-green-700 hover:border-gray-200 group gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-300 dark:hover:shadow-gray-700">
+                         <div class="text-center w-full md:text-left">
+                              <i class="ki-filled ki-google-play text-4xl text-green-600 group-hover:text-gray-100 w-7 mt-4 md:ms-5"></i>
+                         </div>
+                         <div class="flex flex-col gap-1 pb-4 px-5 text-center md:text-left">
+                            <span class="text-3xl font-bold text-green-600 group-hover:text-gray-100">Unduh Aplikasi</span>
+                            <span class="text-sm font-medium text-green-600 group-hover:text-gray-100">Unduh aplikasi Si Demen Tomat Terasi di Play Store</span>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+@endhasrole
 
 @hasrole('faskes')
 <div class="kt-container-fixed mt-10">
@@ -445,6 +551,14 @@
           });
 
     });
+</script>
+@endhasanyrole
+
+@hasanyrole(['user'])
+<script>
+     function _error() {
+          Swal.fire('Error', 'Mohon untuk melengkapi biodata Anda.', 'error')
+     }
 </script>
 @endhasanyrole
 @endsection

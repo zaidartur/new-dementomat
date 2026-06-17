@@ -208,10 +208,18 @@
                             </div>
                         </li>
                         <li>
-                            <a class="kt-dropdown-menu-link" href="#">
+                            @hasanyrole(['user'])
+                            <a class="kt-dropdown-menu-link" href="{{ route('profile.user') }}">
                                 <i class="ki-filled ki-profile-circle"></i>
                                 Profile Saya
                             </a>
+                            @endhasanyrole
+                            @hasanyrole(['admin', 'superadmin', 'faskes'])
+                            <a class="kt-dropdown-menu-link" href="{{ route('profile') }}">
+                                <i class="ki-filled ki-profile-circle"></i>
+                                Profile Saya
+                            </a>
+                            @endhasanyrole
                         </li>
                         {{-- <li data-kt-dropdown="true" data-kt-dropdown-placement="right-start"
                             data-kt-dropdown-trigger="hover">

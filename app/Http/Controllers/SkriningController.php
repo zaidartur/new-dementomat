@@ -25,16 +25,38 @@ class SkriningController extends Controller
     {
         $request = Request();
 
-        if ($request->user()->hasAnyRole(['superadmin', 'admin'])) {
-            $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->get();
-        } else {
-            $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->where('faskes_id', $request->user()->faskes_id)->get();
-        }
+        if (Auth::user()->hasAnyRole(['faskes', 'admin', 'superadmin'])) {
+            if ($request->user()->hasAnyRole(['superadmin', 'admin'])) {
+                $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->get();
+            } else {
+                $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->where('faskes_id', $request->user()->faskes_id)->get();
+            }
 
-        $data = [
-            'faskes'    => $faskes,
-            'kecamatan' => Kecamatan::all(),
-        ];
+            $data = [
+                'faskes'    => $faskes,
+                'kecamatan' => Kecamatan::all(),
+            ];
+
+        } elseif (Auth::user()->hasRole('user')) {
+            $lists = DataSesiSkrining::with(['keluarga:uid_keluarga,nama_lengkap,tgl_lahir,status_keluarga,status_tbc,id_faskes', 'kategori:id,nama_kategori', 'triggeredRule:uid_rule,nama_aturan,rekomendasi', 'keluarga.faskes.kontak', 'dataResponse', 'dataResponse.parameter'])
+                ->withCount(['isYes', 'isNo'])
+                ->where('uid_keluarga', Auth::user()->uuid)
+                ->whereNull('deleted_at')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            collect($lists)->map(function($ls) {
+                $usia  = !empty($ls->keluarga->tgl_lahir) ? Carbon::parse($ls->keluarga->tgl_lahir) : null;
+                $ls->umur_lengkap_saat_skrining = !empty($usia) ? CarbonInterval::instance($usia->diff(Carbon::parse($ls->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+                $ls->tgl_lengkap_tcm = !empty($ls->tgl_tcm) ? Carbon::parse($ls->tgl_tcm)->locale('id')->translatedFormat('d F Y') : '';
+            });
+
+            $data = [
+                'logs'    => $lists,
+            ];
+        } else {
+            return abort(404);
+        }
 
         return view('screenings.view', $data);
     }
@@ -49,6 +71,7 @@ class SkriningController extends Controller
                 ->where('uid_keluarga', Auth::user()->uuid)
                 ->whereNull('deleted_at')
                 ->orderBy('created_at', 'desc')
+                ->take(5)
                 ->get();
 
         collect($lists)->map(function($ls) {

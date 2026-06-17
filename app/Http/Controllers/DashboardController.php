@@ -29,13 +29,25 @@ class DashboardController extends Controller
                 $cureRate = round(($totalSembuhTahunIni / $totalEvaluasiTahunIni) * 100);
             }
             $data = [
-                'aktif'     => DataKeluarga::where('status_tbc', 'Dalam Pengobatan')->whereNull('deleted_at')->count(),
-                'evaluasi'  => $totalEvaluasiTahunIni,
-                'suspek'    => DataSesiSkrining::whereNotNull('triggered_rule_id')->whereNull('deleted_at')->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
-                'rate'      => $cureRate,
-                'bulan'     => Carbon::now()->locale('id')->translatedFormat('F Y'),
+                'aktif'     => DataKeluarga::where('status_tbc', 'Dalam Pengobatan')->whereNull('deleted_at')->count() ?? 0,
+                'evaluasi'  => $totalEvaluasiTahunIni ?? 0,
+                'suspek'    => DataSesiSkrining::whereNotNull('triggered_rule_id')->whereNull('deleted_at')->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count() ?? 0,
+                'rate'      => $cureRate ?? 0,
+                'bulan'     => Carbon::now()->locale('id')->translatedFormat('F Y') ?? '',
                 'grafik'    => $this->grafik_perbandingan(),
             ];
+        } elseif (Auth::user()->hasAnyRole(['user'])) {
+            $user = DataKeluarga::where('uid_keluarga', Auth::user()->uuid)->where('is_auth', 1)->whereNull('deleted_at')->first();
+            if (empty($user->alamat) || empty($user->tgl_lahir) || empty($user->telepon) || empty($user->jenkel) || empty($user->kec_id) || empty($user->desakel_id) || empty($user->id_faskes)) {
+                $verif = false;
+            } else {
+                $verif = true;
+            }
+            $data = [
+                'verify'    => $verif,
+            ];
+        } else {
+            return abort(404);
         }
         return view('dashboard', $data);
     }

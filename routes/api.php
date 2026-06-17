@@ -13,7 +13,7 @@ Route::post('/auth/register', [MobileController::class, 'register']);
 
 Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(function() {
     Route::post('/logout', [MobileController::class, 'logout']);
-    Route::post('/deactivate', [MobileController::class, 'logout']);
+    Route::post('/deactivate', [MobileController::class, 'deactivate']);
 
     Route::prefix('/pendukung')->group(function() {
         Route::get('/data-faskes', [MobileUtilityController::class, 'data_faskes']);

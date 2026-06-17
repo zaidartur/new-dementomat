@@ -268,7 +268,7 @@
             </a>
             @endcan --}}
 
-            <a href="{{ route('profile') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('profile') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
+            <a href="{{ route('profile.user') }}" class="flex flex-col items-center justify-center w-full h-full transition {{ request()->routeIs('profile.user') ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}">
                 <i class="ki-filled ki-profile-circle text-2xl mb-1"></i>
                 <span class="text-[10px] font-medium">Profil</span>
             </a>

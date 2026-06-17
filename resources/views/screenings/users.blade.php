@@ -30,7 +30,7 @@
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
                 <h1 class="font-medium text-lg">
-                    Daftar Riwayat Skrining Terbaru<br>
+                    5 Daftar Riwayat Skrining Terbaru<br>
                     <small class="font-normal text-gray-500 dark:text-gray-200">(Klik untuk melihat detail)</small>
                 </h1>
             </div>

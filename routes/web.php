@@ -44,6 +44,10 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::post('edit-keluarga', [UserController::class, 'edit_keluarga'])->name('pengguna.keluarga.edit')->middleware('permission:update keluarga');
         Route::post('update-keluarga', [UserController::class, 'update_keluarga'])->name('pengguna.keluarga.update')->middleware('permission:update keluarga');
         Route::post('hapus-keluarga', [UserController::class, 'hapus_keluarga'])->name('pengguna.keluarga.hapus')->middleware('permission:hapus keluarga');
+
+        // user
+        Route::get('profile', [ProfileController::class, 'view_user'])->name('profile.user')->middleware('permission:view profile saya');
+        Route::post('profile', [ProfileController::class, 'save_user_profile'])->name('profile.save')->middleware('permission:update profile saya');
     });
 
     Route::prefix('skrining/')->group(function() {

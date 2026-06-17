@@ -422,10 +422,150 @@
     </div>
 </div>
 @endhasanyrole
+
+@hasrole('user')
+<div class="kt-container-fixed">
+    <div class="grid w-full space-y-5">
+        <div class="kt-card">
+            <div class="kt-card-content">
+                <div class="flex flex-col gap-4 md:grid md:grid-cols-2">
+                    @if (count($logs) > 0)
+                    @foreach ($logs as $item)
+                    <div class="kt-card cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:border-indigo-500" onclick="_detail('{{ base64_encode(json_encode($item)) }}')">
+                        <div class="kt-card-content space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <h3 class="text-sm font-semibold text-foreground">{{ $item->kategori->nama_kategori }}</h3>
+                                    <span class="text-muted-foreground text-foreground">Skor {{ $item->is_yes_count }} / {{ $item->is_yes_count + $item->is_no_count }}</span>
+                                </div>
+                                {{-- <h3 class="text-sm font-semibold text-foreground">{{ $item->kategori->nama_kategori }}</h3> --}}
+                                <p class="mt-1 text-sm font-medium {{ empty($item->triggered_rule_id) ? 'text-emerald-700' : 'text-red-700' }} bg-sky-100 rounded-[10px] p-3 dark:bg-sky-800 {{ empty($item->triggered_rule_id) ? 'dark:text-emerald-300' : 'dark:text-red-200' }}">
+                                    <i class="ki-filled ki-{{ empty($item->triggered_rule_id) ? 'verify' : 'cross-circle' }} text-sm md:text-lg"></i>
+                                    {{ $item->triggeredRule?->rekomendasi }}
+                                </p>
+                                <small><i>Gunakan aplikasi versi mobile (Android) untuk kemudahan akses dan tinak lanjut.</i></small>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-muted-foreground">Status: {{ $item->status_skrining }}</span>
+                                <span class="font-medium text-foreground">{{ \Carbon\Carbon::parse($item->created_at)->locale('id')->translatedFormat('d F Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                    @else
+                    <h1 class="w-full text-center font-medium text-lg">Belum ada riwayat untuk saat ini</h1>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="kt-modal" data-kt-modal="true" id="modal_detail">
+    <div class="kt-modal-content max-w-[650px] md:top-[5%] max-h-[93%] md:h-auto">
+        <div class="kt-modal-header">
+            <h3 class="kt-modal-title" id="title_add">Detail Riwayat Skrining</h3>
+            <button type="button" class="kt-modal-close" aria-label="Close modal" data-kt-modal-dismiss="#modal_detail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="kt-modal-body">
+            <div class="rounded-lg w-full grow">
+                <div class="p-2 flex justify-center" id="content_div">
+
+                    <div class="w-full max-w-4xl max-h-[400vh] flex flex-col rounded-xl border border-slate-200 overflow-hidden transform scale-100 transition-all">
+                        <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-1 gap-6">
+                            <div class="md:col-span-2 space-y-5">
+                                <div>
+                                    <h4 class="text-xs text-center md:text-left font-bold uppercase tracking-wider text-slate-400 mb-3">Rekapitulasi Kuesioner Awal</h4>
+                                    <div class="rounded-lg bg-slate-50 dark:bg-gray-800 p-4 border border-slate-100 flex flex-col md:flex-row md:items-center justify-between" id="res_header">
+                                        <div>
+                                            <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Kesimpulan Rekomendasi Sistem</span>
+                                            <span class="text-sm font-bold text-red-600 mt-0.5 block text-center md:text-left" id="head_rekom">Suspek TBC (Rujuk Pemeriksaan Dahak TCM)</span>
+                                        </div>
+                                        <div class="mt-5 md:text-right">
+                                            <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Akumulasi Skor</span>
+                                            <span class="text-xl font-extrabold text-slate-800 dark:text-gray-100 block text-center md:text-left ">5 <span class="text-xs text-slate-400 font-normal">/ 7 Gejala</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rounded-lg bg-slate-50 dark:bg-gray-800 p-4 border border-slate-100 flex flex-col md:flex-row md:items-center justify-between" id="res_subheader">
+                                    <div>
+                                        <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Usia Saat Skrining</span>
+                                        <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">20 Tahun 6 Bulan 2 Minggu 3 Hari</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Tanggal TCM</span>
+                                        <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">20 Mei 2026 <br>(Puskesmas Karangpandan)</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-center">
+                                    <button class="kt-btn kt-btn-outline kt-btn-primary">
+                                        <i class="ki-filled ki-file-down"></i>
+                                        Unduh File
+                                    </button>
+                                </div>
+                                <div id="list_content">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 text-center md:text-left ">Detail Jawaban Indikasi</h4>
+                                    <div class="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">1. Batuk berdahak secara terus menerus selama &ge; 2 Minggu?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">2. Mengalami demam meriang sub-febris lebih dari satu bulan?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">3. Terjadi penurunan berat badan drastis tanpa alasan jelas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">4. Mengeluarkan keringat berlebih di malam hari tanpa aktivitas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Tidak</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">1. Batuk berdahak secara terus menerus selama &ge; 2 Minggu?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">2. Mengalami demam meriang sub-febris lebih dari satu bulan?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">3. Terjadi penurunan berat badan drastis tanpa alasan jelas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Ya</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                                            <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">4. Mengeluarkan keringat berlebih di malam hari tanpa aktivitas?</span>
+                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Tidak</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endhasrole
 @endsection
 
 
 @section('js')
+@hasanyrole(['faskes', 'admin', 'superadmin'])
 <script>
     function ktResolveDocsDatatableApiUrl() {
         var path = "/skrining/data-skrining"
@@ -981,4 +1121,66 @@
         $('#list_content').html(text)
     }
 </script>
+@endhasanyrole
+
+@hasrole('user')
+<script>
+    function _detail(datas) {
+        const data = JSON.parse(atob(datas))
+        fetch_modal_header(data)
+        fetch_modal_content(data.data_response)
+
+        new KTModal('#modal_detail').show()
+    }
+
+    function fetch_modal_header(data) {
+        let text = ''
+        let subs = ''
+        text += `
+            <div>
+                <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Kesimpulan Rekomendasi Sistem</span>
+                <span class="text-sm font-bold ${data.triggered_rule.rekomendasi.includes('Aman') ? 'text-emerald-600' : 'text-red-600'} mt-0.5 block text-center md:text-left">${data.triggered_rule.rekomendasi}</span>
+            </div>
+            <div class="mt-5 md:text-right">
+                <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Akumulasi Skor</span>
+                <span class="text-xl font-extrabold text-slate-800 dark:text-gray-100 block text-center md:text-left ">${data.is_yes_count} <span class="text-xs text-slate-400 font-normal">/ ${data.is_yes_count + data.is_no_count} Gejala</span></span>
+            </div>
+        `
+
+        subs += `
+            <div>
+                <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Usia Saat Skrining</span>
+                <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">${data.umur_lengkap_saat_skrining}</span>
+            </div>
+            <div class="mt-3">
+                <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Tanggal TCM</span>
+                <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">${data.tgl_lengkap_tcm ? data.tgl_lengkap_tcm : '-'} <br>(${data.jenis_tcm === 'faskes' ? data.keluarga?.faskes?.nama_faskes : (data.jenis_tcm === 'mandiri' ? 'Mandiri' : 'Belum Tes TCM')})</span>
+            </div>
+        `
+
+
+        $('#res_header').html(text)
+        $('#res_subheader').html(subs)
+    }
+
+    function fetch_modal_content(datas) {
+        let text = `<h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 text-center md:text-left ">Detail Jawaban Indikasi</h4>
+                    <div class="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">`
+        if (datas && Array.isArray(datas)) {
+            datas.forEach((dt, i) => {
+                text += `
+                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 hover:bg-slate-50/50 dark:hover:bg-gray-200">
+                        <span class="text-sm text-slate-700 dark:text-gray-300 dark:hover:text-slate-700 font-medium">${i+1}. ${dt.parameter.pertanyaan}</span>
+                        <span class="inline-flex items-center rounded-full ${dt.is_yes ? 'bg-red-100' : 'bg-emerald-100'} px-2.5 py-0.5 text-xs font-semibold ${dt.is_yes ? 'text-red-800' : 'text-emerald-800'}">${dt.is_yes ? 'Ya' : 'Tidak'}</span>
+                    </div>
+                `       
+            });
+        }
+
+        text += `<div></div>`
+
+        $('#list_content').html(text)
+    }
+</script>
+@endhasrole
 @endsection
