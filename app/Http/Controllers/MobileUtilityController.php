@@ -8,6 +8,7 @@ use App\Models\Faskes;
 use App\Models\Kecamatan;
 use App\Models\Kontak;
 use App\Models\Slider;
+use App\Models\StatusKeluarga;
 use App\Models\Youtube;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -131,5 +132,12 @@ class MobileUtilityController extends Controller
         $lists = Berita::where('status', 'active')->get();
 
         return send_200('Data berita', $lists);
+    }
+
+    public function status_keluarga()
+    {
+        $lists = StatusKeluarga::all();
+
+        return send_200('Data status keluarga', $lists);
     }
 }

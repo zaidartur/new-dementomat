@@ -24,6 +24,7 @@ Route::prefix('/v2')->middleware(['auth:sanctum', 'throttle:api'])->group(functi
         Route::get('/data-video', [MobileUtilityController::class, 'data_youtube']);
         Route::get('/data-slider', [MobileUtilityController::class, 'data_slider']);
         Route::get('/data-berita', [MobileUtilityController::class, 'data_berita']);
+        Route::get('/data-status', [MobileUtilityController::class, 'status_keluarga']);
     });
 
     Route::prefix('/skrining')->group(function() {

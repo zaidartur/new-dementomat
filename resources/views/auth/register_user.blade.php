@@ -187,7 +187,12 @@
                                                     </div>
                                                     <div class="flex flex-col gap-1 kt-form-item mb-2 w-full">
                                                         <label class="kt-form-label font-normal text-mono mb-1">Status Keluarga*</label>
-                                                        <input class="kt-input" @error('status') aria-invalid="true" @enderror placeholder="Ayah/Ibu/Anak/dll" name="status" type="text" maxlength="50" value="{{ old('status') }}" required>
+                                                        {{-- <input class="kt-input" @error('status') aria-invalid="true" @enderror placeholder="Ayah/Ibu/Anak/dll" name="status" type="text" maxlength="50" value="{{ old('status') }}" required> --}}
+                                                        <select class="kt-select" data-kt-select="true" id="status" name="status" @error('status') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih status keluarga..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' value="{{ old('status') }}" required>
+                                                            @foreach ($status as $item)
+                                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                                            @endforeach
+                                                        </select>
                                                         @error('status')
                                                             <div class="kt-form-message">
                                                                 <strong>{{ $message }}</strong>

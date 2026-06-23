@@ -189,15 +189,7 @@ class CekDahakController extends Controller
                 'verif'     => empty($value->hasil_tcm) ? false : true,
                 'hasil_tcm' => $value->hasil_tcm,
                 'uid'       => $value->uid_sesi,
-                'opsi'      => '
-                        <span class="inline-flex gap-2.5">
-                            <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                <span data-kt-tooltip-content="true" class="kt-tooltip">
-                                    <span class="flex items-center gap-1.5">Lihat Detail</span>
-                                </span>
-                            </a>
-                        '. (empty($value->hasil_tcm) ? '
+                'opsi'      => (empty($value->hasil_tcm) ? '
                             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_verifikasi(`' .$value->uid_sesi. '`, `' .$value->keluarga->nama_lengkap. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
                                 <i class="ki-filled ki-question text-lg"></i>
                                 <span data-kt-tooltip-content="true" class="kt-tooltip">
@@ -213,6 +205,30 @@ class CekDahakController extends Controller
                             ') .
                         '</span>
                 ',
+                // 'opsi'      => '
+                //         <span class="inline-flex gap-2.5">
+                //             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline" onclick="_detail(`' .$value->uid_sesi. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                //                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                //                 <span data-kt-tooltip-content="true" class="kt-tooltip">
+                //                     <span class="flex items-center gap-1.5">Lihat Detail</span>
+                //                 </span>
+                //             </a>
+                //         '. (empty($value->hasil_tcm) ? '
+                //             <a href="javascript:void(0)" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-outline kt-btn-primary" onclick="_verifikasi(`' .$value->uid_sesi. '`, `' .$value->keluarga->nama_lengkap. '`)" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                //                 <i class="ki-filled ki-question text-lg"></i>
+                //                 <span data-kt-tooltip-content="true" class="kt-tooltip">
+                //                     <span class="flex items-center gap-1.5">Verifikasi Data</span>
+                //                 </span>
+                //             </a>' : '
+                //             <span class="kt-badge kt-badge-xl kt-badge-success py-3.5" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                //                 <i class="ki-filled ki-verify text-lg"></i>
+                //                 <span data-kt-tooltip-content="true" class="kt-tooltip">
+                //                     <span class="flex items-center gap-1.5">Sudah Verifikasi</span>
+                //                 </span>
+                //             </span>
+                //             ') .
+                //         '</span>
+                // ',
             ];
         }
 

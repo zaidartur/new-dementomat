@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class SkriningController extends Controller
 {
@@ -80,8 +81,16 @@ class SkriningController extends Controller
             $ls->tgl_lengkap_tcm = !empty($ls->tgl_tcm) ? Carbon::parse($ls->tgl_tcm)->locale('id')->translatedFormat('d F Y') : '';
         });
 
+        $user = DataKeluarga::where('uid_keluarga', Auth::user()->uuid)->where('is_auth', 1)->whereNull('deleted_at')->first();
+        if (empty($user->alamat) || empty($user->tgl_lahir) || empty($user->telepon) || empty($user->jenkel) || empty($user->kec_id) || empty($user->desakel_id) || empty($user->id_faskes)) {
+            $verif = false;
+        } else {
+            $verif = true;
+        }
+
         $data = [
             'logs'    => $lists,
+            'verify'  => $verif,
         ];
 
         return view('screenings.users', $data);
@@ -302,6 +311,73 @@ class SkriningController extends Controller
         $request->validate([
             'uid'   => 'required|string|exists:data_keluargas,uid_keluarga',
         ]);
+
+        return send_200('Ok');
+    }
+
+    public function export_data()
+    {
+        if (Auth::user()->hasAnyRole(['faskes', 'admin', 'superadmin'])) {
+            // $loc_file = public_path('storage/ekspor_data');
+            // if (!is_dir($loc_file)) {
+            //     mkdir(public_path('storage/ekspor_data', 755));
+            // }
+
+            $query = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,jenkel,tgl_lahir,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,deleted_at', 'kategori', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes'])
+                    ->withCount(['isYes', 'isNo'])
+                    ->whereHas('keluarga', function ($q) {
+                        $q->whereNull('deleted_at');
+                    })
+                    ->whereNull('deleted_at')
+                    ->orderBy('created_at', 'desc')->get();
+
+            if (count($query) < 1) {
+                return back()->with('error', 'Tidak ada data skrining.');
+            }
+
+            $fileName = Str::uuid()->toString() . '_' . date('YmdHis');
+            $writer = SimpleExcelWriter::streamDownload('data_skrining_' . $fileName. '.xlsx');
+            $writer->addHeader([
+                'nama', 
+                'nik', 
+                'tanggal_skrining', 
+                'jenis_kelamin', 
+                'tanggal_lahir', 
+                'usia_saat_skrining', 
+                'desa', 
+                'kecamatan', 
+                'faskes', 
+                'jenis_skrining', 
+                'hasil_skrining', 
+                'parameter'
+            ]);
+
+            foreach ($query as $key => $value) {
+                $nik = substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4);
+                $lahir  = !empty($value->keluarga->tgl_lahir) ? Carbon::parse($value->keluarga->tgl_lahir) : null;
+                $usia   = !empty($lahir) ? CarbonInterval::instance($lahir->diff(Carbon::parse($value->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
+                $jenkel = $value->keluarga->jenkel == 'L' ? 'Laki-Laki' : ($value->keluarga->jenkel == 'P' ? 'Perempuan' : '');
+                $hasil  = empty($value->triggered_rule_id) ? 'Aman' : 'Wajib Menghubungi Kader / Petugas Puskesmas';
+
+                $writer->addRow([
+                    $value->keluarga->nama_lengkap, 
+                    $nik, 
+                    Carbon::parse($value->created_at)->format('Y-m-d'), 
+                    $jenkel, 
+                    $value->keluarga->tgl_lahir, 
+                    $usia, 
+                    $value->keluarga->desa->desakel_name, 
+                    $value->keluarga->kecamatan->kec_name, 
+                    $value->keluarga->faskes->nama_faskes, 
+                    $value->kategori->nama_kategori, $hasil, 
+                    $value->is_yes_count . '/' . ($value->is_yes_count + $value->is_no_count)
+                ]);
+            }
+
+            $writer->toBrowser();
+        } else {
+            return abort(404);
+        }
     }
 
     public function ss_skrining()

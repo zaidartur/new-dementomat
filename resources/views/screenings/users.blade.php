@@ -21,7 +21,7 @@
 
 <div class="kt-container-fixed">
     <div class="w-full mb-10">
-        <button type="button" id="btn_add" class="kt-btn kt-btn-primary w-full md:w-[30%] rounded-full text-lg md:text-sm p-7 md:p-2" onclick="_new_skrining()">
+        <button type="button" id="btn_add" class="kt-btn kt-btn-primary w-full md:w-[30%] rounded-full text-lg md:text-sm p-7 md:p-2" {{ $verify ? '' : 'disabled' }} onclick="_new_skrining()">
             <i class="ki-filled ki-plus-circle text-xl md:text-lg"></i>
             Buat Skrining Baru
         </button>
@@ -109,7 +109,7 @@
                                         <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">20 Mei 2026 <br>(Puskesmas Karangpandan)</span>
                                     </div>
                                 </div>
-                                <div class="flex justify-center">
+                                <div class="flex justify-center" id="res_download">
                                     <button class="kt-btn kt-btn-outline kt-btn-primary">
                                         <i class="ki-filled ki-file-down"></i>
                                         Unduh File
@@ -316,6 +316,7 @@
     function fetch_modal_header(data) {
         let text = ''
         let subs = ''
+        let down = ''
         text += `
             <div>
                 <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Kesimpulan Rekomendasi Sistem</span>
@@ -337,10 +338,24 @@
                 <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">${data.tgl_lengkap_tcm ? data.tgl_lengkap_tcm : '-'} <br>(${data.jenis_tcm === 'faskes' ? data.keluarga?.faskes?.nama_faskes : (data.jenis_tcm === 'mandiri' ? 'Mandiri' : 'Belum Tes TCM')})</span>
             </div>
         `
+        if (data.file_tcm) {
+            down += `
+                <button class="kt-btn kt-btn-primary w-full p-5 md:p-2 text-lg md:text-sm" onclick="window.open('{{ asset('') }}storage/dokumen_tcm/${data.file_tcm}', '_blank')">
+                    <i class="ki-filled ki-file-down text-lg md:text-sm"></i>
+                    Unduh File
+                </button>
+            `
+        } else {
+            down += `<button class="kt-btn kt-btn-outline kt-btn-destructive w-full p-5 md:p-2 text-lg md:text-sm" disabled>
+                        <i class="ki-filled ki-search-list text-lg md:text-sm"></i>
+                        Belum ada file
+                    </button>`
+        }
 
 
         $('#res_header').html(text)
         $('#res_subheader').html(subs)
+        $('#res_download').html(down)
     }
 
     function fetch_modal_content(datas) {

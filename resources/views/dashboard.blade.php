@@ -122,7 +122,7 @@
                             <span class="text-sm font-medium text-orange-500">Cek gejala berkala (klik untuk memilih)</span>
                          </div>
                     </div>
-                    <div class="kt-card flex flex-col justify-between border border-emerald-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-300 dark:hover:shadow-gray-700" onclick="{{ $verify ? ('location.href=`' .route('profile'). '`') : '_error()' }}">
+                    <div class="kt-card flex flex-col justify-between border border-emerald-500 gap-6 min-w-[150px] bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-300 dark:hover:shadow-gray-700" onclick="{{ $verify ? ('location.href=`' .route('profile.user'). '`') : '_error()' }}">
                          <div class="text-center w-full md:text-left">
                               <i class="ki-filled ki-questionnaire-tablet text-4xl text-emerald-500 w-7 mt-4 md:ms-5"></i>
                          </div>

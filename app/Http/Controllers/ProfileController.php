@@ -7,6 +7,7 @@ use App\Models\DataKeluarga;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\StatusKeluarga;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ class ProfileController extends Controller
             'profile'    => $user,
             'faskes'     => Faskes::all(),
             'kecamatan'  => Kecamatan::all(),
+            'status'     => StatusKeluarga::all(),
             'desa'       => !empty($user->desakel_id) ? Desa::where('kec_id', $user->kec_id)->get() : [],
         ];
 

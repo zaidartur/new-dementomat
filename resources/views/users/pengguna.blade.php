@@ -836,7 +836,7 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Alamat Sekarang:</label>
                                 <div class="kt-form-control">
-                                    <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat}</textarea>
+                                    <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat ?? ''}</textarea>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi alamat.</div>
                             </div>
@@ -865,7 +865,7 @@
                                 <div class="kt-form-control">
                                     <div class="kt-input">
                                         <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="number" class="kt-input" id="telepon" name="telepon" placeholder="628xxx" value="${user.telepon}" required />
+                                        <input type="number" class="kt-input" id="telepon" name="telepon" placeholder="628xxx" value="${user.telepon ?? ''}" required />
                                     </div>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi no. telepon.</div>
@@ -875,7 +875,7 @@
                                 <div class="kt-form-control">
                                     <div class="kt-input">
                                         <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="${user.tgl_lahir}" required />
+                                        <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="${user.tgl_lahir ?? ''}" required />
                                     </div>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi tanggal lahir.</div>
@@ -894,10 +894,11 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Status Keluarga:</label>
                                 <div class="kt-form-control">
-                                    <div class="kt-input">
-                                        <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="text" class="kt-input" id="status" name="status" placeholder="Status di keluarga" maxlength="100" value="${user.status_keluarga}" required />
-                                    </div>
+                                    <select class="kt-select" data-kt-select="true" id="status" name="status" data-kt-select-placeholder="Pilih status keluarga..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                        @foreach ($status as $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi status keluarga.</div>
                             </div>
@@ -921,6 +922,12 @@
                         $('#form_edit').attr('action', "{{ route('pengguna.update') }}")
                         setTimeout(() => {
                             $('#content_form').append(txt)
+                            const selectStatus = document.querySelector('#form_edit #status');
+                            selectStatus.value = user.status_keluarga
+                            const selectInstance = KTSelect.getInstance(selectStatus)
+                            if (selectInstance) {
+                                selectInstance.update()
+                            }
                         }, 1000);
 
                         new KTModal('#modal_edit').show()
@@ -984,7 +991,7 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Alamat Sekarang:</label>
                                 <div class="kt-form-control">
-                                    <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat}</textarea>
+                                    <textarea class="kt-textarea" name="alamat" id="alamat" placeholder="Alamat Anda" rows="4" required>${user.alamat ?? ''}</textarea>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi alamat.</div>
                             </div>
@@ -1013,7 +1020,7 @@
                                 <div class="kt-form-control">
                                     <div class="kt-input">
                                         <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="number" class="kt-input" id="telepon" name="telepon" placeholder="628xxx" value="${user.telepon}" required />
+                                        <input type="number" class="kt-input" id="telepon" name="telepon" placeholder="628xxx" value="${user.telepon ?? ''}" required />
                                     </div>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi no. telepon.</div>
@@ -1023,7 +1030,7 @@
                                 <div class="kt-form-control">
                                     <div class="kt-input">
                                         <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="${user.tgl_lahir}" required />
+                                        <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="${user.tgl_lahir ?? ''}" required />
                                     </div>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi tanggal lahir.</div>
@@ -1042,10 +1049,11 @@
                             <div class="kt-form-item mb-3">
                                 <label class="kt-form-label">Status Keluarga:</label>
                                 <div class="kt-form-control">
-                                    <div class="kt-input">
-                                        <i class="ki-filled ki-subtitle text-lg"></i>
-                                        <input type="text" class="kt-input" id="status" name="status" placeholder="Status di keluarga" maxlength="100" value="${user.status_keluarga}" required />
-                                    </div>
+                                    <select class="kt-select" data-kt-select="true" id="status" name="status" data-kt-select-placeholder="Pilih status keluarga..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                        @foreach ($status as $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="kt-form-message">Mohon mengisi status keluarga.</div>
                             </div>
@@ -1069,6 +1077,12 @@
                         $('#form_edit').attr('action', "{{ route('pengguna.keluarga.update') }}")
                         setTimeout(() => {
                             $('#content_form').append(txt)
+                            const selectStatus = document.querySelector('#form_edit #status');
+                            selectStatus.value = user.status_keluarga
+                            const selectInstance = KTSelect.getInstance(selectStatus)
+                            if (selectInstance) {
+                                selectInstance.update()
+                            }
                         }, 1000);
 
                         new KTModal('#modal_edit').show()

@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             // KategoriSkriningSeeder::class,
             // ParameterSkriningSeeder::class,
             // RuleSkriningSeeder::class,
+            StatusSeed::class
         ]);
     }
 }

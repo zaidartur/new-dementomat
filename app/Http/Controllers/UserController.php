@@ -7,6 +7,7 @@ use App\Models\DataSesiSkrining;
 use App\Models\Desa;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\StatusKeluarga;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class UserController extends Controller
             'lists' => User::where('level', 'user')->whereNull('deleted_at')->get(),
             'kec'   => Kecamatan::all(),
             'faskes'=> Faskes::all(),
+            'status'=> StatusKeluarga::all(),
         ];
 
         return view('users.pengguna', $data);

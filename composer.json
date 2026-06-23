@@ -17,6 +17,7 @@
         "opcodesio/log-viewer": "^3.24",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-permission": "^7.4",
+        "spatie/simple-excel": "^3.10",
         "yajra/laravel-datatables": "^13.0"
     },
     "require-dev": {

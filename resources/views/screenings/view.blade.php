@@ -502,7 +502,7 @@
                                         <span class="text-sm font-bold mt-0.5 block text-center md:text-left ">20 Mei 2026 <br>(Puskesmas Karangpandan)</span>
                                     </div>
                                 </div>
-                                <div class="flex justify-center">
+                                <div class="flex justify-center" id="res_download">
                                     <button class="kt-btn kt-btn-outline kt-btn-primary">
                                         <i class="ki-filled ki-file-down"></i>
                                         Unduh File
@@ -805,6 +805,12 @@
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    })
+
+    $(document).ready(function() {
+        $('#kt_datatable_remote_download').on('click', function() {
+            window.open("{{ route('skrining.export') }}", "_blank")
+        })
     })
 
     function _detail(uid) {
@@ -1136,6 +1142,7 @@
     function fetch_modal_header(data) {
         let text = ''
         let subs = ''
+        let down = ''
         text += `
             <div>
                 <span class="text-xs text-slate-400 block font-medium text-center md:text-left ">Kesimpulan Rekomendasi Sistem</span>
@@ -1158,9 +1165,24 @@
             </div>
         `
 
+        if (data.file_tcm) {
+            down += `
+                <button class="kt-btn kt-btn-primary w-full p-5 md:p-2 text-lg md:text-sm" onclick="window.open('{{ asset('') }}storage/dokumen_tcm/${data.file_tcm}', '_blank')">
+                    <i class="ki-filled ki-file-down text-lg md:text-sm"></i>
+                    Unduh File
+                </button>
+            `
+        } else {
+            down += `<button class="kt-btn kt-btn-outline kt-btn-destructive w-full p-5 md:p-2 text-lg md:text-sm" disabled>
+                        <i class="ki-filled ki-search-list text-lg md:text-sm"></i>
+                        Belum ada file
+                    </button>`
+        }
+
 
         $('#res_header').html(text)
         $('#res_subheader').html(subs)
+        $('#res_download').html(down)
     }
 
     function fetch_modal_content(datas) {

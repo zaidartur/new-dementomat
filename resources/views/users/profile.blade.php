@@ -119,10 +119,15 @@
                     <div class="kt-form-item mb-5">
                         <label class="kt-form-label">Status Keluarga:</label>
                         <div class="kt-form-control">
-                            <div class="kt-input" @error('status') aria-invalid="true" @enderror>
+                            {{-- <div class="kt-input" @error('status') aria-invalid="true" @enderror>
                                 <i class="ki-filled ki-subtitle text-lg"></i>
                                 <input type="text" class="kt-input" id="status" name="status" placeholder="Status Anda di keluarga" maxlength="50" value="{{ $profile->status_keluarga }}" required />
-                            </div>
+                            </div> --}}
+                            <select class="kt-select" data-kt-select="true" id="status" name="status" @error('status') aria-invalid="true" @enderror data-kt-select-placeholder="Pilih status keluarga..." data-kt-select-config='{"optionsClass": "kt-scrollable overflow-auto max-h-[250px]"}' required>
+                                @foreach ($status as $item)
+                                    <option value="{{ $item->nama }}" {{ !empty($profile->status_keluarga) ? ($item->nama == $profile->status_keluarga ? 'selected' : '') : '' }}>{{ $item->nama }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="kt-form-message">Mohon mengisi status Anda.</div>
                     </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DataKeluarga;
 use App\Models\Faskes;
 use App\Models\Kecamatan;
+use App\Models\StatusKeluarga;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
@@ -28,6 +29,7 @@ class RegisteredUserController extends Controller
         $data = [
             'kecs'   => Kecamatan::all(),
             'faskes' => Faskes::all(),
+            'status' => StatusKeluarga::all(),
         ];
         return view('auth.register_user', $data);
     }
