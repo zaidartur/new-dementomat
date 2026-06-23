@@ -16,11 +16,11 @@
         <!-- End of Mobile Logo -->
 
         <!--Megamenu Contaoner-->
-        <div class="flex items-stretch single-ticker" id="megaMenuContainer">
+        <div class="flex items-stretch single-tickers" id="megaMenuContainer">
             <div class="py-4 px-7 md:py-5 md:px-0 ticker-text">
-                <label class="font-medium block md:hidden cursor-pointer">Si Demen Tomat Terasi</label>
-                <label class="font-medium invisible md:visible cursor-pointer">Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi | </label>
-                <label class="font-medium invisible md:visible cursor-pointer">
+                <label class="font-medium block md:hidden cursor-pointers">Si Demen Tomat Terasi</label>
+                <label class="font-medium invisible md:visible cursor-pointers">Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi | </label>
+                <label class="font-medium invisible md:visible cursor-pointers">
                     {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }} 
                     <span class="ticker-text" id="timer"></span>
                 </label>

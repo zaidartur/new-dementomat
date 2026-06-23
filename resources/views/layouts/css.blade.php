@@ -25,7 +25,7 @@
         line-height: 100%;
         /* text-align: center; */
         
-        animation: singleScrollUp 25s linear infinite;
+        animation: singleScrollUp 5s linear infinite;
     }
     .single-ticker:hover .ticker-text {
         animation-play-state: paused;
