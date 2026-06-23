@@ -12,3 +12,37 @@
 <link href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}" rel="stylesheet" />
 <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet" />
 {{-- <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" /> --}}
+
+<style>
+    .single-ticker {
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .ticker-text {
+        height: 100%;
+        line-height: 100%;
+        /* text-align: center; */
+        
+        animation: singleScrollUp 5s linear infinite;
+    }
+    .single-ticker:hover .ticker-text {
+        animation-play-state: paused;
+    }
+
+    @keyframes singleScrollUp {
+        0% {
+            transform: translateY(100%);
+        }
+        15% {
+            transform: translateY(0);
+        }
+        85% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-100%);
+        }
+    }
+</style>

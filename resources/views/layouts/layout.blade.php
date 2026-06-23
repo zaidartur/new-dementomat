@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta content="follow, index" name="robots" />
         <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-        <meta content="" name="description" />
+        <meta content="Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi Dinas Kesehatan Kabupaten Karanganyar" name="description" />
         <meta content="summary_large_image" name="twitter:card" />
         <meta content="Si Demen Tomat Terasi" name="twitter:title" />
         <meta content="" name="twitter:description" />
@@ -14,7 +14,7 @@
         <meta content="id_ID" property="og:locale" />
         <meta content="website" property="og:type" />
         <meta content="Si Demen Tomat Terasi" property="og:title" />
-        <meta content="" property="og:description" />
+        <meta content="Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi Dinas Kesehatan Kabupaten Karanganyar" property="og:description" />
         <meta content="{{ route('logo') }}" property="og:image" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         

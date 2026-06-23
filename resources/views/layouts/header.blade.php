@@ -3,7 +3,7 @@
     <div class="kt-container-fixed flex justify-between items-stretch lg:gap-4" id="headerContainer">
         <!-- Mobile Logo -->
         <div class="flex gap-2.5 lg:hidden items-center -ms-1">
-            <a class="shrink-0" href="#">
+            <a class="shrink-0" href="/">
                 <img class="max-h-[25px] w-full" src="{{ route('logo') }}" />
             </a>
             <div class="flex items-center">
@@ -16,34 +16,43 @@
         <!-- End of Mobile Logo -->
 
         <!--Megamenu Contaoner-->
-        <div class="flex items-stretch" id="megaMenuContainer"></div>
+        <div class="flex items-stretch single-ticker" id="megaMenuContainer">
+            <div class="py-4 px-7 md:py-5 md:px-0 ticker-text">
+                <label class="font-medium block md:hidden cursor-pointer">Si Demen Tomat Terasi</label>
+                <label class="font-medium invisible md:visible cursor-pointer">Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi | </label>
+                <label class="font-medium invisible md:visible cursor-pointer">
+                    {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }} 
+                    <span class="ticker-text" id="timer"></span>
+                </label>
+            </div>
+        </div>
         <!--End of Megamenu Contaoner-->
         
         <!-- Topbar -->
         <div class="flex items-center gap-2.5">
             <!-- Search -->
-            <button
+            {{-- <button
                 class="group kt-btn kt-btn-ghost kt-btn-icon size-9 rounded-full hover:bg-primary/10 hover:[&_i]:text-primary"
                 data-kt-modal-toggle="#search_modal">
                 <i class="ki-filled ki-magnifier text-lg group-hover:text-primary">
                 </i>
-            </button>
+            </button> --}}
             <!-- End of Search -->
             <!-- Chat -->
-            <button
+            {{-- <button
                 class="kt-btn kt-btn-ghost kt-btn-icon size-9 rounded-full hover:bg-primary/10 hover:[&_i]:text-primary"
                 data-kt-drawer-toggle="#chat_drawer">
                 <i class="ki-filled ki-messages text-lg">
                 </i>
-            </button>
+            </button> --}}
             <!--Chat Drawer-->
-            <div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[90%] w-[450px] top-5 bottom-5 end-5 rounded-xl border border-border" data-kt-drawer="true" data-kt-drawer-container="body" id="chat_drawer">
+            {{-- <div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[90%] w-[450px] top-5 bottom-5 end-5 rounded-xl border border-border" data-kt-drawer="true" data-kt-drawer-container="body" id="chat_drawer">
                 <div></div>
-            </div>
+            </div> --}}
             <!--End of Chat Drawer-->
             <!-- End of Chat -->
             <!-- Apps -->
-            <div data-kt-dropdown="true" data-kt-dropdown-offset="10px, 10px"
+            {{-- <div data-kt-dropdown="true" data-kt-dropdown-offset="10px, 10px"
                 data-kt-dropdown-offset-rtl="-10px, 10px" data-kt-dropdown-placement="bottom-end"
                 data-kt-dropdown-placement-rtl="bottom-start">
                 <button
@@ -176,7 +185,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <!-- End of Apps -->
             <!-- User -->
             <div class="shrink-0" data-kt-dropdown="true" data-kt-dropdown-offset="10px, 10px"

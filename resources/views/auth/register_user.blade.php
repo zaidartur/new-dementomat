@@ -5,9 +5,8 @@
     
         <meta charset="utf-8"/>
         <meta content="follow, index" name="robots"/>
-        <link href="https://127.0.0.1:8001/metronic-tailwind-html/demo1/authentication/classic/sign-in/index.html" rel="canonical"/>
         <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
-        <meta content="Si Demen Tomat Terasi" name="description"/>
+        <meta content="Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi Dinas Kesehatan Kabupaten Karanganyar" name="description"/>
         <meta content="summary_large_image" name="twitter:card"/>
         <meta content="Si Demen Tomat Terasi" name="twitter:title"/>
         <meta content="Sistem deteksi dini" name="twitter:description"/>
@@ -15,7 +14,7 @@
         <meta content="en_US" property="og:locale"/>
         <meta content="website" property="og:type"/>
         <meta content="Si Demen Tomat Terasi" property="og:title"/>
-        <meta content="Sistem deteksi dini" property="og:description"/>
+        <meta content="Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi Dinas Kesehatan Kabupaten Karanganyar" property="og:description"/>
         <meta content="{{ asset('assets/media/app/og-image.png') }}" property="og:image"/>
 
         {{-- <link href="{{ asset('assets/media/app/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180"/>

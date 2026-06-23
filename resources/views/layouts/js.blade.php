@@ -93,4 +93,33 @@
 
         return age + ' tahun';
     }
+
+    $(document).ready(function() {
+        function updateClock() {
+            const now = new Date()
+            
+            let hours = now.getHours()
+            let minutes = now.getMinutes()
+            let seconds = now.getSeconds()
+            
+            // Determine AM/PM
+            const ampm = hours >= 12 ? 'PM' : 'AM'
+            
+            // Convert to 12-hour format
+            hours = hours % 12
+            hours = hours ? hours : 12 // The hour '0' should be '12'
+            
+            hours = hours < 10 ? '0' + hours : hours
+            minutes = minutes < 10 ? '0' + minutes : minutes
+            seconds = seconds < 10 ? '0' + seconds : seconds
+            
+            // Display the time string
+            // const timeString = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false })
+            $('#timer').text(timeString)
+        }
+
+        updateClock()
+        setInterval(updateClock, 1000)
+    })
 </script>

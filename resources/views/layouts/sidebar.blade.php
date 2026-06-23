@@ -1,24 +1,25 @@
 <div class="kt-sidebar bg-background border-e border-e-border fixed top-0 bottom-0 z-20 hidden lg:flex flex-col items-stretch shrink-0 [--kt-drawer-enable:true] lg:[--kt-drawer-enable:false]" data-kt-drawer="true" data-kt-drawer-class="kt-drawer kt-drawer-start top-0 bottom-0" id="sidebar">
     {{-- Header --}}
-    <div class="kt-sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0" id="sidebar_header">
-        <a class="dark:hidden" href="#">
+    <div class="kt-sidebar-header hidden lg:flex items-center relative justify-left px-3 lg:px-6 shrink-0" id="sidebar_header">
+        <a class="dark:hidden" href="/">
             {{-- <img class="default-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/default-logo.svg') }}" />
             <img class="small-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/mini-logo.svg') }}" /> --}}
             <img class="default-logo min-h-[22px] max-w-none max-h-[62px]" src="{{ route('logo') }}" />
             <img class="small-logo min-h-[22px] max-w-none max-h-[36px]" src="{{ route('logo') }}" />
         </a>
-        <a class="hidden dark:block" href="#">
+        <a class="hidden dark:block" href="/">
             {{-- <img class="default-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/default-logo-dark.svg') }}" />
             <img class="small-logo min-h-[22px] max-w-none" src="{{ asset('assets/media/app/mini-logo.svg') }}" /> --}}
             <img class="default-logo min-h-[22px] max-w-none max-h-[62px]" src="{{ route('logo') }}" />
             <img class="small-logo min-h-[22px] max-w-none max-h-[36px]" src="{{ route('logo') }}" />
         </a>
-        <button
-            class="kt-btn kt-btn-outline kt-btn-icon size-[30px] absolute start-full top-2/4 -translate-x-2/4 -translate-y-2/4 rtl:translate-x-2/4"
-            data-kt-toggle="body" data-kt-toggle-class="kt-sidebar-collapse" id="sidebar_toggle">
-            <i
-                class="ki-filled ki-black-left-line kt-toggle-active:rotate-180 transition-all duration-300 rtl:translate rtl:rotate-180 rtl:kt-toggle-active:rotate-0">
-            </i>
+        <div class="ml-2 flex flex-col uppercase">
+            <label class="font-medium text-[16pt]">Si Demen</label>
+            <label class="font-medium text-[11pt]">Tomat Terasi</label>
+            {{-- <label class="text-sm text-gray-500 dark:text-gray-200">{{ Auth::user()->name }}</label> --}}
+        </div>
+        <button class="kt-btn kt-btn-outline kt-btn-icon size-[30px] absolute start-full top-2/4 -translate-x-2/4 -translate-y-2/4 rtl:translate-x-2/4" data-kt-toggle="body" data-kt-toggle-class="kt-sidebar-collapse" id="sidebar_toggle">
+            <i class="ki-filled ki-black-left-line kt-toggle-active:rotate-180 transition-all duration-300 rtl:translate rtl:rotate-180 rtl:kt-toggle-active:rotate-0"></i>
         </button>
     </div>
 
