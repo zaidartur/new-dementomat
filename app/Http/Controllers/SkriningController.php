@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class SkriningController extends Controller
@@ -32,10 +36,17 @@ class SkriningController extends Controller
             } else {
                 $faskes = Faskes::select('faskes_id', 'nama_faskes', 'alamat_faskes')->where('faskes_id', $request->user()->faskes_id)->get();
             }
+            $startDate  = DataSesiSkrining::min('created_at');
+            $endDate    = DataSesiSkrining::max('created_at');
+
+            $formattedStart = $startDate ? Carbon::parse($startDate)->format('Y-m-d') : null;
+            $formattedEnd   = $endDate ? Carbon::parse($endDate)->format('Y-m-d') : null;
 
             $data = [
                 'faskes'    => $faskes,
                 'kecamatan' => Kecamatan::all(),
+                'min_date'  => $formattedStart,
+                'max_date'  => $formattedEnd,
             ];
 
         } elseif (Auth::user()->hasRole('user')) {
@@ -315,28 +326,77 @@ class SkriningController extends Controller
         return send_200('Ok');
     }
 
-    public function export_data()
+    public function export_data(Request $request)
     {
+        $request->validate([
+            'nik'       => 'required|string|in:true,false',
+            'faskes'    => 'nullable|string|exists:faskes,faskes_id',
+            'kec'       => 'nullable|string|exists:kecamatans,kec_id',
+            'status'    => 'nullable|string|in:all,aman,wajib',
+            'date'      => 'nullable|string',
+        ]);
+
         if (Auth::user()->hasAnyRole(['faskes', 'admin', 'superadmin'])) {
             // $loc_file = public_path('storage/ekspor_data');
             // if (!is_dir($loc_file)) {
             //     mkdir(public_path('storage/ekspor_data', 755));
             // }
 
+            $user  = Auth::user();
             $query = DataSesiSkrining::with(['keluarga:uid_keluarga,nik,nama_lengkap,jenkel,tgl_lahir,status_keluarga,status_tbc,id_faskes,kec_id,desakel_id,deleted_at', 'kategori', 'keluarga.kecamatan', 'keluarga.desa', 'keluarga.faskes'])
                     ->withCount(['isYes', 'isNo'])
-                    ->whereHas('keluarga', function ($q) {
+                    ->whereHas('keluarga', function ($q) use ($user, $request) {
                         $q->whereNull('deleted_at');
+                        if ($user->hasRole('faskes')) {
+                            $q->where('id_faskes', $user->faskes_id);
+                        } else {
+                            if (!empty($request->faskes)) {
+                                $q->where('id_faskes', $request->faskes);
+                            }
+                            if (!empty($request->kec)) {
+                                $q->orWhere('kec_id', $request->kec);
+                            }
+                        }
                     })
-                    ->whereNull('deleted_at')
-                    ->orderBy('created_at', 'desc')->get();
+                    ->whereNull('deleted_at');
 
-            if (count($query) < 1) {
-                return back()->with('error', 'Tidak ada data skrining.');
+            if (!empty($request->status) && $request->status == 'aman') {
+                $query->whereNull('triggered_rule_id');
+            } elseif (!empty($request->status) && $request->status == 'wajib') {
+                $query->whereNotNull('triggered_rule_id');
             }
 
-            $fileName = Str::uuid()->toString() . '_' . date('YmdHis');
-            $writer = SimpleExcelWriter::streamDownload('data_skrining_' . $fileName. '.xlsx');
+            if (!empty($request->date)) {
+                $date = explode(' - ', $request->date);
+                $start = Carbon::parse($date[0])->startOfDay();
+                $end   = Carbon::parse($date[1])->endOfDay();
+                $query->whereBetween('created_at', [$start, $end]);
+            }
+
+            $res = $query->orderBy('created_at', 'desc')->get();
+
+            if (count($res) < 1) {
+                // return back()->with('error', 'Tidak ada data skrining.');
+                return send_400('Tidak ada data skrining.');
+            }
+
+            $border = new Border(
+                new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID),
+                new BorderPart(Border::LEFT, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID),
+                new BorderPart(Border::RIGHT, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID),
+                new BorderPart(Border::TOP, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
+            );
+
+            $styleHeader = (new Style())
+                    ->setFontBold()
+                    ->setFontSize(16)
+                    ->setBorder($border);
+
+            $fileName = 'data_skrining_' . Str::uuid()->toString() . '_' . date('YmdHis') . '.xlsx';
+            $filePath = public_path('storage/export_file');
+            if (!is_dir($filePath)) { mkdir($filePath, 0755, true); }
+            // $writer = SimpleExcelWriter::streamDownload($fileName);
+            $writer = SimpleExcelWriter::create($filePath . '/' . $fileName);
             $writer->addHeader([
                 'nama', 
                 'nik', 
@@ -351,9 +411,13 @@ class SkriningController extends Controller
                 'hasil_skrining', 
                 'parameter'
             ]);
+            $writer->setHeaderStyle($styleHeader);
 
-            foreach ($query as $key => $value) {
-                $nik = substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4);
+            $styleBorder = (new Style())
+                    ->setBorder($border);
+
+            foreach ($res as $key => $value) {
+                $nik    = ($request->nik == 'true' ? $value->keluarga->nik : substr($value->keluarga->nik, 0, 4) . str_repeat("*", strlen($value->keluarga->nik) - 4));
                 $lahir  = !empty($value->keluarga->tgl_lahir) ? Carbon::parse($value->keluarga->tgl_lahir) : null;
                 $usia   = !empty($lahir) ? CarbonInterval::instance($lahir->diff(Carbon::parse($value->created_at)))->locale('id')->forHumans(['parts' => 4, 'join' => ' ']) : null;
                 $jenkel = $value->keluarga->jenkel == 'L' ? 'Laki-Laki' : ($value->keluarga->jenkel == 'P' ? 'Perempuan' : '');
@@ -371,13 +435,24 @@ class SkriningController extends Controller
                     $value->keluarga->faskes->nama_faskes, 
                     $value->kategori->nama_kategori, $hasil, 
                     $value->is_yes_count . '/' . ($value->is_yes_count + $value->is_no_count)
-                ]);
+                ], $styleBorder);
             }
 
-            $writer->toBrowser();
+            $writer->close();
+
+            return send_201('Data ekspor berhasil dibuat', [
+                'file'  => asset('storage/export_file/' . $fileName),
+            ]);
         } else {
             return abort(404);
         }
+
+        // return response()->json([
+        //     'nik'   => $request->nik,
+        //     'faskes'=> $request->faskes,
+        //     'kec'   => $request->kec,
+        //     'status'=> $request->status,
+        // ], 201);
     }
 
     public function ss_skrining()
@@ -392,6 +467,8 @@ class SkriningController extends Controller
         $order  = $request->sortOrder ?? 'asc';
         $faskes = (isset($request->faskes) && !empty($request->faskes)) ? $request->faskes : null;
         $kec    = (isset($request->kecamatan) && !empty($request->kecamatan)) ? $request->kecamatan : null;
+        $status = (isset($request->status) && !empty($request->status)) ? $request->status : null;
+        $tgl    = (isset($request->date) && !empty($request->date)) ? $request->date : null;
         $total  = DataSesiSkrining::with('keluarga')
                 ->whereHas('keluarga', function($q) {
                     $q->whereNull('deleted_at');
@@ -407,15 +484,28 @@ class SkriningController extends Controller
             });
         }
 
-        if (!empty($faskes)) {
-            $query->whereHas('keluarga', function($que) use ($faskes) {
+        if (!empty($faskes) && $request->user()->hasAnyRole(['admin', 'superadmin'])) {
+            $query->orWhereHas('keluarga', function($que) use ($faskes) {
                 $que->where('id_faskes', $faskes);
             });
         }
-        if (!empty($kec)) {
-            $query->whereHas('keluarga', function($que) use ($kec) {
+        if (!empty($kec) && $request->user()->hasAnyRole(['admin', 'superadmin'])) {
+            $query->orWhereHas('keluarga', function($que) use ($kec) {
                 $que->where('kec_id', $kec);
             });
+        }
+
+        if (!empty($status) && $status == 'aman') {
+            $query->whereNull('triggered_rule_id');
+        } elseif (!empty($status) && $status == 'wajib') {
+            $query->whereNotNull('triggered_rule_id');
+        }
+
+        if (!empty($tgl)) {
+            $date = explode(' - ', $tgl);
+            $start = Carbon::parse($date[0])->startOfDay();
+            $end   = Carbon::parse($date[1])->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
         }
 
         if (!empty($sort)) {

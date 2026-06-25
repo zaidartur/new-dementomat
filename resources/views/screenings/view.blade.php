@@ -119,7 +119,86 @@
     <div class="grid w-full space-y-5">
         <div class="kt-card">
             <div class="kt-card-header min-h-16">
-                <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-1" data-kt-datatable-search="#kt_datatable_remote_filters" />
+                <div class="flex flex-col w-full">
+                    <div class="flex flex-row flex-wrap xl:flex-nowrap justify-center md:justify-start gap-4 py-4">
+                        <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-1" data-kt-datatable-search="#kt_datatable_remote_filters" />        
+
+                        <div class="flex items-center gap-1">
+                            <input type="checkbox" class="kt-checkbox" id="check_nik" value="1" />
+                            <label class="kt-label" for="check_nik">
+                                Lihat NIK
+                            </label>
+                        </div>
+                        <label class="flex items-center gap-1 text-sm">
+                            <span class="text-muted-foreground">Periode</span>
+                            <input 
+                                type="text" 
+                                class="kt-input sm:w-50 gap-1" 
+                                id="kt_datatable_remote_filters_dtrange" 
+                                data-kt-date-picker="true" 
+                                data-kt-date-picker-action-buttons="true" 
+                                data-kt-date-picker-display-months-count="2" 
+                                data-kt-date-picker-input-mode="true" 
+                                data-kt-date-picker-months-to-switch="1" 
+                                data-kt-date-picker-position-to-input="left" 
+                                data-kt-date-picker-selection-dates-mode="multiple-ranged" 
+                                data-kt-date-picker-type="multiple" 
+                                data-kt-date-picker-date-min="{{ $min_date }}"
+                                data-kt-date-picker-date-max="{{ $max_date }}"
+                                data-kt-date-picker-display-date-min="{{ $min_date }}"
+                                data-kt-date-picker-display-date-max="{{ $max_date }}"
+                                placeholder="Pilih rentang tanggal"
+                                readonly 
+                            />
+                        </label>
+
+                        @hasanyrole(['admin', 'superadmin'])
+                        <label class="flex items-center gap-1 text-sm">
+                            <span class="text-muted-foreground">Faskes</span>
+                            <select id="kt_datatable_remote_filters_faskes" class="kt-select kt-select-sm w-40">
+                                <option value="" selected="">Semua Faskes</option>
+                                @foreach ($faskes as $fs)
+                                    <option value="{{ $fs->faskes_id }}">{{ $fs->nama_faskes }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="flex items-center gap-1 text-sm">
+                            <span class="text-muted-foreground">Kec.</span>
+                            <select id="kt_datatable_remote_filters_kecamatan" class="kt-select kt-select-sm w-40">
+                                <option value="" selected="">Semua Kecamatan</option>
+                                @foreach ($kecamatan as $kc)
+                                    <option value="{{ $kc->kec_id }}">{{ $kc->kec_name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        @endhasanyrole
+
+                        <label class="flex items-center gap-1 text-sm">
+                            <span class="text-muted-foreground">Status</span>
+                            <select id="kt_datatable_remote_filters_status" class="kt-select kt-select-sm w-40">
+                                <option value="all" selected>Semua</option>
+                                <option value="aman">Aman</option>
+                                <option value="wajib">Wajib Menghubungi Kader / Petugas Puskesmas</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="flex flex-row justify-center md:justify-end gap-4 space-y-2 mb-2">
+                        <button type="button" id="kt_datatable_remote_filters_apply" class="kt-btn kt-btn-sm kt-btn-primary gap-1">
+                            <i class="ki-filled ki-filter text-md"></i>
+                            Apply filter
+                        </button>
+
+                        <button type="button" id="kt_datatable_remote_download" class="kt-btn kt-btn-sm bg-green-500 hover:bg-green-600" data-kt-tooltip="true" data-kt-tooltip-placement="bottom-start">
+                            <i class="ki-filled ki-folder-down text-md"></i>
+                            Export Data
+                            <span data-kt-tooltip-content="true" class="kt-tooltip">
+                                <span class="flex items-center gap-1.5">Unduh Semua Data Hasil Skrining</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- <input type="text" placeholder="Pencarian Nama..." class="kt-input sm:w-50 gap-1" data-kt-datatable-search="#kt_datatable_remote_filters" />
 
                 <div class="flex items-center gap-1">
                     <input type="checkbox" class="kt-checkbox" id="check_nik" value="1" />
@@ -155,8 +234,6 @@
                         <option value="all" selected>Semua</option>
                         <option value="Aman">Aman</option>
                         <option value="Wajib Menghubungi Kader (Petugas) Puskesmas">Wajib Menghubungi Kader / Petugas Puskesmas</option>
-                        {{-- <option value="Menunggu Hasil TCM">Menunggu Hasil TCM</option>
-                        <option value="Dalam Pengobatan">Dalam Pengobatan</option> --}}
                     </select>
                 </label>
 
@@ -171,7 +248,7 @@
                     <span data-kt-tooltip-content="true" class="kt-tooltip">
                         <span class="flex items-center gap-1.5">Unduh Semua Data Hasil Skrining</span>
                     </span>
-                </button>
+                </button> --}}
 
             </div>
             <div id="kt_datatable_remote_filters" class="kt-card-table relative" data-kt-datatable-page-size="10">
@@ -630,6 +707,7 @@
                     var arr = JSON.parse(raw)
                     var kc = null
                     var fs = null
+                    var st = null
                     for (var i = 0; i < arr.length; i++) {
                         if (arr[i] && arr[i].column === 'kecamatan') {
                             kc = arr[i];
@@ -652,6 +730,30 @@
                         params.set('faskes', fs.value);
                     } else {
                         params.delete('faskes');
+                    }
+
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i] && arr[i].column === 'status') {
+                            fs = arr[i];
+                            break;
+                        }
+                    }
+                    if (fs && fs.value) {
+                        params.set('status', fs.value);
+                    } else {
+                        params.delete('status');
+                    }
+
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i] && arr[i].column === 'date') {
+                            fs = arr[i];
+                            break;
+                        }
+                    }
+                    if (fs && fs.value) {
+                        params.set('date', fs.value);
+                    } else {
+                        params.delete('date');
                     }
 
                     if (cek.checked) {
@@ -758,26 +860,23 @@
             });
             var selectFaskes = document.getElementById('kt_datatable_remote_filters_faskes');
             var selectKec = document.getElementById('kt_datatable_remote_filters_kecamatan');
+            var selectStatus = document.getElementById('kt_datatable_remote_filters_status');
+            var dateRange = document.getElementById('kt_datatable_remote_filters_dtrange');
             var applyBtn = document.getElementById('kt_datatable_remote_filters_apply');
-            if (selectFaskes && selectKec && applyBtn && applyBtn.getAttribute('data-kt-demo-bound') !== '1') {
+            if (selectStatus && applyBtn && applyBtn.getAttribute('data-kt-demo-bound') !== '1') {
                 applyBtn.setAttribute('data-kt-demo-bound', '1');
                 applyBtn.addEventListener('click', function () {
-                    var v = selectFaskes.value
-                    var k = selectKec.value
-
-                    if (v) {
-                        if (k) {
-                            datatable.setFilter({ column: 'faskes', type: 'text', value: v }).setFilter({ column: 'kecamatan', type: 'text', value: k }).reload()
-                        } else {
-                            datatable.setFilter({ column: 'faskes', type: 'text', value: v }).setFilter({ column: 'kecamatan', type: 'text', value: '' }).reload()
-                        }
-                    } else {
-                        if (k) {
-                            datatable.setFilter({ column: 'faskes', type: 'text', value: '' }).setFilter({ column: 'kecamatan', type: 'text', value: k }).reload()
-                        } else {
-                            datatable.setFilter({ column: 'faskes', type: 'text', value: '' }).setFilter({ column: 'kecamatan', type: 'text', value: '' }).reload()
-                        }
-                    }
+                    console.log(dateRange.value)
+                    var v = selectFaskes ? selectFaskes.value : ''
+                    var k = selectKec ? selectKec.value : ''
+                    var s = selectStatus ? selectStatus.value : ''
+                    var d = dateRange ? dateRange.value : ''
+                    
+                    datatable.setFilter({ column: 'faskes', type: 'text', value: v })
+                    .setFilter({ column: 'kecamatan', type: 'text', value: k })
+                    .setFilter({ column: 'status', type: 'text', value: s })
+                    .setFilter({ column: 'date', type: 'text', value: d })
+                    .reload()
                 });
             }
             isInitialized = true;
@@ -809,7 +908,27 @@
 
     $(document).ready(function() {
         $('#kt_datatable_remote_download').on('click', function() {
-            window.open("{{ route('skrining.export') }}", "_blank")
+            // window.open("{{ route('skrining.export') }}", "_blank")
+            const nik = document.getElementById('check_nik').checked
+            const faskes = $('#kt_datatable_remote_filters_faskes').val() ?? ''
+            const kecs   = $('#kt_datatable_remote_filters_kecamatan').val() ?? ''
+            const status = $('#kt_datatable_remote_filters_status').val() ?? 'all'
+            const ranges = $('#kt_datatable_remote_filters_dtrange').val() ?? ''
+
+            $.ajax({
+                url: "{{ route('skrining.export') }}",
+                type: 'POST',
+                data: {nik: nik, faskes: faskes, kec: kecs, status: status, date: ranges},
+                // dataType: 'JSON',
+                success: function(res) {
+                    window.open(res.data.file, '_blank')
+                },
+                error: function(xhr, status, error) {
+                    console.log(error)
+                    // Swal.fire('Error', xhr.responseJSON.message, 'error')
+                    _swal_alert('error', xhr.responseJSON.message)
+                }
+            })
         })
     })
 

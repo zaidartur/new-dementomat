@@ -55,7 +55,7 @@ Route::prefix('/')->middleware('auth')->group(function() {
         Route::get('data-skrining', [SkriningController::class, 'ss_skrining'])->name('skrining.ss')->middleware('permission:view hasil skrining');
         Route::post('detail', [SkriningController::class, 'detail'])->name('skrining.detail')->middleware('permission:view hasil skrining');
         Route::post('revisi-hasil-skrining', [SkriningController::class, 'revisi_skrining'])->name('skrining.revisi')->middleware('permission:update hasil skrining');
-        Route::get('ekspor-data-skrining', [SkriningController::class, 'export_data'])->name('skrining.export')->middleware('permission:view hasil skrining');
+        Route::post('ekspor-data-skrining', [SkriningController::class, 'export_data'])->name('skrining.export')->middleware('permission:view hasil skrining');
 
         Route::get('pengguna', [SkriningController::class, 'view_user'])->name('skrining.user')->middleware('permission:user skrining');
         Route::post('buat-skrining', [SkriningController::class, 'user_parameter'])->name('skrining.user.add')->middleware('permission:user skrining simpan');

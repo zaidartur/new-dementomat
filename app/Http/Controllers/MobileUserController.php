@@ -102,6 +102,7 @@ class MobileUserController extends Controller
     {
         $request->validate([
             'nama'      => 'required|string',
+            'email'     => 'nullable|email|max:150',
             'alamat_nik'=> 'required|string',
             'dob'       => 'required|date',
             'jenkel'    => 'required|string|max:2',
@@ -117,6 +118,7 @@ class MobileUserController extends Controller
         if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
             return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
         }
+        if (User::where('email', $request->email)->where('id', '!=', $request->user()->id)->exists()) return send_400('Alamat email sudah digunakan.');
 
         $data = [
             'nama_lengkap'  => $request->nama,
@@ -138,7 +140,7 @@ class MobileUserController extends Controller
             ], 400);
         }
 
-        User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama]);
+        User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama, 'email' => ($request->email ?? $request->user()->email)]);
         return response()->json([
             'status'    => 'success',
             'message'   => 'Berhasil memperbarui biodata.'

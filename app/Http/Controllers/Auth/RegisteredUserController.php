@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -52,7 +53,7 @@ class RegisteredUserController extends Controller
             'telepon'   => ['required', 'numeric', 'starts_with:628', 'digits_between:9,14'],
             'faskes'    => ['required', 'string', 'exists:faskes,faskes_id'],
             'nik'       => ['required', 'numeric', 'digits:16', 'unique:data_keluargas,nik'],
-            'email'     => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email'     => ['nullable', 'email', 'max:150', Rule::unique('users', 'email')],
             'password'  => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 

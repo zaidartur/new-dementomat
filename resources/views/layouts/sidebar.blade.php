@@ -14,8 +14,8 @@
             <img class="small-logo min-h-[22px] max-w-none max-h-[36px]" src="{{ route('logo') }}" />
         </a>
         <div class="ml-2 flex flex-col uppercase">
-            <label class="font-medium text-[16pt]">Si Demen</label>
-            <label class="font-medium text-[11pt]">Tomat Terasi</label>
+            <label class="font-bold text-[16pt] default-logo">Si Demen</label>
+            <label class="font-bold text-[11pt] default-logo">Tomat Terasi</label>
             {{-- <label class="text-sm text-gray-500 dark:text-gray-200">{{ Auth::user()->name }}</label> --}}
         </div>
         <button class="kt-btn kt-btn-outline kt-btn-icon size-[30px] absolute start-full top-2/4 -translate-x-2/4 -translate-y-2/4 rtl:translate-x-2/4" data-kt-toggle="body" data-kt-toggle-class="kt-sidebar-collapse" id="sidebar_toggle">
