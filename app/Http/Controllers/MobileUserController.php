@@ -102,7 +102,7 @@ class MobileUserController extends Controller
     {
         $request->validate([
             'nama'      => 'required|string',
-            'email'     => 'nullable|email|max:150',
+            'email'     => "nullable|email|max:150|unique:users,email,{$request->user()->id}",
             'alamat_nik'=> 'required|string',
             'dob'       => 'required|date',
             'jenkel'    => 'required|string|max:2',
@@ -118,7 +118,9 @@ class MobileUserController extends Controller
         if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
             return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
         }
-        if (User::where('email', $request->email)->where('id', '!=', $request->user()->id)->exists()) return send_400('Alamat email sudah digunakan.');
+        if (!empty($request->email)) {
+            if (User::where('email', $request->email)->where('id', '!=', $request->user()->id)->exists()) return send_400('Alamat email sudah digunakan.');
+        }
 
         $data = [
             'nama_lengkap'  => $request->nama,
