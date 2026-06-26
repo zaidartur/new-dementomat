@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -37,9 +38,10 @@ class ProfileController extends Controller
     public function save_user_profile(Request $request)
     {
         if (!Auth::user()->hasRole('user')) return abort(404);
+        $userId = $request->user()?->id;
         $request->validate([
             'nama'      => ['required', 'string', 'max:50'],
-            'bod'       => ['required', 'date'],
+            'dob'       => ['required', 'date'],
             'alamat'    => ['required', 'string'],
             'kecamatan' => ['required', 'numeric', 'exists:kecamatans,kec_id'],
             'desa'      => ['required', 'numeric', 'exists:desas,desakel_id'],
@@ -48,7 +50,34 @@ class ProfileController extends Controller
             'telepon'   => ['required', 'numeric', 'starts_with:628', 'digits_between:9,14'],
             'faskes'    => ['required', 'string', 'exists:faskes,faskes_id'],
             // 'nik'       => ['required', 'numeric', 'digits:16', 'unique:data_keluargas,nik'],
-            'email'     => ['nullable', 'string', 'lowercase', 'email', 'max:100', 'unique:'.User::class],
+            'email'     => ['nullable', 'email', 'max:150', Rule::unique('users', 'email')->ignore($userId)],
         ]);
+
+        if (!empty($request->telepon) && !str_starts_with($request->telepon, '628')) {
+            // return send_400('Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
+            return back()->with('error', 'Format nomor telepon tidak sesuai. Mohon menggunakan awalan 628xxx');
+        }
+        if (!empty($request->email)) {
+            if (User::where('email', $request->email)->where('id', '!=', $request->user()->id)->exists()) return back()->with('error', 'Alamat email sudah digunakan');
+        }
+
+        $data = [
+            'nama_lengkap'  => $request->nama,
+            'alamat_nik'    => $request->alamat,
+            'tgl_lahir'     => $request->dob,
+            'telepon'       => $request->telepon,
+            'alamat'        => $request->alamat,
+            'jenkel'        => $request->jenkel,
+            'status_keluarga' => $request->status,
+            'kec_id'        => $request->kecamatan,
+            'desakel_id'    => $request->desa,
+            'id_faskes'     => $request->faskes,
+        ];
+        $update = DataKeluarga::where('uid_keluarga', $request->user()->uuid)->where('is_auth', 1)->update($data);
+        if (!$update) return back()->with('error', 'Gagal memperbarui biodata');
+
+        User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama, 'email' => ($request->email ?? $request->user()?->email)]);
+
+        return redirect()->back()->with('success', 'Berhasil memperbarui biodata');
     }
 }

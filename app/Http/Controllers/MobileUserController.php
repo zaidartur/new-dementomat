@@ -142,7 +142,7 @@ class MobileUserController extends Controller
             ], 400);
         }
 
-        User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama, 'email' => ($request->email ?? $request->user()->email)]);
+        User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama, 'email' => ($request->email ?? $request->user()?->email)]);
         return response()->json([
             'status'    => 'success',
             'message'   => 'Berhasil memperbarui biodata.'

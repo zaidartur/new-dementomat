@@ -99,9 +99,9 @@
                     <div class="kt-form-item mb-5">
                         <label class="kt-form-label">Tanggal Lahir:</label>
                         <div class="kt-form-control">
-                            <div class="kt-input" @error('bod') aria-invalid="true" @enderror>
+                            <div class="kt-input" @error('dob') aria-invalid="true" @enderror>
                                 <i class="ki-filled ki-subtitle text-lg"></i>
-                                <input type="date" class="kt-input" id="bod" name="bod" placeholder="Tanggal Lahir" value="{{ $profile->tgl_lahir }}" required />
+                                <input type="date" class="kt-input" id="dob" name="dob" placeholder="Tanggal Lahir" value="{{ $profile->tgl_lahir }}" required />
                             </div>
                         </div>
                         <div class="kt-form-message">Mohon mengisi tanggal lahir Anda.</div>
