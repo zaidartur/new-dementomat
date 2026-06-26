@@ -61,7 +61,7 @@
                     </div>
                     <div class="flex flex-col gap-1 kt-form-item -mb-1">
                         <label class="kt-form-label font-normal text-mono">Username</label>
-                        <input class="kt-input" @error('username') aria-invalid="true" @enderror placeholder="Enter Username" name="username" type="text" maxlength="50" value="{{ old('username') }}" required>
+                        <input class="kt-input" @error('username') aria-invalid="true" @enderror placeholder="Enter Username" name="username" type="text" maxlength="50" value="{{ old('username') }}" autofocus required>
                         @error('username')
                             <div class="kt-form-message">
                                 <strong>{{ $message }}</strong>
