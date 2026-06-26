@@ -54,7 +54,7 @@
                 </div>
                 @endcan
 
-                @canany(['view cek jantung lab', 'view cek jantung nonlab'])
+                {{-- @canany(['view cek jantung lab', 'view cek jantung nonlab'])
                 <div class="kt-menu-item pt-2.25 pb-px">
                     <span class="kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]">
                         Cek Kesehatan Jantung
@@ -85,7 +85,7 @@
                         </span>
                     </a>
                 </div>
-                @endcan
+                @endcan --}}
 
                 @canany(['view hasil skrining', 'view cek dahak', 'view pemantauan obat', 'user skrining'])
                 <div class="kt-menu-item pt-2.25 pb-px">
