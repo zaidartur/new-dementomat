@@ -19,7 +19,8 @@
         <div class="flex items-stretch single-tickers" id="megaMenuContainer">
             <div class="py-4 px-7 md:py-5 md:px-0 ticker-texts">
                 <label class="font-medium block md:hidden cursor-pointer">Si Demen Tomat Terasi</label>
-                <label class="font-medium invisible md:visible cursor-pointer">Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi | </label>
+                {{-- <label class="font-medium invisible md:visible cursor-pointer">Sistem Deteksi Dini dan Pemantauan Tuberkolosis Mandiri, Terpadu, dan Terintegrasi | </label> --}}
+                <label class="font-medium invisible md:visible cursor-pointer">{{ Auth::user()->name }} | {{ Auth::user()->level == 'user' ? 'pengguna' : Auth::user()->level }} | </label>
                 <label class="font-medium invisible md:visible cursor-pointer">
                     {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }} 
                     <span class="ticker-text" id="timer"></span>
@@ -193,13 +194,13 @@
                 data-kt-dropdown-placement-rtl="bottom-start" data-kt-dropdown-trigger="click">
                 <div class="cursor-pointer shrink-0" data-kt-dropdown-toggle="true">
                     <img alt="" class="size-9 rounded-full border-2 border-green-500 shrink-0"
-                        src="{{ asset('assets/media/avatars/300-2.png') }}" />
+                        src="{{ (asset('storage/profile/' . Auth::user()->uuid) . '.png') ?? asset('assets/media/avatars/300-2.png') }}" />
                 </div>
                 <div class="kt-dropdown-menu w-[250px]" data-kt-dropdown-menu="true">
                     <div class="flex items-center justify-between px-2.5 py-1.5 gap-1.5">
                         <div class="flex items-center gap-2">
                             <img alt="" class="size-9 shrink-0 rounded-full border-2 border-green-500"
-                                src="{{ asset('assets/media/avatars/300-2.png') }}" />
+                                src="{{ (asset('storage/profile/' . Auth::user()->uuid) . '.png') ?? asset('assets/media/avatars/300-2.png') }}" />
                             <div class="flex flex-col gap-1.5">
                                 <span class="text-sm text-foreground font-semibold leading-none">
                                     {{ Auth::user()->name }}
@@ -224,7 +225,7 @@
                             </a>
                             @endhasanyrole
                             @hasanyrole(['admin', 'superadmin', 'faskes'])
-                            <a class="kt-dropdown-menu-link" href="{{ route('profile') }}">
+                            <a class="kt-dropdown-menu-link" href="{{ route('profile.admin') }}">
                                 <i class="ki-filled ki-profile-circle"></i>
                                 Profile Saya
                             </a>

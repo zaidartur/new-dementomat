@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             // RegDesakelSeeder::class,
             // RoleSeeder::class,
             PermissionSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
             // FaskesSeeder::class,
             // KategoriSkriningSeeder::class,
             // ParameterSkriningSeeder::class,

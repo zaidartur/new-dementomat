@@ -12,6 +12,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -20,9 +23,10 @@ class ProfileController extends Controller
 {
     public function view_user()
     {
+        if (!Auth::user()->hasRole('user')) return abort(404);
+
         $user = DataKeluarga::with('user:uuid,email')->where('uid_keluarga', Auth::user()->uuid)->whereNull('deleted_at')->first();
         if (!$user) return abort(404);
-        if (!Auth::user()->hasRole('user')) return abort(404);
 
         $data = [
             'profile'    => $user,
@@ -33,6 +37,18 @@ class ProfileController extends Controller
         ];
 
         return view('users.profile', $data);
+    }
+
+    public function view_admin()
+    {
+        if (!Auth::user()->hasAnyRole(['faskes', 'admin', 'superadmin'])) return abort(404);
+
+        $data = [
+            'profile'   => Auth::user(),
+            'images'    => (file_exists(public_path('storage/profile/' . Auth::user()->uuid) . '.png') ? (asset('storage/profile/' . Auth::user()->uuid) . '.png') : null)
+        ];
+
+        return view('profile.admin', $data);
     }
 
     public function save_user_profile(Request $request)
@@ -79,5 +95,36 @@ class ProfileController extends Controller
         User::where('uuid', $request->user()->uuid)->update(['name' => $request->nama, 'email' => ($request->email ?? $request->user()?->email)]);
 
         return redirect()->back()->with('success', 'Berhasil memperbarui biodata');
+    }
+
+    public function save_admin_profile(Request $request)
+    {
+        $userId = $request->user()->id;
+        $uuid = $request->user()->uuid;
+        $request->validate([
+            'nama'      => 'required|string|max:50',
+            'email'     => "nullable|email|unique:users,email,$userId",
+            'gambar'    => 'nullable|file|mimes:png,jpg,jpeg|max:4096',
+            'password'  => 'sometimes|nullable|confirmed|string|min:8|max:50',
+            'password_confirmation' => 'sometimes|nullable|string'
+        ]);
+
+        if (!empty($request->password) && ($request->password != $request->password_confirmation)) return back()->with('error', 'Password tidak sama.');
+        if (!empty($request->file('gambar'))) {
+            // Log::info('file exists');
+            upload_profile($request->file('gambar'), $uuid);
+        }
+
+        $upd = User::where('uuid', $uuid)->update(['name' => $request->nama, 'email' => $request->email]);
+        if (!$upd) return back()->with('error', 'Gagal memperbarui profile');
+
+        if (!empty($request->password) && ($request->password == $request->password_confirmation)) {
+            $pass = User::where('uuid', $uuid)->update(['password' => Hash::make($request->password)]);
+            if ($pass) {
+                DB::table('sessions')->where('user_id', $userId)->delete();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Berhasil memperbarui data profile.');
     }
 }

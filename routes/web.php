@@ -83,8 +83,11 @@ Route::prefix('/')->middleware('auth')->group(function() {
     });
 
     Route::prefix('pengaturan/')->group(function() {
-        Route::get('profile', [UtilityController::class, 'view_profile'])->name('profile')->middleware('permission:view profile');
-        Route::post('profile-update', [UtilityController::class, 'update_profile'])->name('profile.update')->middleware('permission:ubah profile');
+        Route::get('aplikasi', [UtilityController::class, 'view_profile'])->name('profile')->middleware('permission:view profile');
+        Route::post('aplikasi-update', [UtilityController::class, 'update_profile'])->name('profile.update')->middleware('permission:ubah profile');
+
+        Route::get('profile', [ProfileController::class, 'view_admin'])->name('profile.admin')->middleware('permission:view profile saya');
+        Route::post('profile', [ProfileController::class, 'save_admin_profile'])->name('profile.admin.save')->middleware('permission:update profile saya');
 
         Route::get('parameter', [ParameterController::class, 'view'])->name('params')->middleware('permission:view parameter skrining');
         Route::get('tabel-parameter', [ParameterController::class, 'ss_param'])->name('params.ss')->middleware('permission:view parameter skrining');
